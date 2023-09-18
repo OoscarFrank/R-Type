@@ -1,0 +1,26 @@
+# config files
+.vscode/
+launch.json
+.env
+
+# useless files
+*~
+\#*#
+.#*
+*#
+.#*#
+__pycache__
+
+# c
+*.a
+*.o
+vgcore*
+unit_tests*
+a.out
+r-type_server
+r-type_client
+
+# test files
+tmp/
+logs/
+*.log
