@@ -57,24 +57,19 @@ BOLD_WHITE	=	\033[1;37m
 all:	$(NAME)
 
 $(NAME):	$(OBJ)
-	@echo -e "$(BOLD_BLUE)Files compilation ok\n$(RESET)"
 	$(CC) -o $(NAME) $(OBJ) $(FLAGS) $(CXXFLAGS)
 	@echo -e "$(BOLD_GREEN)Compilation done$(RESET)"
 
 %.o: %.cpp
 	$(eval COUNT=$(shell echo $$(($(COUNT)+1))))
-	@echo -e "$(BOLD_CYAN)[$(shell echo $$(( $(COUNT) * 100 / \
-	$(TOTAL_NBR_FILES) )))%]$(RESET) Compiling $< -> $@"
 	@$(CC) -o $@ -c $< $(CXXFLAGS)
 
 clean:
 	rm -f $(BIN)
 	rm -f $(OBJ)
-	@echo -e "$(BOLD_YELLOW)Cleaning done\n$(RESET)"
 
 fclean:	clean
 	rm -f $(NAME)
-	@echo -e "$(BOLD_YELLOW)Full cleaning done\n$(RESET)"
 
 re:	clean all
 
