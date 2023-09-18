@@ -1,10 +1,11 @@
 #pragma once
 
-#include "Core.hpp"
-#include "Utils/MyError.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
+#include "../Core.hpp"
+#include "../Error/MyError.hpp"
+#include "Parallax.hpp"
 
 namespace Client
 {

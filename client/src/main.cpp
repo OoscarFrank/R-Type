@@ -1,6 +1,6 @@
 #include <signal.h>
 #include "Core.hpp"
-// #include "Game.hpp"
+
 using namespace Client;
 
 int main(int ac, char **av)

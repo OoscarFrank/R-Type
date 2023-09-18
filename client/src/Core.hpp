@@ -3,8 +3,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "Utils/MyError.hpp"
-#include "Game.hpp"
+#include "Error/MyError.hpp"
+#include "Game/Game.hpp"
 
 namespace Client {
    class Core {
