@@ -7,13 +7,10 @@ int main(int ac, char **av)
 {
     signal(SIGPIPE, SIG_IGN);
     Core core;
-    try
-    {
+    try {
         core.checkArgs(ac, av);
         core.run();
-    }
-    catch (const std::exception &e)
-    {
+    } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
         return 84;
     }

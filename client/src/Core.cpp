@@ -46,5 +46,6 @@ void Core::checkArgs(int ac, char **av)
 
 void Core::run()
 {
-    std::cout << "Run boyyyys" << std::endl;
+    Game game;
+    game.MainLoop();
 }

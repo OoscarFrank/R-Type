@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include "Utils/MyError.hpp"
-// #include "Game.hpp"
+#include "Game.hpp"
 
 namespace Client {
    class Core {
