@@ -1,24 +1,21 @@
-#include <SFML/Graphics.hpp>
+#include <signal.h>
+#include "Core.hpp"
+// #include "Game.hpp"
+using namespace Client;
 
-int main()
+int main(int ac, char **av)
 {
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
-
-    while (window.isOpen())
+    signal(SIGPIPE, SIG_IGN);
+    Core core;
+    try
     {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
-
-        window.clear();
-        window.draw(shape);
-        window.display();
+        core.checkArgs(ac, av);
+        core.run();
     }
-
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        return 84;
+    }
     return 0;
 }
