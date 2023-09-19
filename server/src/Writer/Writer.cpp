@@ -13,6 +13,5 @@ void Writer::run()
     while (true) {
         Packet value = _queue.pop();
         _socket.send_to(asio::buffer(value.message()), value.endpoint());
-        std::cout << "Sent data to " << value.endpoint().address().to_string() << ": " << value.message() << std::endl;
     }
 }
