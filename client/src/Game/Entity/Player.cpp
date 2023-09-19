@@ -9,7 +9,6 @@ Player::Player(const std::string &backgroundPath, const sf::Vector2f &firstPosit
         throw client::MyError("Core", "Failed to load background texture");
     }
 
-    // this->_background.setTexture(this->_texture);
     this->_background.setPosition(this->_position);
 }
 
@@ -20,8 +19,8 @@ void Player::setTexture(const sf::Texture &texture)
 
 void Player::setPosition(const sf::Vector2f &position)
 {
-    std::cout << "Player::setPosition" << std::endl;
     this->_position = position;
+    this->_background.setPosition(this->_position);
 }
 
 const sf::Vector2f &Player::getPosition()

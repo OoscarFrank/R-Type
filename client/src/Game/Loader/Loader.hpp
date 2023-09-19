@@ -16,7 +16,7 @@ namespace game {
                     ParallaxSecondbkg,
                     Player
                 };
-                void loadTexture(const std::string path, sf::Vector2f pos, toLoad type);
+                void loadTexture(const std::string path, toLoad type);
                 const sf::Texture &getTexture(toLoad type) const;
 
             private:

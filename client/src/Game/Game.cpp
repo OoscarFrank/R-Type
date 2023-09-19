@@ -1,5 +1,4 @@
 #include "Game.hpp"
-// #include "Components/EventManager.hpp"
 
 using namespace game;
 using namespace components;
@@ -11,7 +10,7 @@ Game::Game() :
     _player1("./client/assets/player.png", {200, 200}, 100),
     _manager(loader::Loader())
 {
-    this->_window.create(sf::VideoMode(1920, 1080), "R-TYPE");
+    this->_window.create(sf::VideoMode(1920, 1080), "R-TYPE", sf::Style::Fullscreen);
     this->_lastTime = NOW;
     this->_player1.setTexture(this->_manager.getTexture(loader::Loader::toLoad::Player));
 }

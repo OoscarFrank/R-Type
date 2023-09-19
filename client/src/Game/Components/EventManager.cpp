@@ -16,12 +16,22 @@ void EventManager::EventLoop(sf::RenderWindow &window, game::entity::Player &pla
     while (window.pollEvent(this->_event)) {
         if (this->_event.type == sf::Event::Closed)
             window.close();
-        if (this->_event.type == sf::Event::KeyPressed) {
-            if (this->_event.key.code == sf::Keyboard::Escape) window.close();
-            if (this->_event.key.code == sf::Keyboard::Up) {
-                player.setPosition({900, 900});
-            }
-        }
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+        window.close();
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+        player.setPosition({player.getPosition().x + 0.4f, player.getPosition().y});
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+        player.setPosition({player.getPosition().x - 0.4f, player.getPosition().y});
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+        player.setPosition({player.getPosition().x, player.getPosition().y - 0.4f});
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+        player.setPosition({player.getPosition().x, player.getPosition().y + 0.4f});
     }
 }
 

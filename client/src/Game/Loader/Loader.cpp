@@ -5,16 +5,16 @@ using namespace loader;
 
 Loader::Loader()
 {
-    loadTexture("./client/assets/parallax/background.png", {0, 0}, Loader::toLoad::ParallaxFirstbkg);
-    loadTexture("./client/assets/parallax/background2.png", {0, 0}, Loader::toLoad::ParallaxSecondbkg);
-    loadTexture("./client/assets/player.png", {200, 200}, Loader::toLoad::Player);
+    loadTexture("./client/assets/parallax/background.png", Loader::toLoad::ParallaxFirstbkg);
+    loadTexture("./client/assets/parallax/background2.png", Loader::toLoad::ParallaxSecondbkg);
+    loadTexture("./client/assets/player.png", Loader::toLoad::Player);
 }
 
 Loader::~Loader()
 {
 }
 
-void Loader::loadTexture(const std::string path, sf::Vector2f pos, toLoad type)
+void Loader::loadTexture(const std::string path, toLoad type)
 {
     if (this->_textures.find(type) != this->_textures.end())
         return; //😘
