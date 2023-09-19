@@ -18,6 +18,7 @@ class Queue {
         bool tryPop(T &value);
         T pop();
         std::size_t size() const { return _queue.size(); }
+        bool empty() const { return _queue.empty(); }
 
     private:
         std::mutex _mutex;
