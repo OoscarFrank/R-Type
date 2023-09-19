@@ -2,7 +2,7 @@
 
 using namespace client;
 
-Parallax::Parallax(const std::string &backgroundPath, sf::Vector2f firstPosition, float speed): _position(firstPosition), _speed(speed)
+Parallax::Parallax(const std::string &backgroundPath, const sf::Vector2f &firstPosition, float speed): _position(firstPosition), _speed(speed)
 {
     if (!this->_texture.loadFromFile(backgroundPath)) {
         throw MyError("Core", "Failed to load background texture");
@@ -25,7 +25,7 @@ void Parallax::update(float deltaTime)
     this->_background.setPosition(this->_position);
 }
 
-void Parallax::draw(sf::RenderWindow &window)
+void Parallax::draw(sf::RenderWindow &window) const
 {
     window.draw(this->_background);
 }

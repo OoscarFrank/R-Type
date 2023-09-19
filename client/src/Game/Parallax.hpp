@@ -8,11 +8,11 @@ namespace client
 {
     class Parallax {
         public:
-            Parallax(const std::string &backgroundPath, sf::Vector2f firstPosition, float speed);
+            Parallax(const std::string &backgroundPath, const sf::Vector2f &firstPosition, float speed);
             ~Parallax();
 
             void update(float deltaTime);
-            void draw(sf::RenderWindow &window);
+            void draw(sf::RenderWindow &window) const;
 
         private:
             sf::Sprite _background;
