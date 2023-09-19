@@ -60,9 +60,8 @@ $(NAME):	$(OBJ)
 	$(CC) -o $(NAME) $(OBJ) $(FLAGS) $(CXXFLAGS)
 	@echo -e "$(BOLD_GREEN)Compilation done$(RESET)"
 
-# %.o: %.cpp
-# 	$(eval COUNT=$(shell echo $$(($(COUNT)+1))))
-# 	@$(CC) -o $@ -c $< $(CXXFLAGS)
+%.o: %.cpp
+	$(CC) -o $@ -c $< $(CXXFLAGS)
 
 clean:
 	rm -f $(BIN)
