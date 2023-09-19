@@ -3,7 +3,7 @@
 using namespace game;
 using namespace components;
 
-EventManager::EventManager()
+EventManager::EventManager(): _timeElapsed(0)
 {
 }
 
@@ -11,7 +11,7 @@ EventManager::~EventManager()
 {
 }
 
-void EventManager::EventLoop(sf::RenderWindow &window, game::entity::Player &player, float deltaTime, sf::Vector2u screenSize)
+void EventManager::EventLoop(sf::RenderWindow &window, game::entity::Player &player, float deltaTime, sf::Vector2u screenSize, std::function<void()> rocketCallback)
 {
     while (window.pollEvent(this->_event)) {
         if (this->_event.type == sf::Event::Closed)
@@ -34,6 +34,12 @@ void EventManager::EventLoop(sf::RenderWindow &window, game::entity::Player &pla
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
         player.setPosition({player.getPosition().x, player.getPosition().y + (400.0f * deltaTime)});
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+        if (NOW - this->_timeElapsed > 250) {
+            this->_timeElapsed = NOW;
+            rocketCallback();
+        }
     }
 }
 

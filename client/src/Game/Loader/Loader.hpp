@@ -14,7 +14,8 @@ namespace game {
                 enum toLoad {
                     ParallaxFirstbkg,
                     ParallaxSecondbkg,
-                    Player
+                    Player,
+                    Rocket
                 };
                 void loadTexture(const std::string path, toLoad type);
                 const sf::Texture &getTexture(toLoad type) const;

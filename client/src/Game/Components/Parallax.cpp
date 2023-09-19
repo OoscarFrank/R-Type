@@ -3,18 +3,18 @@
 using namespace game;
 using namespace components;
 
-Parallax::Parallax(const std::string &backgroundPath, const sf::Vector2f &firstPosition, float speed): _position(firstPosition), _speed(speed)
+Parallax::Parallax(const sf::Vector2f &firstPosition, float speed): _position(firstPosition), _speed(speed)
 {
-    if (!this->_texture.loadFromFile(backgroundPath)) {
-        throw client::MyError("Core", "Failed to load background texture");
-    }
-
-    this->_background.setTexture(this->_texture);
     this->_background.setPosition(this->_position);
 }
 
 Parallax::~Parallax()
 {
+}
+
+void Parallax::setTexture(const sf::Texture &texture)
+{
+    this->_background.setTexture(texture);
 }
 
 void Parallax::update(float deltaTime)

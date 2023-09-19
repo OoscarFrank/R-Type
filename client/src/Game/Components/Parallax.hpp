@@ -8,9 +8,10 @@ namespace game {
     namespace components {
         class Parallax {
             public:
-                Parallax(const std::string &backgroundPath, const sf::Vector2f &firstPosition, float speed);
+                Parallax(const sf::Vector2f &firstPosition, float speed);
                 ~Parallax();
 
+                void setTexture(const sf::Texture &texture);
                 void update(float deltaTime);
                 void draw(sf::RenderWindow &window) const;
 
