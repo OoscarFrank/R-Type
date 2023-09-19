@@ -1,4 +1,5 @@
 #include "Game.hpp"
+// #include "Components/EventManager.hpp"
 
 using namespace game;
 using namespace components;
@@ -19,18 +20,6 @@ Game::~Game()
 {
 }
 
-int Game::CheckCloseWindow()
-{
-    if (this->_event.type == sf::Event::Closed)
-        return 1;
-    if (this->_event.type == sf::Event::KeyPressed)
-    {
-        if (this->_event.key.code == sf::Keyboard::Escape)
-            return 1;
-    }
-    return 0;
-}
-
 int Game::MainLoop()
 {
     while (this->_window.isOpen()) {
@@ -38,10 +27,7 @@ int Game::MainLoop()
         float deltaTime = (currentTime - _lastTime) / 1000.0f;
         _lastTime = currentTime;
 
-        while (this->_window.pollEvent(this->_event))
-            if (this->CheckCloseWindow() == 1)
-                this->_window.close();
-
+        this->EventLoop(this->_window, this->_player1);
         this->_window.clear();
         this->_parallax1.update(deltaTime);
         this->_parallax1.draw(this->_window);

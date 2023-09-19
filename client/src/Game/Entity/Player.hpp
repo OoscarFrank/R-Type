@@ -10,9 +10,10 @@ namespace game {
                 Player(const std::string &backgroundPath, const sf::Vector2f &firstPosition, float life);
                 ~Player();
 
-                void move(const sf::Vector2f &position);
                 void draw(sf::RenderWindow &window) const;
                 void setTexture(const sf::Texture &texture);
+                void setPosition(const sf::Vector2f &position);
+                const sf::Vector2f &getPosition();
 
             private:
                 sf::Sprite _background;

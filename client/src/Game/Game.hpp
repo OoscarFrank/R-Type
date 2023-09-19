@@ -8,19 +8,18 @@
 #include "./Components/Parallax.hpp"
 #include "./Entity/Player.hpp"
 #include "./Loader/Loader.hpp"
+#include "./Components/EventManager.hpp"
 
 #define NOW std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()
 
 namespace game {
-    class Game {
+    class Game: public components::EventManager {
         public:
             Game();
             ~Game();
             int MainLoop();
         private:
-            int CheckCloseWindow();
             sf::RenderWindow _window;
-            sf::Event _event;
             long _lastTime;
 
             components::Parallax _parallax1;

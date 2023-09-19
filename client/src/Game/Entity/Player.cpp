@@ -18,13 +18,19 @@ void Player::setTexture(const sf::Texture &texture)
     this->_background.setTexture(texture);
 }
 
-Player::~Player()
+void Player::setPosition(const sf::Vector2f &position)
 {
+    std::cout << "Player::setPosition" << std::endl;
+    this->_position = position;
 }
 
-void Player::move(const sf::Vector2f &position)
+const sf::Vector2f &Player::getPosition()
 {
-    this->_position = position;
+    return this->_position;
+}
+
+Player::~Player()
+{
 }
 
 void Player::draw(sf::RenderWindow &window) const
