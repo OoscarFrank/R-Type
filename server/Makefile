@@ -5,7 +5,7 @@
 ## Makefile
 ##
 
-NAME	=	../r-type_server
+NAME	=	r-type_server
 NAME_TESTS	=	unit_tests
 
 # src
@@ -19,7 +19,7 @@ TESTS	=	$(shell find $(TESTS_DIR) -type f '(' -name "*.cpp" ')')
 
 # compil
 OBJ	=	$(SRC:.cpp=.o)
-CC	=	g++ -g
+CC	=	g++ -g -lpthread
 
 COUNT	=	0
 TOTAL_NBR_FILES	=	$(shell echo $(SRC) | wc -w)
