@@ -2,7 +2,7 @@
 
 #include <thread>
 #include "../Utils/Queue.hpp"
-#include "Packet.hpp"
+#include "../Utils/Packet.hpp"
 
 class Writer {
     public:

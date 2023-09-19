@@ -5,7 +5,10 @@
 #include <memory>
 #include <utility>
 
+#include  "../Utils/Packet.hpp"
+
 #include "../Client.hpp"
+#include "../Utils/Queue.hpp"
 
 class Reader
 {
@@ -13,11 +16,11 @@ private:
     std::thread _thread;
     asio::io_context _ioContext;
     asio::ip::udp::socket &_socket;
-    std::vector<std::unique_ptr<Client>> &_clients;
+    Queue<Packet> &_queueIn;
     void Clock();
 
 public:
-    Reader(asio::ip::udp::socket &socket, std::vector<std::unique_ptr<Client>> &clients);
+    Reader(asio::ip::udp::socket &socket, Queue<Packet> &queueIn);
     ~Reader();
 
     class ReadError : public std::exception
