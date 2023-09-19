@@ -14,5 +14,6 @@ typedef struct {
 }inst_t;
 
 #define INST { \
-    {0x01, {INT, INT}, 8},\
+    {0x01, {INT, INT}, 8}, \
+    {0x02, {CHAR}, 1}, \
 };

@@ -3,12 +3,10 @@
 #include "Writer/Writer.hpp"
 #include "Reader/Reader.hpp"
 #include "Utils/ThreadPool.hpp"
+#include "Utils/Args.hpp"
 
-int main(int argc, char **argv)
+void exec(int port)
 {
-    (void)argc;
-    (void)argv;
-    const int port = 4242;
     asio::io_context io_context;
     asio::ip::udp::socket socket(io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), port));
     Queue<Writer::Packet> queueOut;
@@ -24,6 +22,17 @@ int main(int argc, char **argv)
         pool.submit([value, &queueOut]() {
             queueOut.push(Writer::Packet(value.getClient().getEndpoint(), std::string("J'AI RECU TON MESSAGE: ") + value.getData()));
         });
+    }
+}
+
+int main(int argc, char **argv)
+{
+    try {
+        Args args(argc, argv);
+        exec(args.getFlagValue<int>("-p", 4242));
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return 84;
     }
     return 0;
 }
