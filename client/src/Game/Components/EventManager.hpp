@@ -20,7 +20,7 @@ namespace game {
                     A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
                     Escape
                 };
-                void EventLoop(sf::RenderWindow &window, game::entity::Player &player);
+                void EventLoop(sf::RenderWindow &window, game::entity::Player &player, float deltaTime, sf::Vector2u screenSize);
                 bool isKeyPressed(keys key);
             private:
                 sf::Event _event;

@@ -11,7 +11,7 @@ EventManager::~EventManager()
 {
 }
 
-void EventManager::EventLoop(sf::RenderWindow &window, game::entity::Player &player)
+void EventManager::EventLoop(sf::RenderWindow &window, game::entity::Player &player, float deltaTime, sf::Vector2u screenSize)
 {
     while (window.pollEvent(this->_event)) {
         if (this->_event.type == sf::Event::Closed)
@@ -22,16 +22,19 @@ void EventManager::EventLoop(sf::RenderWindow &window, game::entity::Player &pla
         window.close();
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        player.setPosition({player.getPosition().x + 0.4f, player.getPosition().y});
+        std::cout << "size -> " << (screenSize.x - (player._background.getGlobalBounds().width / 2)) << std::endl;
+        if (player.getPosition().x <= (screenSize.x))
+            player.setPosition({player.getPosition().x + (400.0f * deltaTime), player.getPosition().y});
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-        player.setPosition({player.getPosition().x - 0.4f, player.getPosition().y});
+        if (player.getPosition().x > 0)
+            player.setPosition({player.getPosition().x - (400.0f * deltaTime), player.getPosition().y});
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-        player.setPosition({player.getPosition().x, player.getPosition().y - 0.4f});
+        player.setPosition({player.getPosition().x, player.getPosition().y - (400.0f * deltaTime)});
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-        player.setPosition({player.getPosition().x, player.getPosition().y + 0.4f});
+        player.setPosition({player.getPosition().x, player.getPosition().y + (400.0f * deltaTime)});
     }
 }
 

@@ -18,6 +18,7 @@ namespace game {
             Game();
             ~Game();
             int MainLoop();
+            sf::Vector2u _screenSize;
         private:
             sf::RenderWindow _window;
             long _lastTime;

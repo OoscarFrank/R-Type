@@ -14,9 +14,9 @@ namespace game {
                 void setTexture(const sf::Texture &texture);
                 void setPosition(const sf::Vector2f &position);
                 const sf::Vector2f &getPosition();
+                sf::Sprite _background;
 
             private:
-                sf::Sprite _background;
                 sf::Vector2f _position;
                 sf::Texture _texture;
                 float _life;
