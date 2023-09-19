@@ -5,6 +5,8 @@
 #include <queue>
 #include <mutex>
 #include <condition_variable>
+#define NOW std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()
+
 
 template<typename T>
 class Queue {

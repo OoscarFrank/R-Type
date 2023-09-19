@@ -10,6 +10,7 @@ class Client
 {
 private:
     asio::ip::udp::endpoint _endpoint;
+    
 public:
     Client(asio::ip::udp::endpoint endpoint);
     ~Client();

@@ -26,15 +26,18 @@ void Reader::Clock(std::vector<std::unique_ptr<Client>> &clients)
         for (auto i = clients.begin(); i != clients.end(); i++) {
             if ((*i)->GetEndpoint() == sender) {
                 std::cout << "client already exist" << std::endl;
+                // (*i)->PushIn(std::string(data));
                 pass = true;
             }
         }
-
-        if (!pass)
+        if (!pass) {
             clients.push_back(std::make_unique<Client>(sender));
+            // clients.back()->PushIn(std::string(data));
+        }
         if (ec) {
-            std::cerr << "Error during receive: " << ec.message() << std::endl;
-            continue;
+            Reader::ReadError error;
+            error._message = "Error during receive: " + ec.message();
+            throw error;
         }
 
         this->_socket.send_to(asio::buffer(data, length), sender);
