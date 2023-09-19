@@ -41,6 +41,6 @@ std::pair<size_t, std::string> Client::getNextInst()
             return out;
         }
     }
-    this->buffer = this->buffer.substr(1);
+    this->buffer = "";
     return std::make_pair(0, "");
 }
