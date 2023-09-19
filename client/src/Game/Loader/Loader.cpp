@@ -7,7 +7,7 @@ Loader::Loader()
 {
     loadTexture("./client/assets/parallax/background.png", Loader::toLoad::ParallaxFirstbkg);
     loadTexture("./client/assets/parallax/background2.png", Loader::toLoad::ParallaxSecondbkg);
-    loadTexture("./client/assets/player.png", Loader::toLoad::Player);
+    loadTexture("./client/assets/entity/player/Move.png", Loader::toLoad::Player);
 }
 
 Loader::~Loader()

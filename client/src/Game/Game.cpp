@@ -31,11 +31,12 @@ int Game::MainLoop()
 
         this->EventLoop(this->_window, this->_player1, deltaTime, this->_screenSize);
         this->_window.clear();
-        // this->_parallax1.update(deltaTime);
-        // this->_parallax1.draw(this->_window);
-        // this->_parallax2.update(deltaTime);
-        // this->_parallax2.draw(this->_window);
+        this->_parallax1.update(deltaTime);
+        this->_parallax1.draw(this->_window);
+        this->_parallax2.update(deltaTime);
+        this->_parallax2.draw(this->_window);
 
+        this->_player1.update(deltaTime);
         this->_player1.draw(this->_window);
 
         this->_window.display();

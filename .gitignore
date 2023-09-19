@@ -3,3 +3,4 @@ r-type_client
 .vscode/
 logs/
 test.png
+.DS_Store

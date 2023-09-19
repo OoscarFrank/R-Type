@@ -22,7 +22,6 @@ void EventManager::EventLoop(sf::RenderWindow &window, game::entity::Player &pla
         window.close();
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        std::cout << "size -> " << (screenSize.x - (player._background.getGlobalBounds().width / 2)) << std::endl;
         if (player.getPosition().x <= (screenSize.x))
             player.setPosition({player.getPosition().x + (400.0f * deltaTime), player.getPosition().y});
     }
