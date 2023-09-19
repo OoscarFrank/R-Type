@@ -10,13 +10,15 @@
 class Reader
 {
 private:
+    std::thread _thread;
     asio::io_context _ioContext;
-    asio::ip::udp::socket _socket;
+    asio::ip::udp::socket &_socket;
+    std::vector<std::unique_ptr<Client>> &_clients;
+    void Clock();
 
 public:
-    Reader(int port = 4242);
+    Reader(asio::ip::udp::socket &socket, std::vector<std::unique_ptr<Client>> &clients);
     ~Reader();
-    void Clock(std::vector<std::unique_ptr<Client>> &clients);
 
     class ReadError : public std::exception
     {
