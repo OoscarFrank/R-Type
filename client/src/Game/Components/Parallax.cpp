@@ -1,11 +1,12 @@
 #include "Parallax.hpp"
 
-using namespace client;
+using namespace game;
+using namespace components;
 
 Parallax::Parallax(const std::string &backgroundPath, const sf::Vector2f &firstPosition, float speed): _position(firstPosition), _speed(speed)
 {
     if (!this->_texture.loadFromFile(backgroundPath)) {
-        throw MyError("Core", "Failed to load background texture");
+        throw client::MyError("Core", "Failed to load background texture");
     }
 
     this->_background.setTexture(this->_texture);

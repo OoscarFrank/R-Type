@@ -1,6 +1,7 @@
 #include "Core.hpp"
 
 using namespace client;
+using namespace game;
 
 Core::Core()
 {
