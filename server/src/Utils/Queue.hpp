@@ -51,7 +51,7 @@ T Queue<T>::pop()
     std::unique_lock lock(_mutex);
     if (_queue.empty())
         _cv.wait(lock);
-    T value = _queue.front();
+    T value = std::move(_queue.front());
     _queue.pop();
     return value;
 }

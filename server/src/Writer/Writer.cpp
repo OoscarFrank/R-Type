@@ -1,6 +1,6 @@
 #include "Writer.hpp"
 
-Writer::Writer(asio::ip::udp::socket &socket, Queue<Packet> &queue): _socket(socket), _queue(queue) {
+Writer::Writer(asio::ip::udp::socket &socket, Queue<Writer::Packet> &queue): _socket(socket), _queue(queue) {
     _thread = std::thread(&Writer::run, this);
 }
 
@@ -11,7 +11,21 @@ Writer::~Writer() {
 void Writer::run()
 {
     while (true) {
-        Packet value = _queue.pop();
+        Writer::Packet value = _queue.pop();
         _socket.send_to(asio::buffer(value.message()), value.endpoint());
     }
+}
+
+Writer::Packet::Packet(const asio::ip::udp::endpoint &endpoint, const std::string &message): _endpoint(endpoint), _message(message) {}
+
+const asio::ip::udp::endpoint &Writer::Packet::endpoint() const {
+    return _endpoint;
+}
+
+const std::string &Writer::Packet::message() const {
+    return _message;
+}
+
+void Writer::Packet::setMessage(const std::string &message) {
+    _message = message;
 }

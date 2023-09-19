@@ -1,12 +1,27 @@
 #pragma once
 
+#include <iostream>
+#include <asio.hpp>
 #include <thread>
 #include "../Utils/Queue.hpp"
-#include "../Utils/Packet.hpp"
 
 class Writer {
     public:
-        Writer(asio::ip::udp::socket &socket, Queue<Packet> &queue);
+        class Packet {
+            public:
+                Packet(const asio::ip::udp::endpoint &endpoint, const std::string &message);
+
+                const asio::ip::udp::endpoint &endpoint() const;
+                const std::string &message() const;
+                void setMessage(const std::string &message);
+
+            protected:
+            private:
+                const asio::ip::udp::endpoint &_endpoint;
+                std::string _message;
+        };
+
+        Writer(asio::ip::udp::socket &socket, Queue<Writer::Packet> &queue);
         ~Writer();
 
     protected:
@@ -14,5 +29,5 @@ class Writer {
         void run();
         std::thread _thread;
         asio::ip::udp::socket &_socket;
-        Queue<Packet> &_queue;
+        Queue<Writer::Packet> &_queue;
 };
