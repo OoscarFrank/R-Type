@@ -10,11 +10,14 @@ class Client
 {
 private:
     asio::ip::udp::endpoint _endpoint;
-    
+    std::string buffer;
+
 public:
     Client(asio::ip::udp::endpoint endpoint);
     ~Client();
-    const asio::ip::udp::endpoint &GetEndpoint() const;
+    const asio::ip::udp::endpoint &getEndpoint() const;
+    void pushBuffer(const std::string &data);
+    std::pair<size_t, std::string> getNextInst();
 };
 
 

@@ -9,9 +9,9 @@ int main(int argc, char **argv)
     asio::io_context io_context;
     asio::ip::udp::socket socket(io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), 4242));
     Queue<Packet> queueOut;
-    Queue<Packet> queueIn;
+    Queue<std::unique_ptr<Reader::Packet>> queueIn;
     std::vector<std::unique_ptr<Client>> clients;
-    Reader reader(socket, queueIn);
+    Reader reader(socket, queueIn, clients);
     Writer writer(socket, queueOut);
     return 0;
 }
