@@ -29,15 +29,14 @@ void Reader::Clock()
 
         for (auto i = this->_clients.begin(); i != this->_clients.end(); i++)
         {
-            if ((*i)->getEndpoint() == sender)
-            {
+            if ((*i)->getEndpoint() == sender) {
                 pass = true;
                 (*i)->pushBuffer(std::string(data));
                 tmpInst = (*i)->getNextInst();
-                
 
-                if (tmpInst.first != 0)
+                if (tmpInst.first != 0) {
                     _queueIn.push(std::make_unique<Reader::Packet>(**i, tmpInst.second, tmpInst.first));
+                }
                 break;
             }
         }
@@ -47,7 +46,6 @@ void Reader::Clock()
             this->_clients.push_back(std::make_unique<Client>(sender));
             this->_clients.back()->pushBuffer(std::string(data));
             tmpInst = this->_clients.back()->getNextInst();
-
             if (tmpInst.first != 0)
                 _queueIn.push(std::make_unique<Reader::Packet>(*(this->_clients.back()), tmpInst.second, tmpInst.first));
         }

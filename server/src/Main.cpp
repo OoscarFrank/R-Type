@@ -15,12 +15,12 @@ int main(int argc, char **argv)
     Reader reader(socket, queueIn, clients);
     Writer writer(socket, queueOut);
 
-    ThreadPool pool(3, 10);
-    while (true) {
-        Packet value = queueIn.pop();
-        pool.submit([&value, &queueOut]() {
-            queueOut.push(Packet(value.endpoint(), "J'AI RECU TON MESSAGE: " + value.message()));
-        });
-    }
+    // ThreadPool pool(3, 10);
+    // while (true) {
+    //     Packet value = queueIn.pop();
+    //     pool.submit([&value, &queueOut]() {
+    //         queueOut.push(Packet(value.endpoint(), "J'AI RECU TON MESSAGE: " + value.message()));
+    //     });
+    // }
     return 0;
 }
