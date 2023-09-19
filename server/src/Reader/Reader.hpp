@@ -4,8 +4,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/select.h>
-
-
+#include <thread>
 #include <set>
 #include <vector>
 #include <memory>
@@ -16,13 +15,15 @@
 class Reader
 {
 private:
+    std::thread _thread;
     asio::io_context _ioContext;
-    asio::ip::udp::socket _socket;
+    asio::ip::udp::socket &_socket;
+    std::vector<std::unique_ptr<Client>> &_clients;
+    void Clock();
 
 public:
-    Reader(int port = 4242);
+    Reader(asio::ip::udp::socket &socket, std::vector<std::unique_ptr<Client>> &clients);
     ~Reader();
-    void Clock(std::vector<std::unique_ptr<Client>> &clients);
 
     // class SocketError : public std::exception
     // {
@@ -41,7 +42,7 @@ public:
     // public:
     //     virtual const char *what() const noexcept { return "[ERROR] Bind error"; }
     // };
-    
+
     // class ListenError : public std::exception
     // {
     // public:
