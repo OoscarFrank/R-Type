@@ -1,6 +1,6 @@
 #include "Parallax.hpp"
 
-using namespace Client;
+using namespace client;
 
 Parallax::Parallax(const std::string &backgroundPath, sf::Vector2f firstPosition, float speed): _position(firstPosition), _speed(speed)
 {

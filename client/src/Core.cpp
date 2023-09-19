@@ -1,6 +1,6 @@
 #include "Core.hpp"
 
-using namespace Client;
+using namespace client;
 
 Core::Core()
 {

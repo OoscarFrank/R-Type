@@ -6,7 +6,7 @@
 #include "Error/MyError.hpp"
 #include "Game/Game.hpp"
 
-namespace Client {
+namespace client {
    class Core {
         public:
             Core();

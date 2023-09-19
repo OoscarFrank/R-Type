@@ -1,7 +1,7 @@
 #include <signal.h>
 #include "Core.hpp"
 
-using namespace Client;
+using namespace client;
 
 int main(int ac, char **av)
 {

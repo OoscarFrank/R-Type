@@ -7,7 +7,7 @@
 #include "../Error/MyError.hpp"
 #include "Parallax.hpp"
 
-namespace Client
+namespace client
 {
     class Game {
         public:
@@ -18,5 +18,7 @@ namespace Client
             int CheckCloseWindow();
             sf::RenderWindow _window;
             sf::Event _event;
+            Parallax _parallax1;
+            Parallax _parallax2;
     };
 }

@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
-namespace Client
+namespace client
 {
     class Parallax {
         public:

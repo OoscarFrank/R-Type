@@ -6,7 +6,7 @@
 #include <chrono>
 #include <ctime>
 
-namespace Client
+namespace client
 {
     void log(const std::string &message, const std::string &type = "LOG");
 

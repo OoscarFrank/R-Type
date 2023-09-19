@@ -1,6 +1,6 @@
 #include "MyError.hpp"
 
-using namespace Client;
+using namespace client;
 
 static std::tm *getCurrentTime() {
     std::chrono::system_clock::time_point date = std::chrono::system_clock::now();
@@ -8,7 +8,7 @@ static std::tm *getCurrentTime() {
     return std::localtime(&time);
 }
 
-void Client::log(const std::string &message, const std::string &type) {
+void client::log(const std::string &message, const std::string &type) {
     std::filesystem::create_directory("./logs");
     std::ofstream myfile("./logs/error.log", std::ios::app);
     if (myfile.is_open()) {
