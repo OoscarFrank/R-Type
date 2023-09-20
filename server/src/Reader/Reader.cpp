@@ -24,7 +24,7 @@ void Reader::Clock()
     while (true)
     {
         pass = false;
-        std::error_code ec;
+        asio::error_code ec;
         size_t len = this->_socket.receive_from(asio::buffer(data, max_length), sender, 0, ec);
         data[len] = '\0';
 

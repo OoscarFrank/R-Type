@@ -12,7 +12,11 @@ void Writer::run()
 {
     while (true) {
         Writer::Packet value = _queue.pop();
-        _socket.send_to(asio::buffer(value.message()), value.endpoint());
+        try {
+            _socket.send_to(asio::buffer(value.message()), value.endpoint());
+        } catch (const std::exception &e) {
+            std::cerr << e.what() << std::endl;
+        }
     }
 }
 

@@ -24,3 +24,5 @@ r-type_client
 tmp/
 logs/
 *.log
+client_test.cpp
+clienttest
