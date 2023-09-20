@@ -32,10 +32,11 @@ void exec(int port)
 
     std::cout << "Server listening on port " << port << std::endl;
 
-    ThreadPool pool(std::thread::hardware_concurrency() - 3, 10);
+    int nbThread = std::thread::hardware_concurrency() - 3;
+    ThreadPool reqPool(nbThread / 2, 10);
     while (true) {
         Reader::Packet value = queueIn.pop();
-        pool.submit([value, &socket, &game]() {
+        reqPool.submit([value, &socket, &game]() {
             router(value, game, socket);
         });
     }
