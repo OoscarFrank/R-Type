@@ -8,13 +8,12 @@
 void router(Reader::Packet packet, Game &game, asio::ip::udp::socket &socket)
 {
 
-    std::cout << packet.getInstruction() << std::endl;
     switch (packet.getInstruction()) {
         case 8:
             game.createRoom(packet, socket, ((packet.getDataChar() == 1) ? true : false));
             break;
-
         case 9:
+            game.searchRoom(packet, socket);
             break;
         default:
             break;

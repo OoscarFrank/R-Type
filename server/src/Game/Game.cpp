@@ -13,17 +13,21 @@ void Game::createRoom(Reader::Packet &packet, asio::ip::udp::socket &socket, boo
 {
     Room room(_roomIds, packet.getClient(), privateRoom );
     packet.getClient().setRoomId(_roomIds);
+    _roomsMutex.lock();
     _rooms.push_back(room);
     packet.getClient().setInst(0x0a);
     packet.getClient().catShortOut(_roomIds);
+    _roomIds++;
+    _roomsMutex.unlock();
     packet.getClient().catCharOut(packet.getClient().getGamePlayerId());
     socket.send_to(asio::buffer(packet.getClient().getOutReq()), packet.getClient().getEndpoint());
-    _roomIds++;
 }
 
 void Game::searchRoom(Reader::Packet &packet, asio::ip::udp::socket &socket)
 {
+    _roomsMutex.lock();
     if (_rooms.size() == 0) {
+        _roomsMutex.unlock();
         this->createRoom(packet, socket);
         return;
     }
@@ -34,9 +38,12 @@ void Game::searchRoom(Reader::Packet &packet, asio::ip::udp::socket &socket)
             i->addPlayer(packet.getClient());
             packet.getClient().setInst(0x0a);
             packet.getClient().catShortOut(i->getId());
+            _roomsMutex.unlock();
             packet.getClient().catCharOut(packet.getClient().getGamePlayerId());
             socket.send_to(asio::buffer(packet.getClient().getOutReq()), packet.getClient().getEndpoint());
             return;
         }
     }
+    _roomsMutex.unlock();
+    this->createRoom(packet, socket);
 }
