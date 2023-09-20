@@ -1,6 +1,6 @@
 #include "Reader.hpp"
 
-Reader::Reader(asio::ip::udp::socket &socket, Queue<std::unique_ptr<Reader::Packet>> &queueIn, std::vector<std::unique_ptr<Client>> &clients) : _socket(socket), _queueIn(queueIn), _clients(clients)
+Reader::Reader(asio::ip::udp::socket &socket, Queue<Reader::Packet> &queueIn, std::vector<Client> &clients): _socket(socket), _queueIn(queueIn), _clients(clients)
 {
     _thread = std::thread(&Reader::Clock, this);
 }
@@ -30,11 +30,11 @@ void Reader::Clock()
 
         for (auto i = this->_clients.begin(); i != this->_clients.end(); i++)
         {
-            if ((*i)->getEndpoint() == sender) {
+            if (i->getEndpoint() == sender) {
                 pass = true;
-                (*i)->pushBuffer(std::string(data));
-                while ((tmpInst = (*i)->getNextInst()).first != 0) {
-                    _queueIn.push(std::make_unique<Reader::Packet>(**i, tmpInst.second, tmpInst.first));
+                i->pushBuffer(std::string(data));
+                while ((tmpInst = i->getNextInst()).first != 0) {
+                    _queueIn.push(Reader::Packet(*i, tmpInst.second, tmpInst.first));
                 }
                 break;
             }
@@ -42,10 +42,10 @@ void Reader::Clock()
 
         if (!pass)
         {
-            this->_clients.push_back(std::make_unique<Client>(sender));
-            this->_clients.back()->pushBuffer(std::string(data));
-            while ((tmpInst = this->_clients.back()->getNextInst()).first != 0) {
-                _queueIn.push(std::make_unique<Reader::Packet>(*(this->_clients.back()), tmpInst.second, tmpInst.first));
+            this->_clients.push_back(Client(sender));
+            this->_clients.back().pushBuffer(std::string(data));
+            while ((tmpInst = this->_clients.back().getNextInst()).first != 0) {
+                _queueIn.push(Reader::Packet(this->_clients.back(), tmpInst.second, tmpInst.first));
             }
         }
 
