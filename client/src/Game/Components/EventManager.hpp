@@ -4,6 +4,8 @@
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 #include "../Entity/Player.hpp"
+#include <functional>
+
 #define NOW std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()
 
 namespace game {

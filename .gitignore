@@ -4,3 +4,4 @@ r-type_client
 logs/
 test.png
 .DS_Store
+vgcore*

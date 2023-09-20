@@ -19,11 +19,10 @@ namespace game {
                 sf::Sprite _background;
 
             private:
-                components::EntityAnimation _animation;
                 sf::Vector2f _position;
                 sf::Texture _texture;
-                sf::IntRect _textureRect; // TO REMOVE
                 float _life;
+                components::EntityAnimation _animation;
         };
     }
 }

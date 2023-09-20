@@ -44,11 +44,11 @@ int Game::MainLoop()
         this->_player1.update(deltaTime);
         this->_player1.draw(this->_window);
 
-        for (auto &rocket: this->_rockets) {
-            rocket.update(deltaTime);
-            rocket.draw(this->_window);
-            if (rocket.getPosition().x > this->_screenSize.x) {
-                this->_rockets.erase(this->_rockets.begin());
+        for (auto it = this->_rockets.begin(); it != this->_rockets.end();++it) {
+            it->update(deltaTime);
+            it->draw(this->_window);
+            if (it->getPosition().x > this->_screenSize.x) {
+                this->_rockets.erase(it);
             }
         }
 
