@@ -29,7 +29,7 @@ void exec(int port)
 
     std::cout << "Server listening on port " << port << std::endl;
 
-    ThreadPool pool(3, 10);
+    ThreadPool pool(std::thread::hardware_concurrency() - 3, 10);
     while (true) {
         Reader::Packet value = queueIn.pop();
         pool.submit([value, &socket, &game]() {
