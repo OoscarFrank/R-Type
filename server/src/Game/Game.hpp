@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Room.hpp"
 #include <vector>
+#include "../Reader/Reader.hpp"
 
 class Game
 {
@@ -14,5 +15,6 @@ class Game
     public:
         Game();
         ~Game();
-        void createRoom(Client &client);
+        void createRoom(Reader::Packet &packet, asio::ip::udp::socket &socket, bool privateRoom = false);
+        void searchRoom(Reader::Packet &packet, asio::ip::udp::socket &socket);
 };

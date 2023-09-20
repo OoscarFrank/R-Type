@@ -25,6 +25,10 @@ public:
         int getInstruction() const;
         const std::string &getData() const;
         Client &getClient() const;
+        int getDataInt();
+        short getDataShort();
+        char getDataChar();
+
     };
 
     class ReadError : public std::exception

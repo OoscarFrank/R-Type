@@ -13,7 +13,8 @@ private:
     std::string buffer;
     std::string _dataOut;
     unsigned char _instOut;
-    unsigned int _roomId;
+    unsigned short _roomId;
+    unsigned char _gamePlayerId;
     unsigned int lastActivity;
 
 public:
@@ -26,6 +27,8 @@ public:
     void catShortOut(const short &data);
     void catIntOut(const int &data);
     void setInst(unsigned char inst);
+    void setGamePlayerId(unsigned char id);
+    unsigned char getGamePlayerId() const;
     void setRoomId(unsigned int roomId);
     unsigned int getRoomId() const;
     std::string getOutReq();

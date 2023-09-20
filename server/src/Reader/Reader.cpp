@@ -80,3 +80,31 @@ Client &Reader::Packet::getClient() const
 {
     return _client;
 }
+
+int Reader::Packet::getDataInt()
+{
+    int out = 0;
+    out += this->_data[0];
+    out += this->_data[1] << 8;
+    out += this->_data[2] << 16;
+    out += this->_data[3] << 24;
+    this->_data = this->_data.substr(4);
+    return out;
+}
+
+short Reader::Packet::getDataShort()
+{
+    short out = 0;
+    out += this->_data[0];
+    out += this->_data[1] << 8;
+    this->_data = this->_data.substr(2);
+    return out;
+}
+
+char Reader::Packet::getDataChar()
+{
+    char out = 0;
+    out += this->_data[0];
+    this->_data = this->_data.substr(1);
+    return out;
+}

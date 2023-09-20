@@ -9,6 +9,7 @@ Client::Client(asio::ip::udp::endpoint endpoint)
     this->_instOut = 0;
     this->_roomId = 0;
     this->lastActivity = NOW;
+    this->_gamePlayerId = 0;
 }
 
 Client::~Client()
@@ -99,4 +100,14 @@ void Client::setRoomId(unsigned int roomId)
 unsigned int Client::getRoomId() const
 {
     return _roomId;
+}
+
+void Client::setGamePlayerId(unsigned char id)
+{
+    _gamePlayerId = id;
+}
+
+unsigned char Client::getGamePlayerId() const
+{
+    return _gamePlayerId;
 }

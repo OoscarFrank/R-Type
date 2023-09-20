@@ -11,7 +11,10 @@ void router(Reader::Packet packet, Game &game, asio::ip::udp::socket &socket)
     std::cout << packet.getInstruction() << std::endl;
     switch (packet.getInstruction()) {
         case 8:
-            game.createRoom(packet.getClient());
+            game.createRoom(packet, socket, ((packet.getDataChar() == 1) ? true : false));
+            break;
+
+        case 9:
             break;
         default:
             break;
@@ -33,9 +36,7 @@ void exec(int port)
     while (true) {
         Reader::Packet value = queueIn.pop();
         pool.submit([value, &socket, &game]() {
-            // value.getClient().catIntOut(4865);
             router(value, game, socket);
-            socket.send_to(asio::buffer("JAI EU LE MESSAGE"), value.getClient().getEndpoint());
         });
     }
 }
