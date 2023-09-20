@@ -5,6 +5,10 @@ Client::Client(asio::ip::udp::endpoint endpoint)
 {
     this->_endpoint = endpoint;
     this->buffer = "";
+    this->_dataOut = "";
+    this->_instOut = 0;
+    this->_roomId = 0;
+    this->lastActivity = NOW;
 }
 
 Client::~Client()
@@ -27,12 +31,10 @@ std::pair<size_t, std::string> Client::getNextInst()
     if (this->buffer.size() == 0)
         return std::make_pair(0, "");
     std::vector<inst_t> inst = INST;
-
     std::pair<size_t, std::string> out;
 
-
     for (auto i = inst.begin(); i != inst.end(); ++i) {
-        if (this->buffer[0] == std::to_string(i->_inst)[0]) {       //! remove std::to_string()[0]
+        if (this->buffer[0] == i->_inst) {
             if (this->buffer.size() < i->_size + 1)
                 return std::make_pair(0, "");
             out.first = i->_inst;
@@ -43,4 +45,58 @@ std::pair<size_t, std::string> Client::getNextInst()
     }
     this->buffer = "";
     return std::make_pair(0, "");
+}
+
+void Client::catCharOut(const char &data)
+{
+    this->_dataOut += data;
+}
+
+void Client::catShortOut(const short &data)
+{
+    char tmp;
+    this->_dataOut += data;
+    tmp = data >> 8;
+    this->_dataOut += tmp;
+}
+
+void Client::catIntOut(const int &data)
+{
+    char tmp = data;
+    this->_dataOut += tmp;
+    tmp = data >> 8;
+    this->_dataOut += tmp;
+    tmp = data >> 16;
+    this->_dataOut += tmp;
+    tmp = data >> 24;
+    this->_dataOut += tmp;
+
+    // int out = 0;
+    // out += this->_dataOut[0];
+    // out += this->_dataOut[1] << 8;
+    // out += this->_dataOut[2] << 16;
+    // out += this->_dataOut[3] << 24;
+    // std::cout << out << std::endl;
+}
+
+void Client::setInst(unsigned char inst)
+{
+    _instOut = inst;
+}
+
+std::string Client::getOutReq()
+{
+    std::string out = std::to_string(_instOut);
+    out += _dataOut;
+    return out;
+}
+
+void Client::setRoomId(unsigned int roomId)
+{
+    _roomId = roomId;
+}
+
+unsigned int Client::getRoomId() const
+{
+    return _roomId;
 }

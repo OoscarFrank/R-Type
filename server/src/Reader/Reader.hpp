@@ -24,7 +24,7 @@ public:
         ~Packet();
         int getInstruction() const;
         const std::string &getData() const;
-        const Client &getClient() const;
+        Client &getClient() const;
     };
 
     class ReadError : public std::exception

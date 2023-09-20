@@ -11,6 +11,10 @@ class Client
 private:
     asio::ip::udp::endpoint _endpoint;
     std::string buffer;
+    std::string _dataOut;
+    unsigned char _instOut;
+    unsigned int _roomId;
+    unsigned int lastActivity;
 
 public:
     Client(asio::ip::udp::endpoint endpoint);
@@ -18,6 +22,11 @@ public:
     const asio::ip::udp::endpoint &getEndpoint() const;
     void pushBuffer(const std::string &data);
     std::pair<size_t, std::string> getNextInst();
+    void catCharOut(const char &data);
+    void catShortOut(const short &data);
+    void catIntOut(const int &data);
+    void setInst(unsigned char inst);
+    void setRoomId(unsigned int roomId);
+    unsigned int getRoomId() const;
+    std::string getOutReq();
 };
-
-

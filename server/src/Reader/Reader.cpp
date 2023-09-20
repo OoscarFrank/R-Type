@@ -76,7 +76,7 @@ const std::string &Reader::Packet::getData() const
     return _data;
 }
 
-const Client &Reader::Packet::getClient() const
+Client &Reader::Packet::getClient() const
 {
     return _client;
 }

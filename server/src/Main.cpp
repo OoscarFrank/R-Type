@@ -1,26 +1,41 @@
 #include <iostream>
 #include <asio.hpp>
-#include "Writer/Writer.hpp"
 #include "Reader/Reader.hpp"
+#include "Game/Game.hpp"
 #include "Utils/ThreadPool.hpp"
 #include "Utils/Args.hpp"
+
+void router(Reader::Packet packet, Game &game, asio::ip::udp::socket &socket)
+{
+
+    std::cout << packet.getInstruction() << std::endl;
+    switch (packet.getInstruction()) {
+        case 8:
+            game.createRoom(packet.getClient());
+            break;
+        default:
+            break;
+    }
+}
 
 void exec(int port)
 {
     asio::io_context io_context;
     asio::ip::udp::socket socket(io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), port));
-    Queue<Writer::Packet> queueOut;
     Queue<Reader::Packet> queueIn;
     std::vector<Client> clients;
     Reader reader(socket, queueIn, clients);
-    Writer writer(socket, queueOut);
+    Game game;
+
     std::cout << "Server listening on port " << port << std::endl;
 
     ThreadPool pool(3, 10);
     while (true) {
         Reader::Packet value = queueIn.pop();
-        pool.submit([value, &queueOut]() {
-            queueOut.push(Writer::Packet(value.getClient().getEndpoint(), std::string("J'AI RECU TON MESSAGE: ") + value.getData()));
+        pool.submit([value, &socket, &game]() {
+            // value.getClient().catIntOut(4865);
+            router(value, game, socket);
+            socket.send_to(asio::buffer("JAI EU LE MESSAGE"), value.getClient().getEndpoint());
         });
     }
 }
