@@ -15,7 +15,8 @@ namespace game {
                     ParallaxFirstbkg,
                     ParallaxSecondbkg,
                     Player,
-                    Rocket
+                    Rocket,
+                    Monster1
                 };
                 void loadTexture(const std::string path, toLoad type);
                 const sf::Texture &getTexture(toLoad type) const;

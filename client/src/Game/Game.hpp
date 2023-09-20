@@ -7,6 +7,7 @@
 #include "../Error/MyError.hpp"
 #include "./Components/Parallax.hpp"
 #include "./Entity/Player.hpp"
+#include "./Entity/Monster.hpp"
 #include "./Loader/Loader.hpp"
 #include "./Entity/Rocket.hpp"
 #include "./Components/EventManager.hpp"
@@ -27,6 +28,7 @@ namespace game {
             components::Parallax _parallax1;
             components::Parallax _parallax2;
             entity::Player _player1;
+            entity::Monster _monster1;
             std::vector<entity::Rocket> _rockets;
             loader::Loader _manager;
     };

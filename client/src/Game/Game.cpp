@@ -8,11 +8,13 @@ Game::Game() :
     _parallax1({0, 0}, 120),
     _parallax2({0, 0}, 150),
     _player1({200, 200}, 100),
+    _monster1({1500, 600}, 100),
     _manager(loader::Loader())
 {
     this->_window.create(sf::VideoMode(1920, 1080), "R-TYPE");
     this->_lastTime = NOW;
     this->_player1.setTexture(this->_manager.getTexture(loader::Loader::toLoad::Player));
+    this->_monster1.setTexture(this->_manager.getTexture(loader::Loader::toLoad::Monster1));
     this->_parallax1.setTexture(this->_manager.getTexture(loader::Loader::toLoad::ParallaxFirstbkg));
     this->_parallax2.setTexture(this->_manager.getTexture(loader::Loader::toLoad::ParallaxSecondbkg));
 }
@@ -36,13 +38,11 @@ int Game::MainLoop()
         };
         this->EventLoop(this->_window, this->_player1, deltaTime, this->_screenSize, rocketCallback);
         this->_window.clear();
+
         this->_parallax1.update(deltaTime);
         this->_parallax1.draw(this->_window);
         this->_parallax2.update(deltaTime);
         this->_parallax2.draw(this->_window);
-
-        this->_player1.update(deltaTime);
-        this->_player1.draw(this->_window);
 
         for (auto it = this->_rockets.begin(); it != this->_rockets.end();++it) {
             it->update(deltaTime);
@@ -51,6 +51,13 @@ int Game::MainLoop()
                 this->_rockets.erase(it);
             }
         }
+
+        this->_player1.update(deltaTime);
+        this->_player1.draw(this->_window);
+
+        this->_monster1.update(deltaTime);
+        this->_monster1.draw(this->_window);
+
 
         this->_window.display();
     }
