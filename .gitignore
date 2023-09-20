@@ -25,3 +25,5 @@ tmp/
 test/
 logs/
 *.log
+client_test.cpp
+clienttest
