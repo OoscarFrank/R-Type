@@ -31,7 +31,7 @@ std::pair<size_t, std::string> Client::getNextInst()
 
     if (this->buffer.size() == 0)
         return std::make_pair(0, "");
-    std::vector<inst_t> inst = INST;
+    std::vector<Commands> inst = IN_COMMANDS;
     std::pair<size_t, std::string> out;
 
     for (auto i = inst.begin(); i != inst.end(); ++i) {

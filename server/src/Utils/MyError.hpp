@@ -28,6 +28,11 @@ class MyError: public std::exception {
          * @param errorType Type of the error (default: "ERROR")
          */
         MyError(const std::string &className, const std::string &message, bool logToFile = true, const std::string &errorType = "ERROR");
+        /**
+         * @brief Returns a C-style character string describing the general cause of the current error.
+         *
+         * @return const char*
+         */
         virtual const char *what() const noexcept override;
 
     protected:

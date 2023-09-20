@@ -8,16 +8,49 @@
 #define NOW std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()
 
 
+/**
+ * @brief Queue class that can be used to store a list of things to do and share it between threads
+ *
+ * @tparam T Type of data to store
+ */
 template<typename T>
 class Queue {
     public:
         Queue() = default;
         ~Queue() = default;
 
+        /**
+         * @brief Push a new value to the queue
+         *
+         * @param value Value to add at the end of the queue
+         */
         void push(T &&value);
+        /**
+         * @brief Try to pop a value from the queue if there is one
+         *
+         * @param value Value where the popped value will be stored
+         * @return true If a value has been popped and the queue is not empty
+         * @return false If the queue is empty
+         */
         bool tryPop(T &value);
+        /**
+         * @brief Pop a value from the queue and wait if there is none
+         *
+         * @return T
+         */
         T pop();
+        /**
+         * @brief Get the size of the queue
+         *
+         * @return std::size_t
+         */
         std::size_t size() const { return _queue.size(); }
+        /**
+         * @brief Check if the queue is empty
+         *
+         * @return true
+         * @return false
+         */
         bool empty() const { return _queue.empty(); }
 
     private:
