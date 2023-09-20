@@ -6,10 +6,10 @@ using namespace entity;
 Player::Player(const sf::Vector2f &firstPosition, float life):
     _position(firstPosition),
     _life(life),
-    _animation(5, 8.0f, {192, 192})
+    _animation(5, 8.0f, {113, 64})
 {
     this->_background.setPosition(this->_position);
-    this->_background.setTextureRect(sf::IntRect(0, 0, 192, 192));
+    this->_background.setTextureRect(sf::IntRect(0, 0, 113, 64));
 }
 
 Player::~Player()

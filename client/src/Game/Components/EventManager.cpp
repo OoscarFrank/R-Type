@@ -22,7 +22,7 @@ void EventManager::EventLoop(sf::RenderWindow &window, game::entity::Player &pla
         window.close();
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        if (player.getPosition().x <= (screenSize.x))
+        if (player.getPosition().x <= (screenSize.x - player._background.getGlobalBounds().width))
             player.setPosition({player.getPosition().x + (400.0f * deltaTime), player.getPosition().y});
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
@@ -30,10 +30,12 @@ void EventManager::EventLoop(sf::RenderWindow &window, game::entity::Player &pla
             player.setPosition({player.getPosition().x - (400.0f * deltaTime), player.getPosition().y});
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-        player.setPosition({player.getPosition().x, player.getPosition().y - (400.0f * deltaTime)});
+        if (player.getPosition().y > 0)
+            player.setPosition({player.getPosition().x, player.getPosition().y - (400.0f * deltaTime)});
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-        player.setPosition({player.getPosition().x, player.getPosition().y + (400.0f * deltaTime)});
+        if (player.getPosition().y <= (screenSize.y - player._background.getGlobalBounds().width))
+            player.setPosition({player.getPosition().x, player.getPosition().y + (400.0f * deltaTime)});
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
         if (NOW - this->_timeElapsed > 250) {

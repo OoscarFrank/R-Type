@@ -11,7 +11,9 @@ Game::Game() :
     _monster1({1500, 600}, 100),
     _manager(loader::Loader())
 {
-    this->_window.create(sf::VideoMode(1920, 1080), "R-TYPE");
+    sf::VideoMode mode = sf::VideoMode::getDesktopMode();
+    this->_screenSize = {mode.width, mode.height};
+    this->_window.create(sf::VideoMode(mode.width, mode.height), "R-TYPE");
     this->_lastTime = NOW;
     this->_player1.setTexture(this->_manager.getTexture(loader::Loader::toLoad::Player));
     this->_monster1.setTexture(this->_manager.getTexture(loader::Loader::toLoad::Monster1));
@@ -25,9 +27,6 @@ Game::~Game()
 
 int Game::MainLoop()
 {
-    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
-    this->_screenSize = {desktop.width, desktop.height};
-
     while (this->_window.isOpen()) {
         long currentTime = NOW;
         float deltaTime = (currentTime - _lastTime) / 1000.0f;
