@@ -25,7 +25,7 @@ void exec(int port)
     asio::io_context io_context;
     asio::ip::udp::socket socket(io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), port));
     Queue<Reader::Packet> queueIn;
-    std::vector<Client> clients;
+    std::vector<std::shared_ptr<Client>> clients;
     Reader reader(socket, queueIn, clients);
     Game game;
 

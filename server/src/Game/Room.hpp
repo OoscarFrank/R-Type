@@ -8,9 +8,8 @@
 class Room
 {
     private:
-        asio::ip::udp::socket &_socket;
         std::thread _thread;
-        std::vector<Client> _clients;
+        std::vector<std::shared_ptr<Client>> _clients;
         unsigned short _id;
         unsigned int _nbPlayer;
         unsigned int _maxPlayer;
@@ -20,7 +19,7 @@ class Room
         void refresh();
 
     public:
-        Room(asio::ip::udp::socket &socket, unsigned int id, Client &client, bool privateRoom = false);
+        Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom = false);
         ~Room();
         Room(const Room &room) = delete;
         Room(Room &&room) = delete;
@@ -30,6 +29,6 @@ class Room
         unsigned int getNbPlayer() const;
         unsigned int getProgress() const;
         unsigned int getMaxPlayer() const;
-        void addPlayer(Client &client);
-        void removePlayer(Client &client);
+        void addPlayer(std::shared_ptr<Client> client);
+        void removePlayer(std::shared_ptr<Client> client);
 };

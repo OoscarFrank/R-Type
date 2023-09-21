@@ -9,6 +9,7 @@
 class Client
 {
 private:
+    asio::ip::udp::socket &_socket;
     asio::ip::udp::endpoint _endpoint;
     std::string buffer;
     std::string _dataOut;
@@ -18,8 +19,12 @@ private:
     unsigned int lastActivity;
 
 public:
-    Client(asio::ip::udp::endpoint endpoint);
+    Client(asio::ip::udp::socket &socket, asio::ip::udp::endpoint endpoint);
     ~Client();
+    Client(const Client &client) = delete;
+    Client(Client &&client) = delete;
+    Client &operator=(const Client &client) = delete;
+    Client &operator=(Client &&client) = delete;
     const asio::ip::udp::endpoint &getEndpoint() const;
     void pushBuffer(const std::string &data);
     std::pair<size_t, std::string> getNextInst();
@@ -32,4 +37,5 @@ public:
     void setRoomId(unsigned int roomId);
     unsigned int getRoomId() const;
     std::string getOutReq();
+    void send(const std::string &message);
 };

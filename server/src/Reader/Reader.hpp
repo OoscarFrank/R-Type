@@ -15,16 +15,16 @@ public:
     class Packet
     {
     private:
-        Client &_client;
+        std::shared_ptr<Client> _client;
         std::string _data;
         int _instruction;
 
     public:
-        Packet(Client &client, const std::string &data, int instruction);
+        Packet(std::shared_ptr<Client> client, const std::string &data, int instruction);
         ~Packet();
         int getInstruction() const;
         const std::string &getData() const;
-        Client &getClient() const;
+        std::shared_ptr<Client> getClient() const;
         int getDataInt();
         short getDataShort();
         char getDataChar();
@@ -38,7 +38,7 @@ public:
         const char *what() const noexcept override { return _message.c_str(); }
     };
 
-    Reader(asio::ip::udp::socket &socket, Queue<Reader::Packet> &queueIn, std::vector<Client> &clients);
+    Reader(asio::ip::udp::socket &socket, Queue<Reader::Packet> &queueIn, std::vector<std::shared_ptr<Client>> &clients);
     ~Reader();
 
 private:
@@ -46,6 +46,6 @@ private:
     asio::io_context _ioContext;
     asio::ip::udp::socket &_socket;
     Queue<Reader::Packet> &_queueIn;
-    std::vector<Client> &_clients;
+    std::vector<std::shared_ptr<Client>> &_clients;
     void Clock();
 };

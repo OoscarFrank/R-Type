@@ -1,7 +1,7 @@
 #include "Client.hpp"
 #include "Utils/Instruction.hpp"
 
-Client::Client(asio::ip::udp::endpoint endpoint)
+Client::Client(asio::ip::udp::socket &socket, asio::ip::udp::endpoint endpoint): _socket(socket)
 {
     this->_endpoint = endpoint;
     this->buffer = "";
@@ -110,4 +110,12 @@ void Client::setGamePlayerId(unsigned char id)
 unsigned char Client::getGamePlayerId() const
 {
     return _gamePlayerId;
+}
+
+void Client::send(const std::string &message)
+{
+    if (_endpoint.protocol() == asio::ip::udp::v4()) {
+        _socket.send_to(asio::buffer(message), _endpoint);
+    } else
+        std::cerr << "Endpoint is not IPv4" << std::endl;
 }
