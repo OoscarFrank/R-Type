@@ -10,7 +10,7 @@
 class Game
 {
     private:
-        std::vector<Room> _rooms;
+        std::vector<std::unique_ptr<Room>> _rooms;
         unsigned int _roomIds;
         std::mutex _roomsMutex;
 

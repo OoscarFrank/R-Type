@@ -1,6 +1,6 @@
 #include "Room.hpp"
 
-Room::Room(unsigned int id, Client &client, bool privateRoom)
+Room::Room(asio::ip::udp::socket &socket, unsigned int id, Client &client, bool privateRoom): _socket(socket)
 {
     _id = id;
     _nbPlayer = 1;
@@ -12,6 +12,8 @@ Room::Room(unsigned int id, Client &client, bool privateRoom)
     _clients.push_back(client);
     _private = privateRoom;
 
+    _thread = std::thread(&Room::refresh, this);
+
     // std::cout << "New room created with:" << std::endl;
     // for (auto i = _clients.begin(); i != _clients.end(); i++) {
     //     std::cout << i->getEndpoint().address() << std::endl;
@@ -20,7 +22,8 @@ Room::Room(unsigned int id, Client &client, bool privateRoom)
 
 Room::~Room()
 {
-
+    if (_thread.joinable())
+        _thread.join();
 }
 
 unsigned short Room::getId() const
@@ -62,3 +65,14 @@ void Room::removePlayer(Client &client)
     }
 }
 
+void Room::refresh()
+{
+    while (true) {
+        std::chrono::system_clock::time_point begin = std::chrono::system_clock::now();
+        for (auto i = _clients.begin(); i != _clients.end(); i++) {
+            _socket.send_to(asio::buffer("test"), i->getEndpoint());
+        }
+        std::cout << "Room " << _id << " has " << _nbPlayer << " players" << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(1) - (std::chrono::system_clock::now() - begin));
+    }
+}
