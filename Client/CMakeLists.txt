@@ -42,12 +42,6 @@ elseif(WIN32)
   endif()
 
   message(STATUS "Set _WIN32_WINNET=${_WIN32_WINNT}")
-
-  target_compile_definitions(asio
-    INTERFACE
-      _WIN32_WINNT=${_WIN32_WINNT}
-      WIN32_LEAN_AND_MEAN
-  )
 endif()
 
 aux_source_directory(./client/src/ dir_src)
