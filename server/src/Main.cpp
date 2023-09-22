@@ -7,8 +7,15 @@
 
 void router(Reader::Packet packet, Game &game, asio::ip::udp::socket &socket)
 {
-
     switch (packet.getInstruction()) {
+        case 5:
+            try {
+                Room &room = game.getRoom(packet.getClient());
+                room.getPlayer(packet.getClient()).fireMissile();
+            } catch (const std::exception &e) {
+                std::cerr << e.what() << std::endl;
+            }
+            break;
         case 8:
             game.createRoom(packet, socket, ((packet.getDataChar() == 1) ? true : false));
             break;

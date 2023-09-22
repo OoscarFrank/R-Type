@@ -7,9 +7,9 @@ Room::Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom)
     _playersIds = 1;
     _maxPlayer = 4;
     _progress = 0;
-    client->setGamePlayerId(_playersIds);
+    // client->setGamePlayerId(_playersIds);
+    _players.push_back(std::make_unique<Player>(this, &Room::sendToAll, client, _playersIds, 100));
     _playersIds++;
-    _clients.push_back(client);
     _private = privateRoom;
 
     _thread = std::thread(&Room::refresh, this);
@@ -48,7 +48,11 @@ unsigned int Room::getMaxPlayer() const
 
 void Room::addPlayer(std::shared_ptr<Client> client)
 {
-    _clients.push_back(client);
+    for (auto i = _players.begin(); i != _players.end(); i++)
+        if ((**i).client() == client)
+            return;
+
+    _players.push_back(std::make_unique<Player>(this, &Room::sendToAll, client, _playersIds, 100));
     _nbPlayer++;
     client->setGamePlayerId(_playersIds);
     _playersIds++;
@@ -56,12 +60,39 @@ void Room::addPlayer(std::shared_ptr<Client> client)
 
 void Room::removePlayer(std::shared_ptr<Client> client)
 {
-    for (auto i = _clients.begin(); i != _clients.end(); i++) {
-        if ((**i).getEndpoint() == client->getEndpoint()) {
-            _clients.erase(i);
+    for (auto i = _players.begin(); i != _players.end(); i++) {
+        if ((**i).client() == client) {
+            _players.erase(i);
             _nbPlayer--;
             break;
         }
+    }
+}
+
+bool Room::isClientInRoom(std::shared_ptr<Client> client)
+{
+    for (auto i = _players.begin(); i != _players.end(); i++) {
+        if ((**i).client() == client) {
+            return true;
+        }
+    }
+    return false;
+}
+
+Player &Room::getPlayer(std::shared_ptr<Client> client)
+{
+    for (auto i = _players.begin(); i != _players.end(); i++) {
+        if ((**i).client() == client) {
+            return **i;
+        }
+    }
+    throw std::runtime_error("Player not found");
+}
+
+void Room::sendToAll(const std::string &message)
+{
+    for (auto i = _players.begin(); i != _players.end(); i++) {
+        (**i).client()->send(message);
     }
 }
 
@@ -69,8 +100,8 @@ void Room::refresh()
 {
     while (true) {
         std::chrono::system_clock::time_point begin = std::chrono::system_clock::now();
-        for (auto i = _clients.begin(); i != _clients.end(); i++) {
-            (**i).send("test refresh");
+        for (auto i = _players.begin(); i != _players.end(); i++) {
+            (**i).refreshMissiles();
         }
         std::cout << "Room " << _id << " has " << _nbPlayer << " players" << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(1) - (std::chrono::system_clock::now() - begin));

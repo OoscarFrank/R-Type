@@ -15,7 +15,7 @@
  * 0x05 gui  - spawn d'un missile par le player
  * 0x06 serv - score du joueur
  * 0x07 serv - position x et y d'un ennemi (id, x, y)
- * 0x08 gui  - creation d'une room
+ * 0x08 gui  - creation d'une room (booleen pour savoir si la room est privee)
  * 0x09 gui  - match making
  * 0x0a serv - join d'une room (room id, player id)
  * 0x0b serv - temps restant avant le debut de la partie (temps, booleen pour savoir si la partie a commence)

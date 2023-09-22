@@ -47,3 +47,27 @@ void Game::searchRoom(Reader::Packet &packet, asio::ip::udp::socket &socket)
     _roomsMutex.unlock();
     this->createRoom(packet, socket);
 }
+
+Room &Game::getRoom(unsigned int id)
+{
+    std::unique_lock<std::mutex> lock(_roomsMutex);
+
+    for (auto i = this->_rooms.begin(); i != this->_rooms.end(); i++) {
+        if ((**i).getId() == id) {
+            return **i;
+        }
+    }
+    throw std::runtime_error("Room not found");
+}
+
+Room &Game::getRoom(std::shared_ptr<Client> client)
+{
+    std::unique_lock<std::mutex> lock(_roomsMutex);
+
+    for (auto i = this->_rooms.begin(); i != this->_rooms.end(); i++) {
+        if ((**i).isClientInRoom(client)) {
+            return **i;
+        }
+    }
+    throw std::runtime_error("Room not found");
+}

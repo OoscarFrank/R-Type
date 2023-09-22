@@ -1,20 +1,21 @@
 #pragma once
 
 #include <iostream>
-#include "../Client.hpp"
 #include <vector>
 #include <thread>
+#include "Player.hpp"
+#include "../Client.hpp"
 
 class Room
 {
     private:
         std::thread _thread;
-        std::vector<std::shared_ptr<Client>> _clients;
+        std::vector<std::unique_ptr<Player>> _players;
         unsigned short _id;
         unsigned int _nbPlayer;
         unsigned int _maxPlayer;
         unsigned int _progress;
-        unsigned int _playersIds;
+        u_char _playersIds;
         bool _private;
         void refresh();
 
@@ -31,4 +32,7 @@ class Room
         unsigned int getMaxPlayer() const;
         void addPlayer(std::shared_ptr<Client> client);
         void removePlayer(std::shared_ptr<Client> client);
+        bool isClientInRoom(std::shared_ptr<Client> client);
+        Player &getPlayer(std::shared_ptr<Client> client);
+        void sendToAll(const std::string &message);
 };
