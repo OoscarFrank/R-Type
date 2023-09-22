@@ -10,7 +10,7 @@ NAME    =    ../r-type_client
 # src
 SRC = $(shell find . -type f -name "*.cpp")
 
-# compil
+# compilation
 OBJ    =    $(SRC:.cpp=.o)
 CC    =    g++
 
@@ -26,10 +26,10 @@ FLAGS    =    -g
 
 UNAME_S := $(shell uname -s)
 
-# Flags par défaut pour Linux
+# Flags Linux
 CFLAGS += -std=c++2a -Wall -Wextra -lsfml-graphics -lsfml-window -lsfml-system
 
-# Flags spécifiques pour macOS
+# Flags macOS
 ifeq ($(UNAME_S),Darwin)
     CFLAGS += -I/opt/homebrew/Cellar/sfml/2.6.0/include -L/opt/homebrew/Cellar/sfml/2.6.0/lib
 endif

@@ -9,7 +9,7 @@ Core::Core()
     this->_ip = "127.0.0.1";
 }
 
-void Core::checkArgs(int ac, char **av)
+int Core::checkArgs(int ac, char **av)
 {
     if (ac == 1)
         throw MyError("Core", "Not enough arguments.");
@@ -17,7 +17,7 @@ void Core::checkArgs(int ac, char **av)
         throw MyError("Core", "Too many arguments.");
     if ((ac == 2) && (std::string(av[1]).find("-help") != std::string::npos)) {
         std::cout << "USAGE: ./client -p port -h machine\n\tport\tis the port number\n\tmachine\tis the name of the machine; localhost by default" << std::endl;
-        return;
+        return -1;
     }
 
     // for (int i = 0; i < ac; i++) {
@@ -43,6 +43,7 @@ void Core::checkArgs(int ac, char **av)
     //         }
     //     }
     // }
+    return 0;
 }
 
 void Core::run()

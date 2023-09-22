@@ -9,11 +9,20 @@ static std::tm *getCurrentTime() {
 }
 
 void client::log(const std::string &message, const std::string &type) {
+    std::tm *currentTime = getCurrentTime();
+
+    std::stringstream dateStream;
+    dateStream << std::put_time(currentTime, "%Y-%m-%d");
+    std::string dateStr = dateStream.str();
+
     std::filesystem::create_directory("./logs");
-    std::ofstream myfile("./logs/error.log", std::ios::app);
-    if (myfile.is_open()) {
-        myfile << std::put_time(getCurrentTime(), "%Y-%m-%d %H:%M:%S") << " [" << type << "] " << message << std::endl;
-        myfile.close();
+
+    std::string fileName = "./logs/" + dateStr + ".log";
+    std::ofstream file(fileName, std::ios::app);
+
+    if (file.is_open()) {
+        file << std::put_time(currentTime, "%H:%M:%S") << " [" << type << "] " << message << std::endl;
+        file.close();
     }
 }
 

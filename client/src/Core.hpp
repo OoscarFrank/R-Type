@@ -11,11 +11,12 @@ namespace client {
         public:
             Core();
             ~Core(){};
-            void checkArgs(int ac, char **av);
+
+            int checkArgs(int ac, char **av);
             void run();
-        protected:
+
+        private:
             int _port;
             std::string _ip;
-        private:
     };
 }

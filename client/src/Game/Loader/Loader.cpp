@@ -1,7 +1,6 @@
 #include "Loader.hpp"
 
 using namespace game;
-using namespace loader;
 
 Loader::Loader()
 {
