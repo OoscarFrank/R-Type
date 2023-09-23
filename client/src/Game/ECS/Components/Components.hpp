@@ -4,3 +4,4 @@
 #include "PositionComponent.hpp"
 #include "TextureRectComponent.hpp"
 #include "VelocityComponent.hpp"
+#include "ControllableComponent.hpp"

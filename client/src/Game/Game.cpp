@@ -11,6 +11,7 @@ Game::Game() :
     sf::VideoMode mode = sf::VideoMode::getDesktopMode();
     this->_screenSize = {mode.width, mode.height};
     this->_window.create(sf::VideoMode(mode.width, mode.height), "R-TYPE");
+    this->_window.setFramerateLimit(120);
     this->_lastTime = NOW;
 
     // register components
@@ -18,11 +19,13 @@ Game::Game() :
     ecs.register_component<ECS::components::PositionComponent>();
     ecs.register_component<ECS::components::TextureRectComponent>();
     ecs.register_component<ECS::components::VelocityComponent>();
+    ecs.register_component<ECS::components::ControllableComponent>();
 
     // create test entity
     entity_t playerEntity = ecs.spawn_entity();
     ecs.emplace_component<ECS::components::PositionComponent>(playerEntity, ECS::components::PositionComponent{ 100.0f, 100.0f });
-    ecs.emplace_component<ECS::components::VelocityComponent>(playerEntity, ECS::components::VelocityComponent{ 0.0f, 0.0f });
+    ecs.emplace_component<ECS::components::VelocityComponent>(playerEntity, ECS::components::VelocityComponent{ 0.8f, 0.8f });
+    ecs.emplace_component<ECS::components::ControllableComponent>(playerEntity, ECS::components::ControllableComponent{ });
 
     const sf::Texture &texture = this->_manager.getTexture(Loader::Loader::Player);
     ecs.emplace_component<ECS::components::TextureRectComponent>(playerEntity, ECS::components::TextureRectComponent{ 0, 0, (int)texture.getSize().x, (int)texture.getSize().y, 5, 150.0f });
@@ -42,6 +45,7 @@ int Game::MainLoop()
 
         this->EventLoop(this->_window);
         // ALL SYSTEMS CALL
+        ECS::systems::ControllableSystem().update(this->ecs, deltaTime);
         ECS::systems::PositionSystem().update(this->ecs);
         ECS::systems::AnimationSystem().update(this->ecs, deltaTime);
         this->_window.clear();

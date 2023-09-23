@@ -20,6 +20,8 @@ namespace ECS {
                             float newY = position->getY() + velocity->getDY();
                             position->setX(newX);
                             position->setY(newY);
+                            velocity->setDX(0);
+                            velocity->setDY(0);
                         }
                     }
                 }
