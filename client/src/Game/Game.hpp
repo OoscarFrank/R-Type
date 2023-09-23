@@ -4,6 +4,7 @@
 #include "./EventManager.hpp"
 #include "./Loader/Loader.hpp"
 #include "../Utils.hpp"
+#include "./ECS/Registry.hpp"
 
 namespace game {
     class Game: public EventManager {
@@ -17,5 +18,6 @@ namespace game {
             sf::RenderWindow _window;
             long _lastTime;
             Loader _manager;
+            ECS::Registry ecs;
     };
 }
