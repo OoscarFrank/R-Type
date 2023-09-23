@@ -23,8 +23,10 @@ Game::Game() :
     entity_t playerEntity = ecs.spawn_entity();
     ecs.emplace_component<ECS::components::PositionComponent>(playerEntity, ECS::components::PositionComponent{ 100.0f, 100.0f });
     ecs.emplace_component<ECS::components::VelocityComponent>(playerEntity, ECS::components::VelocityComponent{ 0.0f, 0.0f });
-    ecs.emplace_component<ECS::components::TextureRectComponent>(playerEntity, ECS::components::TextureRectComponent{ 0, 0, 113, 64 });
-    ecs.emplace_component<ECS::components::SpriteComponent>(playerEntity, ECS::components::SpriteComponent{ this->_manager.getTexture(Loader::Loader::Player) });
+
+    const sf::Texture &texture = this->_manager.getTexture(Loader::Loader::Player);
+    ecs.emplace_component<ECS::components::TextureRectComponent>(playerEntity, ECS::components::TextureRectComponent{ 0, 0, (int)texture.getSize().x, (int)texture.getSize().y, 5, 150.0f });
+    ecs.emplace_component<ECS::components::SpriteComponent>(playerEntity, ECS::components::SpriteComponent{ texture });
 }
 
 Game::~Game()
@@ -35,13 +37,13 @@ int Game::MainLoop()
 {
     while (this->_window.isOpen()) {
         long currentTime = NOW;
-        float deltaTime = (currentTime - _lastTime) / 1000.0f;
-        (void)deltaTime; // TO REMOVE WARNING
+        float deltaTime = (currentTime - _lastTime) / 1.0f;
         _lastTime = currentTime;
 
         this->EventLoop(this->_window);
         // ALL SYSTEMS CALL
         ECS::systems::PositionSystem().update(this->ecs);
+        ECS::systems::AnimationSystem().update(this->ecs, deltaTime);
         this->_window.clear();
         // DRAW SYSTEM CALL
         ECS::systems::DrawSystem().update(this->ecs, this->_window);
