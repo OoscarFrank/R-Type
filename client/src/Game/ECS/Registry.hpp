@@ -5,9 +5,13 @@
 #include <typeindex>
 #include <any>
 #include "StorageComponents.hpp"
+#include "./Components/Components.hpp"
+
+using entity_t = std::size_t;
+
 
 namespace ECS {
-    class registry {
+    class Registry {
         public:
             template<class Component>
             StorageComponents<Component> &register_component() {
@@ -36,9 +40,43 @@ namespace ECS {
                 return std::any_cast<const StorageComponents<Component> &>(it->second);
             }
 
-        public:
-            using entity_t = std::size_t;
+            template <typename Component>
+            bool hasComponent(entity_t const &entity) {
+                if (_entity_to_index.find(entity) == _entity_to_index.end()) {
+                    throw std::runtime_error("Entity not found.");
+                }
 
+                auto &comp_array = get_components<Component>();
+                size_t index = entity;
+
+                if (index >= comp_array.size()) {
+                    return false;
+                }
+                return comp_array[index].has_value();
+            }
+
+            template <typename Component>
+            Component &getComponent(entity_t const &entity) {
+                if (_entity_to_index.find(entity) == _entity_to_index.end()) {
+                    throw std::runtime_error("Entity not found.");
+                }
+
+                auto &comp_array = get_components<Component>();
+                size_t index = entity;
+
+                if (index >= comp_array.size()) {
+                    throw std::runtime_error("Entity does not have the specified component.");
+                }
+
+                auto &optionalComponent = comp_array[index];
+
+                if (!optionalComponent.has_value()) {
+                    throw std::runtime_error("Entity does not have the specified component.");
+                }
+                return optionalComponent.value();
+            }
+
+        public:
             entity_t spawn_entity() {
                 entity_t entity = _next_entity_id++;
                 _entity_to_index[entity] = true;

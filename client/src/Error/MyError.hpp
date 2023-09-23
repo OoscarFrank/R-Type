@@ -5,9 +5,9 @@
 #include <filesystem>
 #include <chrono>
 #include <ctime>
+#include <sstream>
 
-namespace client
-{
+namespace client {
     void log(const std::string &message, const std::string &type = "LOG");
 
     class MyError: public std::exception {
