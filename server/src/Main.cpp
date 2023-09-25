@@ -14,17 +14,7 @@ void router(Reader::Packet packet, Game &game, asio::ip::udp::socket &socket)
                 {
                     char move = packet.getDataChar();
                     char nbr = packet.getDataChar();
-                    Player &player = game.getRoom(packet.getClient()).getPlayer(packet.getClient());
-                    for (int i = 0; i < nbr; i++) {
-                        if (move == PLAYER_MOVE_UP)
-                            player.move(-PLAYER_MOVE_OFFSET, 0);
-                        else if (move == PLAYER_MOVE_DOWN)
-                            player.move(PLAYER_MOVE_OFFSET, 0);
-                        else if (move == PLAYER_MOVE_LEFT)
-                            player.move(0, -PLAYER_MOVE_OFFSET);
-                        else if (move == PLAYER_MOVE_RIGHT)
-                            player.move(0, PLAYER_MOVE_OFFSET);
-                    }
+                    game.getRoom(packet.getClient()).movePlayer(packet.getClient(), move, nbr);
                 }
                 break;
             case 5:
@@ -40,7 +30,7 @@ void router(Reader::Packet packet, Game &game, asio::ip::udp::socket &socket)
                 break;
         }
     } catch (const std::exception &e) {
-        std::cerr << e.what() << std::endl;
+        std::cerr << "[ROUTER ERROR] " << e.what() << std::endl;
     }
 }
 
