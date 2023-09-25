@@ -86,7 +86,8 @@ void Client::setInst(unsigned char inst)
 
 void Client::send()
 {
-    std::string out = std::to_string(_instOut);
+    std::string out;
+    out += _instOut;
     out += _dataOut;
     send(out);
     _dataOut = "";

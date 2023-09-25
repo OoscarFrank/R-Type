@@ -122,7 +122,8 @@ void Room::sendToAll(const std::string &message)
 
 void Room::sendBroadcast()
 {
-    std::string out = std::to_string(_broadcastBufferInst);
+    std::string out;
+    out += _broadcastBufferInst;
     out += _broadcastBuffer;
     for (auto i = _players.begin(); i != _players.end(); i++) {
         (**i).client()->send(out);
@@ -162,7 +163,7 @@ void Room::update()
         while (now - _lastPlayerUpdate >= REFRESH_PLAYERS) {
             _lastPlayerUpdate += REFRESH_PLAYERS;
             for (auto i = _players.begin(); i != _players.end(); i++) {
-                (**i).position(); 
+                (**i).position();
                 this->setInstBroadcast(0x03);
                 this->catCharBroadcast((**i).id());
                 this->catShortBroadcast((**i).position().first);
