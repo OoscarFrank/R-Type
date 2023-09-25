@@ -43,6 +43,7 @@ class Room
         unsigned int getProgress() const;
         unsigned int getMaxPlayer() const;
         void addPlayer(std::shared_ptr<Client> client);
+        void movePlayer(std::shared_ptr<Client> client, char move, char nbr);
         void removePlayer(std::shared_ptr<Client> client);
         bool isClientInRoom(std::shared_ptr<Client> client);
         Player &getPlayer(std::shared_ptr<Client> client);
