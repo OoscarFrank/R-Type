@@ -1,8 +1,8 @@
-#include "Parallax.hpp"
+#include "Missile.hpp"
 
 using namespace game::entitiesType;
 
-void ParallaxEntity::create(ECS::Registry &ecs, const sf::Texture &texture,
+void MissileEntity::create(ECS::Registry &ecs, const sf::Texture &texture,
         const ECS::components::PositionComponent &positionComponent,
         float scrollSpeed) {
     entity_t newEntity = ecs.spawn_entity();

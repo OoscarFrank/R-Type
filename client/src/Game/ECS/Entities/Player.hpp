@@ -9,7 +9,7 @@ namespace game {
             public:
                 PlayerEntity() = default;
 
-                static void newPlayer(ECS::Registry &ecs, const sf::Texture &texture,
+                static void create(ECS::Registry &ecs, const sf::Texture &texture,
                         const ECS::components::PositionComponent &positionComponent,
                         const ECS::components::VelocityComponent &velocityComponent,
                         const ECS::components::ControllableComponent &ControllableComponent,

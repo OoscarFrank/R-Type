@@ -24,23 +24,29 @@ Game::Game() :
     ecs.register_component<ECS::components::ParallaxComponent>();
 
     // create parallaxFirst entity
-    entitiesType::ParallaxEntity::newParallax(this->ecs,
+    entitiesType::ParallaxEntity::create(this->ecs,
         this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg),
         ECS::components::PositionComponent{0.0f, 0.0f},
         -0.15f);
 
     // create parallaxScd entity
-    entitiesType::ParallaxEntity::newParallax(this->ecs,
+    entitiesType::ParallaxEntity::create(this->ecs,
         this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg),
         ECS::components::PositionComponent{0.0f, 0.0f},
         -0.20f);
 
     // create player entity
-    entitiesType::PlayerEntity::newPlayer(this->ecs,
+    entitiesType::PlayerEntity::create(this->ecs,
         this->_manager.getTexture(Loader::Loader::Player),
         ECS::components::PositionComponent{ 100.0f, 100.0f },
         ECS::components::VelocityComponent{ 0.8f, 0.8f },
         ECS::components::ControllableComponent{ }, 5);
+
+    // create missile entity
+    entitiesType::MissileEntity::create(this->ecs,
+        this->_manager.getTexture(Loader::Loader::Rocket),
+        ECS::components::PositionComponent{100.0f, 300.0f},
+        0.4f);
 }
 
 Game::~Game()

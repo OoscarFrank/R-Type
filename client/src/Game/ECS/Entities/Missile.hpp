@@ -5,14 +5,14 @@
 
 namespace game {
     namespace entitiesType {
-        class ParallaxEntity {
+        class MissileEntity {
             public:
-                ParallaxEntity() = default;
+                MissileEntity() = default;
 
                 static void create(ECS::Registry &ecs, const sf::Texture &texture,
                     const ECS::components::PositionComponent &positionComponent,
                     float scrollSpeed);
-                ~ParallaxEntity() {};
+                ~MissileEntity() {};
 
             private:
         };
