@@ -1,0 +1,7 @@
+r-type_client
+*.o
+.vscode/
+logs/
+test.png
+.DS_Store
+vgcore*
