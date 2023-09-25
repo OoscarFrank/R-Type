@@ -8,7 +8,7 @@ Room::Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom)
     _maxPlayer = 4;
     _progress = 0;
     // client->setGamePlayerId(_playersIds);
-    _players.push_back(std::make_unique<Player>(this, &Room::sendToAll, client, _playersIds, 100));
+    _players.push_back(std::make_unique<Player>(*this, &Room::sendToAll, client, _playersIds, 100));
     _playersIds++;
     _private = privateRoom;
 
@@ -52,7 +52,7 @@ void Room::addPlayer(std::shared_ptr<Client> client)
         if ((**i).client() == client)
             return;
 
-    _players.push_back(std::make_unique<Player>(this, &Room::sendToAll, client, _playersIds, 100));
+    _players.push_back(std::make_unique<Player>(*this, &Room::sendToAll, client, _playersIds, 100));
     _nbPlayer++;
     client->setGamePlayerId(_playersIds);
     _playersIds++;

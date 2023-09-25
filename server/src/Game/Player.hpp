@@ -10,7 +10,7 @@ using Notifier = void (Room::*)(const std::string &);
 
 class Player {
     public:
-        Player(Room *room, Notifier sendToAll, std::shared_ptr<Client> client, u_char &id, int missileRange);
+        Player(Room &room, Notifier sendToAll, std::shared_ptr<Client> client, u_char &id, int missileRange);
         ~Player() = default;
 
         Player(const Player &player) = delete;
@@ -30,7 +30,7 @@ class Player {
 
     protected:
     private:
-        Room *_room;
+        Room &_room;
         Notifier _sendToAll;
         std::shared_ptr<Client> _client;
         std::pair<float, float> _pos;
