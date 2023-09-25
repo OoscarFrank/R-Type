@@ -3,13 +3,12 @@
 Room::Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom)
 {
     _id = id;
-    _nbPlayer = 1;
+    _nbPlayer = 0;
     _playersIds = 1;
     _maxPlayer = 4;
     _progress = 0;
-    // client->setGamePlayerId(_playersIds);
-    _players.push_back(std::make_unique<Player>(*this, &Room::sendToAll, client, _playersIds, 100));
-    _playersIds++;
+
+    addPlayer(client);
     _private = privateRoom;
 
     _thread = std::thread(&Room::refresh, this);
@@ -52,10 +51,12 @@ void Room::addPlayer(std::shared_ptr<Client> client)
         if ((**i).client() == client)
             return;
 
-    _players.push_back(std::make_unique<Player>(*this, &Room::sendToAll, client, _playersIds, 100));
+    client->setInst(0x0a);
+    client->catShortOut(_id);
+    client->catCharOut(_playersIds);
+    _players.push_back(std::make_unique<Player>(*this, &Room::sendToAll, client, _playersIds++, 100));
     _nbPlayer++;
-    client->setGamePlayerId(_playersIds);
-    _playersIds++;
+    client->send();
 }
 
 void Room::removePlayer(std::shared_ptr<Client> client)
@@ -100,10 +101,27 @@ void Room::refresh()
 {
     while (true) {
         std::chrono::system_clock::time_point begin = std::chrono::system_clock::now();
-        for (auto i = _players.begin(); i != _players.end(); i++) {
-            (**i).refreshMissiles();
-        }
+        updateEntities();
+        sendUpdateClients();
         std::cout << "Room " << _id << " has " << _nbPlayer << " players" << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(1) - (std::chrono::system_clock::now() - begin));
     }
+}
+
+void Room::updateEntities()
+{
+    for (auto i = _players.begin(); i != _players.end(); i++) {
+        (**i).refreshMissiles();
+    }
+}
+
+void Room::sendUpdateClients()
+{
+    for (auto i = _players.begin(); i != _players.end(); i++) {
+        sendToAll("Player pos: " + std::to_string((**i).id()) + " " + std::to_string((**i).position().first) + " " + std::to_string((**i).position().second));
+        for (auto j = (**i).missiles().begin(); j != (**i).missiles().end(); j++) {
+            sendToAll("Player missiles: " + std::to_string((**i).id()) + " " + std::to_string(j->first) + " " + std::to_string(j->second));
+        }
+    }
+
 }

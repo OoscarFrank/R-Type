@@ -18,6 +18,8 @@ class Room
         u_char _playersIds;
         bool _private;
         void refresh();
+        void updateEntities();
+        void sendUpdateClients();
 
     public:
         Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom = false);

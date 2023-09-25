@@ -15,7 +15,6 @@ private:
     std::string _dataOut;
     unsigned char _instOut;
     unsigned short _roomId;
-    unsigned char _gamePlayerId;
     unsigned int lastActivity;
 
 public:
@@ -32,10 +31,6 @@ public:
     void catShortOut(const short &data);
     void catIntOut(const int &data);
     void setInst(unsigned char inst);
-    void setGamePlayerId(unsigned char id);
-    unsigned char getGamePlayerId() const;
-    void setRoomId(unsigned int roomId);
-    unsigned int getRoomId() const;
-    std::string getOutReq();
+    void send();
     void send(const std::string &message);
 };

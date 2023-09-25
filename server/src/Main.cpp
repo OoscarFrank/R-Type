@@ -17,10 +17,10 @@ void router(Reader::Packet packet, Game &game, asio::ip::udp::socket &socket)
             }
             break;
         case 8:
-            game.createRoom(packet, socket, ((packet.getDataChar() == 1) ? true : false));
+            game.createRoom(packet, ((packet.getDataChar() == 1) ? true : false));
             break;
         case 9:
-            game.searchRoom(packet, socket);
+            game.searchRoom(packet);
             break;
         default:
             break;

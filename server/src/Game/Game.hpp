@@ -17,8 +17,8 @@ class Game
     public:
         Game();
         ~Game();
-        void createRoom(Reader::Packet &packet, asio::ip::udp::socket &socket, bool privateRoom = false);
-        void searchRoom(Reader::Packet &packet, asio::ip::udp::socket &socket);
+        void createRoom(Reader::Packet &packet, bool privateRoom = false);
+        void searchRoom(Reader::Packet &packet);
 
         Room &getRoom(unsigned int id);
         Room &getRoom(std::shared_ptr<Client> client);
