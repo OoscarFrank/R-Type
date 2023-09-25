@@ -9,7 +9,9 @@
 class Room
 {
     private:
+        bool _started;
         std::thread _thread;
+        std::mutex _playersMutex;
         std::vector<std::unique_ptr<Player>> _players;
         unsigned short _id;
         unsigned int _nbPlayer;
@@ -18,8 +20,16 @@ class Room
         u_char _playersIds;
         bool _private;
         void refresh();
-        void updateEntities();
-        void sendUpdateClients();
+        void update();
+
+        std::string _broadcastBuffer;
+        unsigned char _broadcastBufferInst;
+
+        size_t _lastMapRefresh;
+        size_t _lastWaitMessage;
+        size_t _lastJoin;
+        size_t _lastMissileUpdate;
+        size_t _lastPlayerUpdate;
 
     public:
         Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom = false);
@@ -37,4 +47,10 @@ class Room
         bool isClientInRoom(std::shared_ptr<Client> client);
         Player &getPlayer(std::shared_ptr<Client> client);
         void sendToAll(const std::string &message);
+        void sendBroadcast();
+        void startGame();
+        void catCharBroadcast(const char &data);
+        void catShortBroadcast(const short &data);
+        void catIntBroadcast(const int &data);
+        void setInstBroadcast(unsigned char inst);
 };

@@ -9,7 +9,7 @@ Game::~Game()
 {
 }
 
-void Game::createRoom(Reader::Packet &packet, bool privateRoom)
+void Game:: createRoom(Reader::Packet &packet, bool privateRoom)
 {
     std::unique_ptr<Room> newRoom = std::make_unique<Room>(_roomIds++, packet.getClient(), privateRoom);
     _roomsMutex.lock();

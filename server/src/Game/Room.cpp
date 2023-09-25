@@ -1,4 +1,5 @@
 #include "Room.hpp"
+#include "../Utils/Scheduling.hpp"
 
 Room::Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom)
 {
@@ -7,10 +8,15 @@ Room::Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom)
     _playersIds = 1;
     _maxPlayer = 4;
     _progress = 0;
+    _lastMapRefresh = 0;
+    _started = false;
+    _broadcastBufferInst = 0;
+    _broadcastBuffer = "";
 
     addPlayer(client);
+    _lastJoin = NOW;
     _private = privateRoom;
-
+    _lastWaitMessage = NOW;
     _thread = std::thread(&Room::refresh, this);
 
     // std::cout << "New room created with:" << std::endl;
@@ -47,6 +53,7 @@ unsigned int Room::getMaxPlayer() const
 
 void Room::addPlayer(std::shared_ptr<Client> client)
 {
+    std::unique_lock<std::mutex> lock(_playersMutex);
     for (auto i = _players.begin(); i != _players.end(); i++)
         if ((**i).client() == client)
             return;
@@ -54,9 +61,10 @@ void Room::addPlayer(std::shared_ptr<Client> client)
     client->setInst(0x0a);
     client->catShortOut(_id);
     client->catCharOut(_playersIds);
-    _players.push_back(std::make_unique<Player>(*this, &Room::sendToAll, client, _playersIds++, 100));
+    _players.push_back(std::make_unique<Player>(*this, &Room::sendToAll, client, _playersIds++));
     _nbPlayer++;
     client->send();
+    _lastJoin = NOW;
 }
 
 void Room::removePlayer(std::shared_ptr<Client> client)
@@ -97,31 +105,114 @@ void Room::sendToAll(const std::string &message)
     }
 }
 
+void Room::sendBroadcast()
+{
+    std::string out = std::to_string(_broadcastBufferInst);
+    out += _broadcastBuffer;
+    for (auto i = _players.begin(); i != _players.end(); i++) {
+        (**i).client()->send(out);
+    }
+    _broadcastBuffer = "";
+    _broadcastBufferInst = 0;
+}
+
 void Room::refresh()
 {
     while (true) {
-        std::chrono::system_clock::time_point begin = std::chrono::system_clock::now();
-        updateEntities();
-        sendUpdateClients();
-        std::cout << "Room " << _id << " has " << _nbPlayer << " players" << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(1) - (std::chrono::system_clock::now() - begin));
+        update();
+        // std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
 
-void Room::updateEntities()
+void Room::update()
 {
-    for (auto i = _players.begin(); i != _players.end(); i++) {
-        (**i).refreshMissiles();
-    }
-}
-
-void Room::sendUpdateClients()
-{
-    for (auto i = _players.begin(); i != _players.end(); i++) {
-        sendToAll("Player pos: " + std::to_string((**i).id()) + " " + std::to_string((**i).position().first) + " " + std::to_string((**i).position().second));
-        for (auto j = (**i).missiles().begin(); j != (**i).missiles().end(); j++) {
-            sendToAll("Player missiles: " + std::to_string((**i).id()) + " " + std::to_string(j->first) + " " + std::to_string(j->second));
+    size_t now = NOW;
+    if (_started) {
+        while (now - _lastMapRefresh >= REFRESH_MAP) {
+            _lastMapRefresh += REFRESH_MAP;
+            _progress += MAP_PROGRESS_STEP;
+            this->setInstBroadcast(0x01);
+            this->catIntBroadcast(_progress);
+            this->sendBroadcast();
+            now = NOW;
         }
+        _playersMutex.lock();
+        while (now - _lastMissileUpdate >= REFRESH_MISSILES) {
+            _lastMissileUpdate += REFRESH_MISSILES;
+            for (auto i = _players.begin(); i != _players.end(); i++) {
+                (**i).refreshMissiles();
+            }
+            now = NOW;
+        }
+        while (now - _lastPlayerUpdate >= REFRESH_PLAYERS) {
+            _lastPlayerUpdate += REFRESH_PLAYERS;
+            for (auto i = _players.begin(); i != _players.end(); i++) {
+                (**i).position(); 
+                this->setInstBroadcast(0x03);
+                this->catCharBroadcast((**i).id());
+                this->catShortBroadcast((**i).position().first);
+                this->catShortBroadcast((**i).position().second);
+                this->sendBroadcast();
+            }
+            now = NOW;
+        }
+        _playersMutex.unlock();
+    } else {
+        _playersMutex.lock();
+        if (_nbPlayer == _maxPlayer || now - _lastJoin >= JOIN_TIMEOUT) {
+            this->startGame();
+        } else  {
+            while (now - _lastWaitMessage >= REFRESH_WAIT_MESSAGE) {
+                _lastWaitMessage += REFRESH_WAIT_MESSAGE;
+                this->setInstBroadcast(0x0b);
+                this->catIntBroadcast(JOIN_TIMEOUT - (now - _lastJoin));
+                this->catCharBroadcast(_started);
+                this->sendBroadcast();
+                now = NOW;
+            }
+        }
+        _playersMutex.unlock();
     }
+}
 
+void Room::startGame()
+{
+    _started = true;
+    _lastMapRefresh = NOW;
+    _lastPlayerUpdate = NOW;
+    _lastMissileUpdate = NOW;
+    this->setInstBroadcast(0x0b);
+    this->catIntBroadcast(0);
+    this->catCharBroadcast(true);
+    this->sendBroadcast();
+}
+
+void Room::catCharBroadcast(const char &data)
+{
+    this->_broadcastBuffer += data;
+}
+
+void Room::catShortBroadcast(const short &data)
+{
+    char tmp;
+    this->_broadcastBuffer += data;
+    tmp = data >> 8;
+    this->_broadcastBuffer += tmp;
+}
+
+void Room::catIntBroadcast(const int &data)
+{
+    char tmp = data;
+    this->_broadcastBuffer += tmp;
+    tmp = data >> 8;
+    this->_broadcastBuffer += tmp;
+    tmp = data >> 16;
+    this->_broadcastBuffer += tmp;
+    tmp = data >> 24;
+    this->_broadcastBuffer += tmp;
+}
+
+void Room::setInstBroadcast(unsigned char inst)
+{
+    _broadcastBufferInst = inst;
 }

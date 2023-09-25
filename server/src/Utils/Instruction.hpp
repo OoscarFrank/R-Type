@@ -38,7 +38,7 @@ struct Commands {
 
 /**
  * @brief Commands
- * 0x01 serv - position x de l'ecran
+ * 0x01 serv - progression de l'ecran
  * 0x03 serv - position x et y du player (id, x, y)
  * 0x04 serv - position x et y d'un missile (id, x, y)
  * 0x06 serv - score du joueur

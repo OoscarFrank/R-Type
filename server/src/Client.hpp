@@ -15,7 +15,7 @@ private:
     std::string _dataOut;
     unsigned char _instOut;
     unsigned short _roomId;
-    unsigned int lastActivity;
+    size_t lastActivity;
 
 public:
     Client(asio::ip::udp::socket &socket, asio::ip::udp::endpoint endpoint);

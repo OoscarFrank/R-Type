@@ -1,4 +1,5 @@
 #include "Player.hpp"
+#include "../Utils/Scheduling.hpp"
 
 Player::Player(Room &room, Notifier sendToAll, std::shared_ptr<Client> client, u_char id):
     _room(room),
@@ -21,10 +22,9 @@ void Player::refreshMissiles()
         if (i->second > SCREEN_WIDTH) {
             _missiles.erase(i);
             (_room.*_sendToAll)("Missile destroyed");
-            i--;
         } else {
-            i->second++;
-            // (_room.*_sendToAll)("Missile pos: " + std::to_string(i->first) + " " + std::to_string(i->second));
+            i->second += MISSILE_PROGRESS_STEP;
+            (_room.*_sendToAll)("Missile new pos");
         }
     }
 }
@@ -33,7 +33,6 @@ void Player::move(int dx, int dy)
 {
     _pos.first += dx;
     _pos.second += dy;
-    // (_room.*_sendToAll)("Player moved: " + std::to_string(_pos.first) + " " + std::to_string(_pos.second));
 }
 
 std::shared_ptr<Client> Player::client() const
