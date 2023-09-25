@@ -16,13 +16,3 @@ jobs:
     - name:
       run: |
         make
-
-    - name: Check for compilation errors
-      run: |
-        if [ $? -eq 0 ]; then
-          echo "Compilation successful"
-        else
-          echo "Compilation failed"
-          exit 1
-        fi
-
