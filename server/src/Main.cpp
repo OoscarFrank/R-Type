@@ -26,6 +26,9 @@ void router(Reader::Packet packet, Game &game, asio::ip::udp::socket &socket)
             case 9:
                 game.searchRoom(packet);
                 break;
+            case 12:
+                packet.getClient()->ping();
+                break;
             default:
                 break;
         }

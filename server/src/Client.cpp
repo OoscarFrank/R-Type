@@ -101,3 +101,15 @@ void Client::send(const std::string &message)
     } else
         std::cerr << "Endpoint is not IPv4" << std::endl;
 }
+
+bool Client::isAlive()
+{
+    if (std::chrono::system_clock::now() - _lastPing > std::chrono::seconds(TIME_PLAYER_ALIVE))
+        return false;
+    return true;
+}
+
+void Client::ping()
+{
+    _lastPing = std::chrono::system_clock::now();
+}

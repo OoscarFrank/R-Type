@@ -4,7 +4,6 @@
 Room::Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom)
 {
     _id = id;
-    _nbPlayer = 0;
     _playersIds = 1;
     _maxPlayer = 4;
     _progress = 0;
@@ -38,7 +37,7 @@ unsigned short Room::getId() const
 
 unsigned int Room::getNbPlayer() const
 {
-    return _nbPlayer;
+    return _players.size();
 }
 
 unsigned int Room::getProgress() const
@@ -58,12 +57,18 @@ void Room::addPlayer(std::shared_ptr<Client> client)
         if ((**i).client() == client)
             return;
 
+    u_char newId = _playersIds++;
+
+    setInstBroadcast(13);
+    catCharBroadcast(newId);
+    sendBroadcast();
+
     client->setInst(0x0a);
     client->catShortOut(_id);
-    client->catCharOut(_playersIds);
-    _players.push_back(std::make_unique<Player>(*this, &Room::sendToAll, client, _playersIds++));
-    _nbPlayer++;
+    client->catCharOut(newId);
     client->send();
+    _players.push_back(std::make_unique<Player>(*this, &Room::sendToAll, client, newId));
+
     _lastJoin = NOW;
 }
 
@@ -86,8 +91,10 @@ void Room::removePlayer(std::shared_ptr<Client> client)
 {
     for (auto i = _players.begin(); i != _players.end(); i++) {
         if ((**i).client() == client) {
+            setInstBroadcast(14);
+            catCharBroadcast((**i).id());
             _players.erase(i);
-            _nbPlayer--;
+            sendBroadcast();
             break;
         }
     }
@@ -125,9 +132,7 @@ void Room::sendBroadcast()
     std::string out;
     out += _broadcastBufferInst;
     out += _broadcastBuffer;
-    for (auto i = _players.begin(); i != _players.end(); i++) {
-        (**i).client()->send(out);
-    }
+    sendToAll(out);
     _broadcastBuffer = "";
     _broadcastBufferInst = 0;
 }
@@ -135,6 +140,13 @@ void Room::sendBroadcast()
 void Room::refresh()
 {
     while (true) {
+        for (auto i = _players.begin(); i != _players.end(); i++) {
+            if (!(**i).client()->isAlive()) {
+                removePlayer((**i).client());
+                std::cout << "Player disconnected in room " << _id << std::endl;
+                break;
+            }
+        }
         update();
         // std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
@@ -175,7 +187,7 @@ void Room::update()
         _playersMutex.unlock();
     } else {
         _playersMutex.lock();
-        if (_nbPlayer == _maxPlayer || now - _lastJoin >= JOIN_TIMEOUT) {
+        if (_players.size() == _maxPlayer || now - _lastJoin >= JOIN_TIMEOUT) {
             this->startGame();
         } else  {
             while (now - _lastWaitMessage >= REFRESH_WAIT_MESSAGE) {

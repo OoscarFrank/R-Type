@@ -16,6 +16,7 @@ private:
     unsigned char _instOut;
     unsigned short _roomId;
     size_t lastActivity;
+    std::chrono::system_clock::time_point _lastPing = std::chrono::system_clock::now();
 
 public:
     Client(asio::ip::udp::socket &socket, asio::ip::udp::endpoint endpoint);
@@ -33,4 +34,6 @@ public:
     void setInst(unsigned char inst);
     void send();
     void send(const std::string &message);
+    bool isAlive();
+    void ping();
 };

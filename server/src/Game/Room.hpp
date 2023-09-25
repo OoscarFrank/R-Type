@@ -14,7 +14,6 @@ class Room
         std::mutex _playersMutex;
         std::vector<std::unique_ptr<Player>> _players;
         unsigned short _id;
-        unsigned int _nbPlayer;
         unsigned int _maxPlayer;
         unsigned int _progress;
         u_char _playersIds;
