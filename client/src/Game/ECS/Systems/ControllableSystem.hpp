@@ -21,17 +21,25 @@ namespace ECS {
                         float velocityChangeX = VelocityComponents[entity]->getInitialDX() * deltaTime;
                         float velocityChangeY = VelocityComponents[entity]->getInitialDY() * deltaTime;
 
-                        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-                            VelocityComponents[entity]->setDY(-velocityChangeY);
-                        }
-                        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-                            VelocityComponents[entity]->setDY(velocityChangeY);
-                        }
-                        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-                            VelocityComponents[entity]->setDX(-velocityChangeX);
-                        }
-                        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-                            VelocityComponents[entity]->setDX(velocityChangeX);
+                        for (auto key : ControllableComponent->getControls()) {
+                            if (sf::Keyboard::isKeyPressed(key)) {
+                                switch (key) {
+                                    case sf::Keyboard::Up:
+                                        VelocityComponents[entity]->setDY(-velocityChangeY);
+                                        break;
+                                    case sf::Keyboard::Down:
+                                        VelocityComponents[entity]->setDY(velocityChangeY);
+                                        break;
+                                    case sf::Keyboard::Left:
+                                        VelocityComponents[entity]->setDX(-velocityChangeX);
+                                        break;
+                                    case sf::Keyboard::Right:
+                                        VelocityComponents[entity]->setDX(velocityChangeX);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
                         }
                     }
                 }
