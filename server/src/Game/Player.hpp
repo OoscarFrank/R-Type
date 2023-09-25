@@ -4,13 +4,14 @@
 #include <vector>
 #include <memory>
 #include "../Client.hpp"
+#include "../Utils/Instruction.hpp"
 
 class Room;
 using Notifier = void (Room::*)(const std::string &);
 
 class Player {
     public:
-        Player(Room &room, Notifier sendToAll, std::shared_ptr<Client> client, u_char id, int missileRange);
+        Player(Room &room, Notifier sendToAll, std::shared_ptr<Client> client, u_char id);
         ~Player() = default;
 
         Player(const Player &player) = delete;
@@ -20,13 +21,12 @@ class Player {
 
         void fireMissile();
         void refreshMissiles();
-        void move(float dx, float dy);
+        void move(int dx, int dy);
 
         std::shared_ptr<Client> client() const;
-        const std::pair<float, float> &position() const;
-        const std::vector<std::pair<float, float>> &missiles() const;
+        const std::pair<int, int> &position() const;
+        const std::vector<std::pair<int, int>> &missiles() const;
         u_char id() const;
-        int missileRange() const;
         int score() const;
 
     protected:
@@ -34,10 +34,9 @@ class Player {
         Room &_room;
         Notifier _sendToAll;
         std::shared_ptr<Client> _client;
-        std::pair<float, float> _pos;
-        std::vector<std::pair<float, float>> _missiles;
+        std::pair<int, int> _pos;
+        std::vector<std::pair<int, int>> _missiles;
         u_char _id;
-        int _missileRange;
         int _score;
 
 };

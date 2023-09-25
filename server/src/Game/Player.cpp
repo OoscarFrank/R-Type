@@ -1,12 +1,11 @@
 #include "Player.hpp"
 
-Player::Player(Room &room, Notifier sendToAll, std::shared_ptr<Client> client, u_char id, int missileRange):
+Player::Player(Room &room, Notifier sendToAll, std::shared_ptr<Client> client, u_char id):
     _room(room),
     _sendToAll(sendToAll),
     _client(client),
     _pos(0, 0),
     _id(id),
-    _missileRange(missileRange),
     _score(0)
 {}
 
@@ -19,7 +18,7 @@ void Player::fireMissile()
 void Player::refreshMissiles()
 {
     for (auto i = _missiles.begin(); i != _missiles.end(); i++) {
-        if (i->second > _missileRange) {
+        if (i->second > SCREEN_WIDTH) {
             _missiles.erase(i);
             (_room.*_sendToAll)("Missile destroyed");
             i--;
@@ -30,7 +29,7 @@ void Player::refreshMissiles()
     }
 }
 
-void Player::move(float dx, float dy)
+void Player::move(int dx, int dy)
 {
     _pos.first += dx;
     _pos.second += dy;
@@ -42,12 +41,12 @@ std::shared_ptr<Client> Player::client() const
     return _client;
 }
 
-const std::pair<float, float> &Player::position() const
+const std::pair<int, int> &Player::position() const
 {
     return _pos;
 }
 
-const std::vector<std::pair<float, float>> &Player::missiles() const
+const std::vector<std::pair<int, int>> &Player::missiles() const
 {
     return _missiles;
 }
@@ -55,11 +54,6 @@ const std::vector<std::pair<float, float>> &Player::missiles() const
 u_char Player::id() const
 {
     return _id;
-}
-
-int Player::missileRange() const
-{
-    return _missileRange;
 }
 
 int Player::score() const

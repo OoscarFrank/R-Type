@@ -4,26 +4,43 @@
 #include "Game/Game.hpp"
 #include "Utils/ThreadPool.hpp"
 #include "Utils/Args.hpp"
+#include "Utils/Instruction.hpp"
 
 void router(Reader::Packet packet, Game &game, asio::ip::udp::socket &socket)
 {
-    switch (packet.getInstruction()) {
-        case 5:
-            try {
-                Room &room = game.getRoom(packet.getClient());
-                room.getPlayer(packet.getClient()).fireMissile();
-            } catch (const std::exception &e) {
-                std::cerr << e.what() << std::endl;
-            }
-            break;
-        case 8:
-            game.createRoom(packet, ((packet.getDataChar() == 1) ? true : false));
-            break;
-        case 9:
-            game.searchRoom(packet);
-            break;
-        default:
-            break;
+    try {
+        switch (packet.getInstruction()) {
+            case 2:
+                {
+                    char move = packet.getDataChar();
+                    char nbr = packet.getDataChar();
+                    Player &player = game.getRoom(packet.getClient()).getPlayer(packet.getClient());
+                    for (int i = 0; i < nbr; i++) {
+                        if (move == PLAYER_MOVE_UP)
+                            player.move(-PLAYER_MOVE_OFFSET, 0);
+                        else if (move == PLAYER_MOVE_DOWN)
+                            player.move(PLAYER_MOVE_OFFSET, 0);
+                        else if (move == PLAYER_MOVE_LEFT)
+                            player.move(0, -PLAYER_MOVE_OFFSET);
+                        else if (move == PLAYER_MOVE_RIGHT)
+                            player.move(0, PLAYER_MOVE_OFFSET);
+                    }
+                }
+                break;
+            case 5:
+                game.getRoom(packet.getClient()).getPlayer(packet.getClient()).fireMissile();
+                break;
+            case 8:
+                game.createRoom(packet, ((packet.getDataChar() == 1) ? true : false));
+                break;
+            case 9:
+                game.searchRoom(packet);
+                break;
+            default:
+                break;
+        }
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
     }
 }
 
