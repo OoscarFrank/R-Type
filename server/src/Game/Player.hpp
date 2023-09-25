@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include "../Client.hpp"
+#include "Missiles.hpp"
 #include "../Utils/Instruction.hpp"
 
 class Room;
@@ -19,13 +20,13 @@ class Player {
         Player &operator=(const Player &player) = delete;
         Player &operator=(Player &&player) = delete;
 
-        void fireMissile();
+        void fireMissile(size_t &missilesIds);
         void refreshMissiles();
         void move(int dx, int dy);
 
         std::shared_ptr<Client> client() const;
         const std::pair<int, int> &position() const;
-        const std::vector<std::pair<int, int>> &missiles() const;
+        const std::vector<std::unique_ptr<Missiles>> &missiles() const;
         u_char id() const;
         int score() const;
 
@@ -35,7 +36,7 @@ class Player {
         Notifier _sendToAll;
         std::shared_ptr<Client> _client;
         std::pair<int, int> _pos;
-        std::vector<std::pair<int, int>> _missiles;
+        std::vector<std::unique_ptr<Missiles>> _missiles;
         u_char _id;
         int _score;
 

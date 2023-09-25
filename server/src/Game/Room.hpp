@@ -21,6 +21,8 @@ class Room
         void refresh();
         void update();
 
+        size_t _missilesIds;
+
         std::string _broadcastBuffer;
         unsigned char _broadcastBufferInst;
 
@@ -53,4 +55,5 @@ class Room
         void catShortBroadcast(const short &data);
         void catIntBroadcast(const int &data);
         void setInstBroadcast(unsigned char inst);
+        size_t &getMissilesIds();
 };

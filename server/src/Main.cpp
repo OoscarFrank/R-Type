@@ -6,7 +6,7 @@
 #include "Utils/Args.hpp"
 #include "Utils/Instruction.hpp"
 
-void router(Reader::Packet packet, Game &game, asio::ip::udp::socket &socket)
+void router(Reader::Packet packet, Game &game)
 {
     try {
         switch (packet.getInstruction()) {
@@ -18,7 +18,10 @@ void router(Reader::Packet packet, Game &game, asio::ip::udp::socket &socket)
                 }
                 break;
             case 5:
-                game.getRoom(packet.getClient()).getPlayer(packet.getClient()).fireMissile();
+                {
+                Room &tmpRoom = game.getRoom(packet.getClient());
+                tmpRoom.getPlayer(packet.getClient()).fireMissile(tmpRoom.getMissilesIds());
+                }
                 break;
             case 8:
                 game.createRoom(packet, ((packet.getDataChar() == 1) ? true : false));
@@ -52,8 +55,8 @@ void exec(int port)
     ThreadPool reqPool(nbThread / 2, 10);
     while (true) {
         Reader::Packet value = queueIn.pop();
-        reqPool.submit([value, &socket, &game]() {
-            router(value, game, socket);
+        reqPool.submit([value, &game]() {
+            router(value, game);
         });
     }
 }

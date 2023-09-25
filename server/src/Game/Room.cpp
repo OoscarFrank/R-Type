@@ -12,6 +12,8 @@ Room::Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom)
     _broadcastBufferInst = 0;
     _broadcastBuffer = "";
 
+    _missilesIds = 0;
+
     addPlayer(client);
     _lastJoin = NOW;
     _private = privateRoom;
@@ -48,6 +50,11 @@ unsigned int Room::getProgress() const
 unsigned int Room::getMaxPlayer() const
 {
     return _maxPlayer;
+}
+
+size_t &Room::getMissilesIds()
+{
+    return _missilesIds;
 }
 
 void Room::addPlayer(std::shared_ptr<Client> client)
