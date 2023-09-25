@@ -1,6 +1,7 @@
-#include "Game.hpp"
-#include "ECS/Components/Components.hpp"
-#include "ECS/Systems/Systems.hpp"
+#include "./Game.hpp"
+#include "./ECS/Components/Components.hpp"
+#include "./ECS/Systems/Systems.hpp"
+#include "./ECS/Entities/Entities.hpp"
 
 using namespace game;
 using entity_t = std::size_t;
@@ -20,16 +21,26 @@ Game::Game() :
     ecs.register_component<ECS::components::TextureRectComponent>();
     ecs.register_component<ECS::components::VelocityComponent>();
     ecs.register_component<ECS::components::ControllableComponent>();
+    ecs.register_component<ECS::components::ParallaxComponent>();
 
-    // create test entity
-    entity_t playerEntity = ecs.spawn_entity();
-    ecs.emplace_component<ECS::components::PositionComponent>(playerEntity, ECS::components::PositionComponent{ 100.0f, 100.0f });
-    ecs.emplace_component<ECS::components::VelocityComponent>(playerEntity, ECS::components::VelocityComponent{ 0.8f, 0.8f });
-    ecs.emplace_component<ECS::components::ControllableComponent>(playerEntity, ECS::components::ControllableComponent{ });
+    // create parallaxFirst entity
+    entitiesType::ParallaxEntity::newParallax(this->ecs,
+        this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg),
+        ECS::components::PositionComponent{0.0f, 0.0f},
+        -0.15f);
 
-    const sf::Texture &texture = this->_manager.getTexture(Loader::Loader::Player);
-    ecs.emplace_component<ECS::components::TextureRectComponent>(playerEntity, ECS::components::TextureRectComponent{ 0, 0, (int)texture.getSize().x, (int)texture.getSize().y, 5, 150.0f });
-    ecs.emplace_component<ECS::components::SpriteComponent>(playerEntity, ECS::components::SpriteComponent{ texture });
+    // create parallaxScd entity
+    entitiesType::ParallaxEntity::newParallax(this->ecs,
+        this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg),
+        ECS::components::PositionComponent{0.0f, 0.0f},
+        -0.20f);
+
+    // create player entity
+    entitiesType::PlayerEntity::newPlayer(this->ecs,
+        this->_manager.getTexture(Loader::Loader::Player),
+        ECS::components::PositionComponent{ 100.0f, 100.0f },
+        ECS::components::VelocityComponent{ 0.8f, 0.8f },
+        ECS::components::ControllableComponent{ }, 5);
 }
 
 Game::~Game()
@@ -48,6 +59,7 @@ int Game::MainLoop()
         ECS::systems::ControllableSystem().update(this->ecs, deltaTime);
         ECS::systems::PositionSystem().update(this->ecs);
         ECS::systems::AnimationSystem().update(this->ecs, deltaTime);
+        ECS::systems::ParallaxSystem().update(this->ecs, deltaTime);
         this->_window.clear();
         // DRAW SYSTEM CALL
         ECS::systems::DrawSystem().update(this->ecs, this->_window);

@@ -2,7 +2,7 @@
 
 #include "../Core.hpp"
 #include "./EventManager.hpp"
-#include "./Loader/Loader.hpp"
+#include "./ECS/Loader/Loader.hpp"
 #include "../Utils.hpp"
 #include "./ECS/Registry.hpp"
 
