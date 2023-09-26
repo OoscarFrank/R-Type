@@ -1,5 +1,6 @@
 #include "Room.hpp"
 #include "../Utils/Scheduling.hpp"
+#include <bitset>
 
 Room::Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom)
 {
@@ -9,8 +10,7 @@ Room::Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom)
     _progress = 0;
     _lastMapRefresh = 0;
     _started = false;
-    _broadcastBufferInst = 0;
-    _broadcastBuffer = "";
+    _broadcastInst = 0;
 
     _missilesIds = 0;
 
@@ -20,10 +20,6 @@ Room::Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom)
     _lastWaitMessage = NOW;
     _thread = std::thread(&Room::refresh, this);
 
-    // std::cout << "New room created with:" << std::endl;
-    // for (auto i = _clients.begin(); i != _clients.end(); i++) {
-    //     std::cout << i->getEndpoint().address() << std::endl;
-    // }
 }
 
 Room::~Room()
@@ -67,14 +63,15 @@ void Room::addPlayer(std::shared_ptr<Client> client)
     u_char newId = _playersIds++;
 
     setInstBroadcast(13);
-    catCharBroadcast(newId);
+    this->_broadcastStream.setDataChar(newId);
     sendBroadcast();
 
+
     client->setInst(0x0a);
-    client->catShortOut(_id);
-    client->catCharOut(newId);
+    client->getStreamOut().setDataShort(_id);
+    client->getStreamOut().setDataChar(newId);
     client->send();
-    _players.push_back(std::make_unique<Player>(*this, &Room::sendToAll, client, newId));
+    _players.push_back(std::make_unique<Player>(*this, client, newId));
 
     _lastJoin = NOW;
 }
@@ -99,7 +96,7 @@ void Room::removePlayer(std::shared_ptr<Client> client)
     for (auto i = _players.begin(); i != _players.end(); i++) {
         if ((**i).client() == client) {
             setInstBroadcast(14);
-            catCharBroadcast((**i).id());
+            this->_broadcastStream.setDataChar((**i).id());
             _players.erase(i);
             sendBroadcast();
             break;
@@ -127,21 +124,21 @@ Player &Room::getPlayer(std::shared_ptr<Client> client)
     throw std::runtime_error("Player not found");
 }
 
-void Room::sendToAll(const std::string &message)
+void Room::sendToAll(const Stream &stream)
 {
     for (auto i = _players.begin(); i != _players.end(); i++) {
-        (**i).client()->send(message);
+        (**i).client()->send(stream);
     }
 }
 
 void Room::sendBroadcast()
 {
-    std::string out;
-    out += _broadcastBufferInst;
-    out += _broadcastBuffer;
+    Stream out;
+    out += _broadcastInst;
+    out += _broadcastStream;
     sendToAll(out);
-    _broadcastBuffer = "";
-    _broadcastBufferInst = 0;
+    _broadcastStream.clear();
+    _broadcastInst = 0;
 }
 
 void Room::refresh()
@@ -167,7 +164,7 @@ void Room::update()
             _lastMapRefresh += REFRESH_MAP;
             _progress += MAP_PROGRESS_STEP;
             this->setInstBroadcast(0x01);
-            this->catIntBroadcast(_progress);
+            this->_broadcastStream.setDataInt(_progress);
             this->sendBroadcast();
             now = NOW;
         }
@@ -184,9 +181,9 @@ void Room::update()
             for (auto i = _players.begin(); i != _players.end(); i++) {
                 (**i).position();
                 this->setInstBroadcast(0x03);
-                this->catCharBroadcast((**i).id());
-                this->catShortBroadcast((**i).position().first);
-                this->catShortBroadcast((**i).position().second);
+                this->_broadcastStream.setDataChar((**i).id());
+                this->_broadcastStream.setDataShort((**i).position().first);
+                this->_broadcastStream.setDataShort((**i).position().second);
                 this->sendBroadcast();
             }
             now = NOW;
@@ -200,8 +197,8 @@ void Room::update()
             while (now - _lastWaitMessage >= REFRESH_WAIT_MESSAGE) {
                 _lastWaitMessage += REFRESH_WAIT_MESSAGE;
                 this->setInstBroadcast(0x0b);
-                this->catIntBroadcast(JOIN_TIMEOUT - (now - _lastJoin));
-                this->catCharBroadcast(_started);
+                this->_broadcastStream.setDataInt(JOIN_TIMEOUT - (now - _lastJoin));
+                this->_broadcastStream.setDataChar(_started);
                 this->sendBroadcast();
                 now = NOW;
             }
@@ -217,37 +214,18 @@ void Room::startGame()
     _lastPlayerUpdate = NOW;
     _lastMissileUpdate = NOW;
     this->setInstBroadcast(0x0b);
-    this->catIntBroadcast(0);
-    this->catCharBroadcast(true);
+    this->_broadcastStream.setDataInt(0);
+    this->_broadcastStream.setDataChar(1);
     this->sendBroadcast();
 }
 
-void Room::catCharBroadcast(const char &data)
+Stream &Room::getBroadcastStream()
 {
-    this->_broadcastBuffer += data;
+    return _broadcastStream;
 }
 
-void Room::catShortBroadcast(const short &data)
-{
-    char tmp;
-    this->_broadcastBuffer += data;
-    tmp = data >> 8;
-    this->_broadcastBuffer += tmp;
-}
-
-void Room::catIntBroadcast(const int &data)
-{
-    char tmp = data;
-    this->_broadcastBuffer += tmp;
-    tmp = data >> 8;
-    this->_broadcastBuffer += tmp;
-    tmp = data >> 16;
-    this->_broadcastBuffer += tmp;
-    tmp = data >> 24;
-    this->_broadcastBuffer += tmp;
-}
 
 void Room::setInstBroadcast(unsigned char inst)
 {
-    _broadcastBufferInst = inst;
+    _broadcastInst = inst;
 }
