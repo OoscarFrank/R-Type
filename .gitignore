@@ -30,5 +30,8 @@ r-type_client
 
 # test files
 tmp/
+test/
 logs/
 *.log
+client_test.c*
+clienttest
