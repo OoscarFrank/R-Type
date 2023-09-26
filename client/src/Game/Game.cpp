@@ -40,7 +40,7 @@ Game::Game() :
         this->_manager.getTexture(Loader::Loader::Player),
         ECS::components::PositionComponent{ 100.0f, 100.0f },
         ECS::components::VelocityComponent{ 0.8f, 0.8f },
-        ECS::components::ControllableComponent{ }, 5);
+        ECS::components::ControllableComponent{ sf::Keyboard::Up, sf::Keyboard::Down, sf::Keyboard::Left, sf::Keyboard::Right }, 5);
 
     // create missile entity
     entitiesType::MissileEntity::create(this->ecs,

@@ -5,3 +5,33 @@ logs/
 test.png
 .DS_Store
 vgcore*
+=======
+# config files
+.vscode/
+launch.json
+.env
+
+# useless files
+*~
+\#*#
+.#*
+*#
+.#*#
+__pycache__
+
+# c
+*.a
+*.o
+vgcore*
+unit_tests*
+a.out
+r-type_server
+r-type_client
+
+# test files
+tmp/
+test/
+logs/
+*.log
+client_test.c*
+clienttest
