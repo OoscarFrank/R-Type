@@ -4,6 +4,7 @@
 #include <asio.hpp>
 #include "Queue.hpp"
 #include "Instruction.hpp"
+#include "Stream.hpp"
 
 class Network
 {
@@ -11,29 +12,24 @@ public:
     class Packet
     {
     private:
-        std::string _data;
+        Stream _data;
         int _instruction;
 
     public:
-        Packet(const std::string &data, int instruction);
+        Packet(const Stream &data, int instruction);
         ~Packet();
         int getInstruction() const;
-        const std::string &getData() const;
-        int getDataInt();
-        short getDataShort();
-        char getDataChar();
+        Stream &getData();
     };
 
     Network(std::string ip = "127.0.0.1", int port = 4242);
     ~Network();
-    void catCharOut(const char &data);
-    void catShortOut(const short &data);
-    void catIntOut(const int &data);
     void setInst(unsigned char inst);
-    void send(const std::string &message);
+    void send(const Stream &stream);
     void send();
     void read();
-    std::pair<size_t, std::string> getNextInst();
+    Stream &getStreamOut();
+    std::pair<size_t, Stream> getNextInst();
 
     class ReadError : public std::exception
     {
@@ -50,10 +46,10 @@ private:
     asio::ip::udp::socket _socket;
     asio::ip::udp::endpoint _serverEndpoint;
 
-    std::string _dataOut;
+    Stream _streamOut;
     unsigned char _instOut;
 
     std::thread _ReaderThread;
-    std::string _buferIn;
+    Stream _streamIn;
     Queue<Network::Packet> _queueIn;
 };

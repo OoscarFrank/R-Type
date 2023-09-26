@@ -23,8 +23,8 @@ class Room
 
         size_t _missilesIds;
 
-        std::string _broadcastBuffer;
-        unsigned char _broadcastBufferInst;
+        Stream _broadcastStream;
+        unsigned char _broadcastInst;
 
         size_t _lastMapRefresh;
         size_t _lastWaitMessage;
@@ -48,12 +48,10 @@ class Room
         void removePlayer(std::shared_ptr<Client> client);
         bool isClientInRoom(std::shared_ptr<Client> client);
         Player &getPlayer(std::shared_ptr<Client> client);
-        void sendToAll(const std::string &message);
+        void sendToAll(const Stream &stream);
         void sendBroadcast();
         void startGame();
-        void catCharBroadcast(const char &data);
-        void catShortBroadcast(const short &data);
-        void catIntBroadcast(const int &data);
+        Stream &getBroadcastStream();
         void setInstBroadcast(unsigned char inst);
         size_t &getMissilesIds();
 };

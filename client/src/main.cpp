@@ -11,6 +11,8 @@ int main(int ac, char **av)
     try {
         if (core.checkArgs(ac, av) == 0) {
             Network net;
+            net.setInst(9);
+            net.send();
             core.run();
         }
     } catch (const std::exception &e) {

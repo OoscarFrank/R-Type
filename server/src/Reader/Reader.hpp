@@ -16,18 +16,15 @@ public:
     {
     private:
         std::shared_ptr<Client> _client;
-        std::string _data;
+        Stream _data;
         int _instruction;
 
     public:
-        Packet(std::shared_ptr<Client> client, const std::string &data, int instruction);
+        Packet(std::shared_ptr<Client> client, const Stream &data, int instruction);
         ~Packet();
-        int getInstruction() const;
-        const std::string &getData() const;
         std::shared_ptr<Client> getClient() const;
-        int getDataInt();
-        short getDataShort();
-        char getDataChar();
+        int getInstruction() const;
+        Stream &getData();
 
     };
 
