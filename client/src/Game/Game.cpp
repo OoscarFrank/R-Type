@@ -61,8 +61,11 @@ void Game::update()
     Network::Packet packet;
 
     while (this->_net.getQueueIn().tryPop(packet)) {
-        std::cout << "Packet received : " << packet.getData().getDataInt() << std::endl;
+        if (packet.getInstruction() == 11)
+            std::cout << "Packet received : " << packet.getData().getDataInt() << std::endl;
     }
+    this->_net.setInst(12);
+    this->_net.send();
 }
 
 int Game::MainLoop()
