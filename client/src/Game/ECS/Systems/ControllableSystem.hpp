@@ -34,6 +34,8 @@ namespace ECS {
 
                 for (size_t i = 0; i < ControllableComponents.size(); ++i) {
                     auto &ControllableComponent = ControllableComponents[i];
+                    if (!ControllableComponent)
+                        continue;
                     entity_t entity = ecs.entity_from_index(i);
                     EntityMove entityMoveTmp(entity);
                     for (auto key : ControllableComponent->getControls()) {

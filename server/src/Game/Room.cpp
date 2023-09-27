@@ -81,13 +81,13 @@ void Room::movePlayer(std::shared_ptr<Client> client, char move, char nbr)
     Player &player = getPlayer(client);
     for (int i = 0; i < nbr; i++) {
         if (move == PLAYER_MOVE_UP)
-            player.move(-PLAYER_MOVE_OFFSET, 0);
-        else if (move == PLAYER_MOVE_DOWN)
-            player.move(PLAYER_MOVE_OFFSET, 0);
-        else if (move == PLAYER_MOVE_LEFT)
             player.move(0, -PLAYER_MOVE_OFFSET);
-        else if (move == PLAYER_MOVE_RIGHT)
+        else if (move == PLAYER_MOVE_DOWN)
             player.move(0, PLAYER_MOVE_OFFSET);
+        else if (move == PLAYER_MOVE_LEFT)
+            player.move(-PLAYER_MOVE_OFFSET, 0);
+        else if (move == PLAYER_MOVE_RIGHT)
+            player.move(PLAYER_MOVE_OFFSET, 0);
     }
 }
 

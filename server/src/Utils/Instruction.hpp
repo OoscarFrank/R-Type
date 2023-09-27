@@ -17,7 +17,7 @@ struct Commands {
 
 #define TIME_PLAYER_ALIVE   10 // seconds
 
-#define PLAYER_MOVE_OFFSET  1
+#define PLAYER_MOVE_OFFSET  10
 #define PLAYER_MOVE_UP      1
 #define PLAYER_MOVE_DOWN    2
 #define PLAYER_MOVE_LEFT    3

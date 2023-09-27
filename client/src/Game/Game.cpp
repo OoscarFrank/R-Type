@@ -71,6 +71,7 @@ void Game::update()
             const sf::Texture &tmp =  this->_manager.getTexture(Loader::Loader::Player);
             ecs.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{ 0, 0, (int)tmp.getSize().x, (int)tmp.getSize().y, 5, 150.0f });
             ecs.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{ tmp });
+            ecs.emplace_component<ECS::components::ControllableComponent>(newEntity, ECS::components::ControllableComponent{sf::Keyboard::Up, sf::Keyboard::Down, sf::Keyboard::Left, sf::Keyboard::Right});
             this->_players.push_back(std::make_pair(this->_playerId, newEntity));
             this->_playerEntity = newEntity;
         }
@@ -111,6 +112,7 @@ void Game::sendMoveToServer()
             this->_net.send();
         }
     }
+    this->_entityMoves.clear();
 }
 
 int Game::MainLoop()
