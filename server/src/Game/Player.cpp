@@ -11,13 +11,13 @@ Player::Player(Room &room, std::shared_ptr<Client> client, u_char id):
     _score(0)
 {}
 
-void Player::fireMissile(size_t &missilesIds)
+void Player::fireMissile()
 {
-    ++missilesIds;
-    _missiles.push_back(std::make_unique<Missiles>(_pos.first, _pos.second, missilesIds, Missiles::ALlY, _room));
+    ++_room.getMissilesIds();
+    _missiles.push_back(std::make_unique<Missiles>(_pos.first, _pos.second, _room.getMissilesIds(), Missiles::ALlY, _room));
     // (_room.*_sendToAll)("Missile fired");
     //! mettre bin pour missile fired (this->_room.getBroadcastStream()...etc)
-    
+
 }
 
 void Player::refreshMissiles()

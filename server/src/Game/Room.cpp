@@ -13,6 +13,7 @@ Room::Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom)
     _broadcastInst = 0;
 
     _missilesIds = 0;
+    _monstersIds = 0;
 
     addPlayer(client);
     _lastJoin = NOW;
@@ -182,7 +183,6 @@ void Room::update()
         while (now - _lastPlayerUpdate >= REFRESH_PLAYERS) {
             _lastPlayerUpdate += REFRESH_PLAYERS;
             for (auto i = _players.begin(); i != _players.end(); i++) {
-                (**i).position();
                 this->setInstBroadcast(0x03);
                 this->_broadcastStream.setDataChar((**i).id());
                 this->_broadcastStream.setDataShort((**i).position().first);
@@ -190,6 +190,13 @@ void Room::update()
                 this->sendBroadcast();
             }
             now = NOW;
+        }
+        if (now - _lastMonsterSpawn >= SPAWN_MONSTERS) {
+            this->addMonster(IMonster::LITTLE, SCREEN_WIDTH, SCREEN_HEIGHT / 2);
+            _lastMonsterSpawn = NOW;
+        }
+        for (auto i = _monsters.begin(); i != _monsters.end(); i++) {
+            (**i).refresh();
         }
         _playersMutex.unlock();
     } else {
@@ -216,6 +223,7 @@ void Room::startGame()
     _lastMapRefresh = NOW;
     _lastPlayerUpdate = NOW;
     _lastMissileUpdate = NOW;
+    _lastMonsterSpawn = NOW;
     this->setInstBroadcast(0x0b);
     this->_broadcastStream.setDataInt(0);
     this->_broadcastStream.setDataChar(1);
@@ -231,4 +239,10 @@ Stream &Room::getBroadcastStream()
 void Room::setInstBroadcast(unsigned char inst)
 {
     _broadcastInst = inst;
+}
+
+void Room::addMonster(IMonster::Type type, int x, int y)
+{
+    _monsters.push_back(IMonster::create(type, *this, ++_monstersIds, x, y));
+    std::cout << "Monster spawned in room " << static_cast<int>(_id) << std::endl;
 }
