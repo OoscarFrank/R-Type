@@ -17,6 +17,7 @@ public:
 
     public:
         Packet(const Stream &data, int instruction);
+        Packet();
         ~Packet();
         int getInstruction() const;
         Stream &getData();
@@ -29,6 +30,7 @@ public:
     void send();
     void read();
     Stream &getStreamOut();
+    Queue<Network::Packet> &getQueueIn();
     std::pair<size_t, Stream> getNextInst();
 
     class ReadError : public std::exception
