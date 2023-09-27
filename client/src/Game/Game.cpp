@@ -76,10 +76,12 @@ void Game::update()
             const sf::Texture &tmp =  this->_manager.getTexture(Loader::Loader::Player);
             ecs.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{ 0, 0, (int)tmp.getSize().x, (int)tmp.getSize().y, 5, 150.0f });
             ecs.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{ tmp });
+            ecs.emplace_component<ECS::components::ControllableComponent>(newEntity, ECS::components::ControllableComponent{sf::Keyboard::Up, sf::Keyboard::Down, sf::Keyboard::Left, sf::Keyboard::Right});
             this->_players.push_back(std::make_pair(this->_playerId, newEntity));
 
             this->_manager.loadTexture("./client/assets/entity/rocket.png", Loader::toLoad::Rocket);
             this->_manager.loadTexture("./client/assets/entity/monsters/monster1.png", Loader::toLoad::Monster1);
+            this->_playerEntity = newEntity;
         }
 
         if (packet.getInstruction() == 11) {
@@ -101,7 +103,7 @@ void Game::update()
             this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(this->getEntityFromId(id), x, y));
             entity_t newEntity = ecs.spawn_entity();
             ecs.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{ (float)x, (float)y });
-            const sf::Texture &tmp =  this->_manager.getTexture(Loader::Loader::Rocket);
+            const sf::Texture &tmp = this->_manager.getTexture(Loader::Loader::Rocket);
             ecs.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{ tmp });
             ecs.emplace_component<ECS::components::ParallaxComponent>(newEntity, ECS::components::ParallaxComponent{ 0.4f, (float)tmp.getSize().x });
 
@@ -109,6 +111,19 @@ void Game::update()
     }
     this->_net.setInst(12);
     this->_net.send();
+}
+
+void Game::sendMoveToServer()
+{
+    for (auto i = this->_entityMoves.begin(); i != this->_entityMoves.end(); ++i) {
+        if ((*i).getEntity() == this->_playerEntity) {
+            this->_net.setInst(2);
+            this->_net.getStreamOut().setDataUChar((*i).getMove());
+            this->_net.getStreamOut().setDataUChar(1);
+            this->_net.send();
+        }
+    }
+    this->_entityMoves.clear();
 }
 
 int Game::MainLoop()
@@ -120,7 +135,7 @@ int Game::MainLoop()
         this->update();
         this->EventLoop(this->_window);
         // ALL SYSTEMS CALL
-        ECS::systems::ControllableSystem().update(this->ecs, deltaTime);
+        ECS::systems::ControllableSystem().update(this->ecs, this->_entityMoves);
         ECS::systems::PositionSystem().update(this->ecs);
         ECS::systems::AnimationSystem().update(this->ecs, deltaTime);
         ECS::systems::ParallaxSystem().update(this->ecs, deltaTime);
@@ -129,6 +144,7 @@ int Game::MainLoop()
         // DRAW SYSTEM CALL
         ECS::systems::DrawSystem().update(this->ecs, this->_window);
         this->_window.display();
+        this->sendMoveToServer();
     }
     return 0;
 }
