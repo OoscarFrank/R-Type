@@ -60,3 +60,13 @@ int Player::score() const
 {
     return _score;
 }
+
+size_t Player::getLastMove()
+{
+    return _lastMove;
+}
+
+void Player::setLastMove(size_t lastMove)
+{
+    this->_lastMove = lastMove;
+}

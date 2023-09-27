@@ -25,6 +25,7 @@ Game::Game() :
     this->_manager.loadTexture("./client/assets/parallax/background.png", Loader::toLoad::ParallaxFirstbkg);
     this->_manager.loadTexture("./client/assets/parallax/background2.png", Loader::toLoad::ParallaxSecondbkg);
 
+    _resMult = (float)this->_screenSize.x / SCREEN_WIDTH;
     // register components
     ecs.register_component<ECS::components::SpriteComponent>();
     ecs.register_component<ECS::components::PositionComponent>();
@@ -92,7 +93,9 @@ void Game::update()
         if (packet.getInstruction() == 3) {
             unsigned char id = packet.getData().getDataUChar();
             unsigned short x = packet.getData().getDataUShort();
+            x *= _resMult;
             unsigned short y = packet.getData().getDataUShort();
+            y *= _resMult;
             this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(this->getEntityFromId(id), x, y));
         }
 
