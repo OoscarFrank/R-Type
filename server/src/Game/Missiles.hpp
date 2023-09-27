@@ -1,7 +1,6 @@
+class Room;
 #pragma once
 
-
-class Room;
 
 
 class Missiles

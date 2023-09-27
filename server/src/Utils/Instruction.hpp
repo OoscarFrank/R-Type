@@ -12,8 +12,8 @@ struct Commands {
     unsigned int _size;
 };
 
-#define SCREEN_HEIGHT       2160
 #define SCREEN_WIDTH        3840
+#define SCREEN_HEIGHT       2160
 
 #define PLAYER_HEIGHT       65 * 2
 #define PLAYER_WIDTH        113 * 2
