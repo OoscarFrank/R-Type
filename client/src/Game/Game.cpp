@@ -52,11 +52,20 @@ Game::~Game()
 {
 }
 
-entity_t Game::getEntityFromId(unsigned char id)
+entity_t Game::getPlayerEntityFromId(unsigned char id)
 {
     for (auto &player : this->_players) {
         if (player.first == id)
             return player.second;
+    }
+    return 0;
+}
+
+entity_t Game::getMissileEntityFromId(unsigned char id)
+{
+    for (auto &missile : this->_missiles) {
+        if (missile.first == id)
+            return missile.second;
     }
     return 0;
 }
@@ -96,20 +105,27 @@ void Game::update()
             x *= _resMult;
             unsigned short y = packet.getData().getDataUShort();
             y *= _resMult;
-            this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(this->getEntityFromId(id), x, y));
+            this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(this->getPlayerEntityFromId(id), x, y));
         }
 
-        if (packet.getInstruction() == 5) {
-            unsigned char id = packet.getData().getDataUChar();
+        if (packet.getInstruction() == 4) {
+            unsigned int id = packet.getData().getDataUInt();
+            unsigned char type = packet.getData().getDataUChar();
             unsigned short x = packet.getData().getDataUShort();
             unsigned short y = packet.getData().getDataUShort();
-            this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(this->getEntityFromId(id), x, y));
-            entity_t newEntity = ecs.spawn_entity();
-            ecs.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{ (float)x, (float)y });
-            const sf::Texture &tmp = this->_manager.getTexture(Loader::Loader::Rocket);
-            ecs.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{ tmp });
-            ecs.emplace_component<ECS::components::ParallaxComponent>(newEntity, ECS::components::ParallaxComponent{ 0.4f, (float)tmp.getSize().x });
 
+            entity_t res = getMissileEntityFromId(id);
+
+            if (res == 0) {
+                entity_t newEntity = ecs.spawn_entity();
+                ecs.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{ (float)x, (float)y });
+                const sf::Texture &tmp = this->_manager.getTexture(Loader::Loader::Rocket);
+                ecs.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{ tmp });
+                ecs.emplace_component<ECS::components::MovableComponent>(newEntity, ECS::components::MovableComponent{});
+                this->_missiles.push_back(std::make_pair(id, newEntity));
+            } else {
+                this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(res, x, y));
+            }
         }
     }
     this->_net.setInst(12);
@@ -136,7 +152,7 @@ int Game::MainLoop()
         float deltaTime = (currentTime - _lastTime) / 1.0f;
         _lastTime = currentTime;
         this->update();
-        this->EventLoop(this->_window);
+        this->EventLoop(this->_window, this->_net);
         // ALL SYSTEMS CALL
         ECS::systems::ControllableSystem().update(this->ecs, this->_entityMoves);
         ECS::systems::PositionSystem().update(this->ecs);
