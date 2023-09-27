@@ -51,7 +51,7 @@ struct Commands {
  * 11 serv - temps restant avant le debut de la partie (temps, booleen pour savoir si la partie a commence)
  * 13 serv - player joined game (player id)
  * 14 serv - player left game (player id)
- * 15 serv - missile destroyed (id, x, y)
+ * 15 serv - missile destroyed (id, type, x, y)
  */
 #define OUT_COMMANDS { \
     {1, {INT}, 4}, \
