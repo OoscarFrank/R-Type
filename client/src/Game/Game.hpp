@@ -16,7 +16,8 @@ namespace game {
             ~Game();
             int MainLoop();
             void update();
-            entity_t getEntityFromId(unsigned char id);
+            entity_t getPlayerEntityFromId(unsigned char id);
+            entity_t getMissileEntityFromId(unsigned char id);
             void sendMoveToServer();
 
         private:
@@ -34,6 +35,7 @@ namespace game {
             unsigned int _startTimeLeft;
             unsigned char _started;
             std::vector<std::pair<size_t, entity_t>> _players;
+            std::vector<std::pair<size_t, entity_t>> _missiles;
             std::vector<ECS::systems::MovableSystem::EntityPos> _entityPositions;
             std::vector<ECS::systems::ControllableSystem::EntityMove> _entityMoves;
     };
