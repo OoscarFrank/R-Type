@@ -39,6 +39,7 @@ public:
         std::string _message;
         const char *what() const noexcept override { return _message.c_str(); }
     };
+    std::thread _ReaderThread;
 
 
 private:
@@ -51,7 +52,6 @@ private:
     Stream _streamOut;
     unsigned char _instOut;
 
-    std::thread _ReaderThread;
     Stream _streamIn;
     Queue<Network::Packet> _queueIn;
 };

@@ -20,6 +20,15 @@ namespace game {
             entity_t getMissileEntityFromId(unsigned char id);
             entity_t getEnnemieEntityFromId(unsigned char id);
             void sendMoveToServer();
+            sf::Vector2f convertServerCoordsToUserResolution(float x, float y, const sf::Vector2u& screenSize) {
+                const float SERVER_WIDTH = 3840.0f;
+                const float SERVER_HEIGHT = 2160.0f;
+
+                float newX = (x / SERVER_WIDTH) * screenSize.x;
+                float newY = (y / SERVER_HEIGHT) * screenSize.y;
+
+                return sf::Vector2f(newX, newY);
+            }
 
         private:
             sf::Vector2u _screenSize;

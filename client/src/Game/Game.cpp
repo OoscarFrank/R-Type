@@ -130,18 +130,24 @@ void Game::update()
             x *= _resMult;
             unsigned short y = packet.getData().getDataUShort();
             y *= _resMult;
+            // MACOS
+            // std::cout << "computer's resolution : " << (this->_screenSize.x / 2) << " | " << (this->_screenSize.y / 2) << std::endl;
+            // OTHER
+            std::cout << "computer's resolution : " << this->_screenSize.x << " | " << this->_screenSize. << std::endl;
+            sf::Vector2f userCoords = convertServerCoordsToUserResolution(x, y, this->_screenSize);
+            std::cout << "pos x & y after : " << userCoords.x << " | " << userCoords.y << std::endl;
 
             entity_t res = getMissileEntityFromId(id);
 
             if (res == 0) {
                 entity_t newEntity = ecs.spawn_entity();
-                ecs.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{ (float)x, (float)y });
+                ecs.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{ userCoords.x, userCoords.y });
                 const sf::Texture &tmp = this->_manager.getTexture(Loader::Loader::Rocket);
                 ecs.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{ tmp });
                 ecs.emplace_component<ECS::components::MovableComponent>(newEntity, ECS::components::MovableComponent{});
                 this->_missiles.push_back(std::make_pair(id, newEntity));
             } else {
-                this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(res, x, y));
+                this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(res, userCoords.x, userCoords.y));
             }
         }
 

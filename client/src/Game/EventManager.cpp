@@ -20,6 +20,8 @@ void EventManager::EventLoop(sf::RenderWindow &window, Network &_net)
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+        // if (_net._ReaderThread.joinable())
+        //     _net._ReaderThread.join();
         window.close();
         return;
     }
