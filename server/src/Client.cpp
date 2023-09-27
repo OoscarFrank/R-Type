@@ -1,13 +1,11 @@
 #include "Client.hpp"
 #include "Utils/Instruction.hpp"
+#include <bitset>
 
 Client::Client(asio::ip::udp::socket &socket, asio::ip::udp::endpoint endpoint): _socket(socket)
 {
     this->_endpoint = endpoint;
-    this->buffer = "";
-    this->_dataOut = "";
     this->_instOut = 0;
-    this->_roomId = 0;
     this->lastActivity = NOW;
 }
 
@@ -20,63 +18,30 @@ const asio::ip::udp::endpoint &Client::getEndpoint() const
     return this->_endpoint;
 }
 
-void Client::pushBuffer(const std::string &data)
+Stream &Client::getStreamIn()
 {
-    this->buffer += data;
+    return this->_streamIn;
 }
 
-std::pair<size_t, std::string> Client::getNextInst()
+std::pair<size_t, Stream> Client::getNextInst()
 {
-
-    if (this->buffer.size() == 0)
-        return std::make_pair(0, "");
+    if (this->_streamIn.size() == 0)
+        return std::make_pair(0, Stream());
     std::vector<Commands> inst = IN_COMMANDS;
-    std::pair<size_t, std::string> out;
+    std::pair<size_t, Stream> out;
 
     for (auto i = inst.begin(); i != inst.end(); ++i) {
-        if (this->buffer[0] == i->_inst) {
-            if (this->buffer.size() < i->_size + 1)
-                return std::make_pair(0, "");
+        if (this->_streamIn[0] == i->_inst) {
+            if (this->_streamIn.size() < i->_size + 1)
+                return std::make_pair(0, Stream());
             out.first = i->_inst;
-            out.second = this->buffer.substr(1, i->_size);
-            this->buffer = this->buffer.substr(i->_size + 1);
+            out.second = this->_streamIn.subStream(1, i->_size);
+            this->_streamIn = this->_streamIn.subStream(i->_size + 1);
             return out;
         }
     }
-    this->buffer = "";
-    return std::make_pair(0, "");
-}
-
-void Client::catCharOut(const char &data)
-{
-    this->_dataOut += data;
-}
-
-void Client::catShortOut(const short &data)
-{
-    char tmp;
-    this->_dataOut += data;
-    tmp = data >> 8;
-    this->_dataOut += tmp;
-}
-
-void Client::catIntOut(const int &data)
-{
-    char tmp = data;
-    this->_dataOut += tmp;
-    tmp = data >> 8;
-    this->_dataOut += tmp;
-    tmp = data >> 16;
-    this->_dataOut += tmp;
-    tmp = data >> 24;
-    this->_dataOut += tmp;
-
-    // int out = 0;
-    // out += this->_dataOut[0];
-    // out += this->_dataOut[1] << 8;
-    // out += this->_dataOut[2] << 16;
-    // out += this->_dataOut[3] << 24;
-    // std::cout << out << std::endl;
+    this->_streamIn.clear();
+    return std::make_pair(0, Stream());
 }
 
 void Client::setInst(unsigned char inst)
@@ -84,22 +49,22 @@ void Client::setInst(unsigned char inst)
     _instOut = inst;
 }
 
-void Client::send()
+void Client::send(const Stream &stream)
 {
-    std::string out;
-    out += _instOut;
-    out += _dataOut;
-    send(out);
-    _dataOut = "";
-    _instOut = 0;
+    if (_endpoint.protocol() == asio::ip::udp::v4())
+        _socket.send_to(asio::buffer(stream.toString()), _endpoint);
+    else
+        std::cerr << "Endpoint is not IPv4" << std::endl;
 }
 
-void Client::send(const std::string &message)
+void Client::send()
 {
-    if (_endpoint.protocol() == asio::ip::udp::v4()) {
-        _socket.send_to(asio::buffer(message), _endpoint);
-    } else
-        std::cerr << "Endpoint is not IPv4" << std::endl;
+    Stream out;
+    out += _instOut;
+    out += _streamOut;
+    send(out);
+    _streamOut.clear();
+    _instOut = 0;
 }
 
 bool Client::isAlive()
@@ -112,4 +77,9 @@ bool Client::isAlive()
 void Client::ping()
 {
     _lastPing = std::chrono::system_clock::now();
+}
+
+Stream &Client::getStreamOut()
+{
+    return this->_streamOut;
 }

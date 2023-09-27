@@ -1,10 +1,10 @@
 #include "Player.hpp"
 #include "../Utils/Scheduling.hpp"
 #include "../Utils/Instruction.hpp"
+#include "Room.hpp"
 
-Player::Player(Room &room, Notifier sendToAll, std::shared_ptr<Client> client, u_char id):
+Player::Player(Room &room, std::shared_ptr<Client> client, u_char id):
     _room(room),
-    _sendToAll(sendToAll),
     _client(client),
     _pos(0, 0),
     _id(id),
@@ -15,7 +15,9 @@ void Player::fireMissile(size_t &missilesIds)
 {
     ++missilesIds;
     _missiles.push_back(std::make_unique<Missiles>(_pos.first, _pos.second, missilesIds, Missiles::ALlY, _room));
-    (_room.*_sendToAll)("Missile fired");
+    // (_room.*_sendToAll)("Missile fired");
+    //! mettre bin pour missile fired (this->_room.getBroadcastStream()...etc)
+    
 }
 
 void Player::refreshMissiles()

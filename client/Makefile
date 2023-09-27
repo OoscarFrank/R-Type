@@ -5,7 +5,7 @@
 ## Makefile
 ##
 
-NAME    =    ../r-type_client
+NAME    =    r-type_client
 
 # src
 SRC = $(shell find . -type f -name "*.cpp")

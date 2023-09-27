@@ -1,4 +1,5 @@
 #include "Network.hpp"
+#include <bitset>
 
 Network::Network(std::string ip, int port) : _socket(_ioContext, asio::ip::udp::v4()), _serverEndpoint(asio::ip::address::from_string(ip), port)
 {
@@ -13,51 +14,26 @@ Network::~Network()
 {
 }
 
-void Network::catCharOut(const char &data)
-{
-    this->_dataOut += data;
-}
-
-void Network::catShortOut(const short &data)
-{
-    char tmp;
-    this->_dataOut += data;
-    tmp = data >> 8;
-    this->_dataOut += tmp;
-}
-
-void Network::catIntOut(const int &data)
-{
-    char tmp = data;
-    this->_dataOut += tmp;
-    tmp = data >> 8;
-    this->_dataOut += tmp;
-    tmp = data >> 16;
-    this->_dataOut += tmp;
-    tmp = data >> 24;
-    this->_dataOut += tmp;
-}
-
 void Network::setInst(unsigned char inst)
 {
     _instOut = inst;
 }
 
-void Network::send(const std::string &message)
+void Network::send(const Stream &stream)
 {
     if (_serverEndpoint.protocol() == asio::ip::udp::v4())
-        _socket.send_to(asio::buffer(message), _serverEndpoint);
+        _socket.send_to(asio::buffer(stream.toString()), _serverEndpoint);
     else
         std::cerr << "Endpoint is not IPv4" << std::endl;
 }
 
 void Network::send()
 {
-    std::string out;
+    Stream out;
     out += _instOut;
-    out += _dataOut;
+    out += _streamOut;
     send(out);
-    _dataOut = "";
+    _streamOut.clear();
     _instOut = 0;
 }
 
@@ -65,7 +41,7 @@ void Network::send()
 void Network::read()
 {
     asio::ip::udp::endpoint sender;
-    std::pair<size_t, std::string> tmpInst;
+    std::pair<size_t, Stream> tmpInst;
     enum
     {
         max_length = 1024
@@ -76,10 +52,12 @@ void Network::read()
     {
         asio::error_code ec;
         size_t len = this->_socket.receive_from(asio::buffer(data, max_length), _serverEndpoint, 0, ec);
-        data[len] = '\0';
+        this->_streamIn.setDataCharArray(data, len);
 
-        while ((tmpInst = this->getNextInst()).first != 0)
-            _queueIn.push(Network::Packet( tmpInst.second, tmpInst.first));
+        while ((tmpInst = this->getNextInst()).first != 0) {
+            _queueIn.push(Network::Packet(tmpInst.second, tmpInst.first));
+            // std::cout << tmpInst.first << tmpInst.second << std::endl;
+        }
         if (ec) {
             Network::ReadError error;
             error._message = "Error during receive: " + ec.message();
@@ -90,32 +68,36 @@ void Network::read()
 
 
 
-std::pair<size_t, std::string> Network::getNextInst()
+std::pair<size_t, Stream> Network::getNextInst()
 {
-    if (this->_buferIn.size() == 0)
-        return std::make_pair(0, "");
-    std::vector<Commands> inst = OUT_COMMANDS;
-    std::pair<size_t, std::string> out;
+    if (this->_streamIn.size() == 0)
+        return std::make_pair(0, Stream());
+    std::vector<Commands> inst = IN_COMMANDS;
+    std::pair<size_t, Stream> out;
 
     for (auto i = inst.begin(); i != inst.end(); ++i) {
-        if (this->_buferIn[0] == i->_inst) {
-            if (this->_buferIn.size() < i->_size + 1)
-                return std::make_pair(0, "");
+        if (this->_streamIn[0] == i->_inst) {
+            if (this->_streamIn.size() < i->_size + 1)
+                return std::make_pair(0, Stream());
             out.first = i->_inst;
-            out.second = this->_buferIn.substr(1, i->_size);
-            this->_buferIn = this->_buferIn.substr(i->_size + 1);
+            out.second = this->_streamIn.subStream(1, i->_size);
+            this->_streamIn = this->_streamIn.subStream(i->_size + 1);
             return out;
         }
     }
-    this->_buferIn = "";
-    return std::make_pair(0, "");
+    this->_streamIn.clear();
+    return std::make_pair(0, Stream());
+}
+
+Stream &Network::getStreamOut()
+{
+    return _streamOut;
 }
 
 
 
 
-
-Network::Packet::Packet(const std::string &data, int instruction) : _data(data), _instruction(instruction)
+Network::Packet::Packet(const Stream &data, int instruction) : _data(data), _instruction(instruction)
 {
 
 }
@@ -130,35 +112,8 @@ int Network::Packet::getInstruction() const
     return _instruction;
 }
 
-const std::string &Network::Packet::getData() const
+Stream &Network::Packet::getData()
 {
     return _data;
 }
 
-int Network::Packet::getDataInt()
-{
-    int out = 0;
-    out += this->_data[0];
-    out += this->_data[1] << 8;
-    out += this->_data[2] << 16;
-    out += this->_data[3] << 24;
-    this->_data = this->_data.substr(4);
-    return out;
-}
-
-short Network::Packet::getDataShort()
-{
-    short out = 0;
-    out += this->_data[0];
-    out += this->_data[1] << 8;
-    this->_data = this->_data.substr(2);
-    return out;
-}
-
-char Network::Packet::getDataChar()
-{
-    char out = 0;
-    out += this->_data[0];
-    this->_data = this->_data.substr(1);
-    return out;
-}

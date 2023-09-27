@@ -60,9 +60,9 @@ struct Commands {
     {6, {INT}, 4}, \
     {7, {CHAR, SHORT, SHORT}, 5}, \
     {10, {SHORT, CHAR}, 3}, \
-    {11, {INT, CHAR}, 5} \
+    {11, {INT, CHAR}, 5}, \
     {13, {CHAR}, 1}, \
-    {14, {CHAR}, 1} \
+    {14, {CHAR}, 1}, \
     {15, {INT,CHAR, SHORT, SHORT}, 9} \
 };
 
