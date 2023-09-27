@@ -70,6 +70,15 @@ entity_t Game::getMissileEntityFromId(unsigned char id)
     return 0;
 }
 
+entity_t Game::getEnnemieEntityFromId(unsigned char id)
+{
+    for (auto &ennemie : this->_ennemies) {
+        if (ennemie.first == id)
+            return ennemie.second;
+    }
+    return 0;
+}
+
 void Game::update()
 {
     Network::Packet packet;
@@ -125,6 +134,28 @@ void Game::update()
                 ecs.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{ tmp });
                 ecs.emplace_component<ECS::components::MovableComponent>(newEntity, ECS::components::MovableComponent{});
                 this->_missiles.push_back(std::make_pair(id, newEntity));
+            } else {
+                this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(res, x, y));
+            }
+        }
+
+        if (packet.getInstruction() == 7) {
+            unsigned char id = packet.getData().getDataUChar();
+            unsigned short x = packet.getData().getDataUShort();
+            x *= _resMult;
+            unsigned short y = packet.getData().getDataUShort();
+            y *= _resMult;
+
+            entity_t res = getEnnemieEntityFromId(id);
+
+            if (res == 0) {
+                entity_t newEntity = ecs.spawn_entity();
+                ecs.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{ (float)x, (float)y });
+                const sf::Texture &tmp = this->_manager.getTexture(Loader::Loader::Player);
+                ecs.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{ 0, 0, (int)tmp.getSize().x, (int)tmp.getSize().y, 5, 150.0f });
+                ecs.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{ tmp });
+                ecs.emplace_component<ECS::components::MovableComponent>(newEntity, ECS::components::MovableComponent{});
+                this->_ennemies.push_back(std::make_pair(id, newEntity));
             } else {
                 this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(res, x, y));
             }

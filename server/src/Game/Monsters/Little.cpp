@@ -14,7 +14,7 @@ void Little::refresh()
         fireMissile();
         _lastFire = now;
     }
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= 100) {
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= 2) {
         move(-1, 0);
         _lastMove = now;
         for (auto &missile: _missiles)
