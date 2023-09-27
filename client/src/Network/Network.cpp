@@ -117,3 +117,7 @@ Stream &Network::Packet::getData()
     return _data;
 }
 
+Queue<Network::Packet> &Network::getQueueIn()
+{
+    return _queueIn;
+}

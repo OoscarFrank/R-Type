@@ -29,6 +29,7 @@ public:
     void send();
     void read();
     Stream &getStreamOut();
+    Queue<Network::Packet> &getQueueIn();
     std::pair<size_t, Stream> getNextInst();
 
     class ReadError : public std::exception
