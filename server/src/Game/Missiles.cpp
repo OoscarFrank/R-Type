@@ -3,7 +3,7 @@
 #include "../Utils/Instruction.hpp"
 #include "Room.hpp"
 
-Missiles::Missiles(unsigned short x, unsigned short y, int id, unsigned char type, Room &room) : _room(room)
+Missiles::Missiles(unsigned short x, unsigned short y, size_t id, unsigned char type, Room &room) : _room(room)
 {
     _x = x;
     _y = y;

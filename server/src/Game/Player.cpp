@@ -14,7 +14,7 @@ Player::Player(Room &room, std::shared_ptr<Client> client, u_char id):
     _timerTotMissilesRefresh = 0;
 }
 
-void Player::fireMissile(size_t &missilesIds)
+void Player::fireMissile()
 {
     if (NOW - _lastFire >= FIRE_TIME) {
         ++missilesIds;
