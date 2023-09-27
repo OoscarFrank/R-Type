@@ -17,6 +17,7 @@ namespace game {
             int MainLoop();
             void update();
             entity_t getEntityFromId(unsigned char id);
+            void sendMoveToServer();
 
         private:
             sf::Vector2u _screenSize;
@@ -28,10 +29,12 @@ namespace game {
 
             unsigned short _roomId;
             unsigned char _playerId;
+            entity_t _playerEntity;
 
             unsigned int _startTimeLeft;
             unsigned char _started;
             std::vector<std::pair<size_t, entity_t>> _players;
             std::vector<ECS::systems::MovableSystem::EntityPos> _entityPositions;
+            std::vector<ECS::systems::ControllableSystem::EntityMove> _entityMoves;
     };
 }
