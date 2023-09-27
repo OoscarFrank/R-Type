@@ -5,6 +5,7 @@
 #include <thread>
 #include "Player.hpp"
 #include "../Client.hpp"
+#include "Monsters/Monster.hpp"
 
 class Room
 {
@@ -13,6 +14,7 @@ class Room
         std::thread _thread;
         std::mutex _playersMutex;
         std::vector<std::unique_ptr<Player>> _players;
+        std::vector<std::unique_ptr<IMonster>> _monsters;
         unsigned short _id;
         unsigned int _maxPlayer;
         unsigned int _progress;
@@ -22,6 +24,7 @@ class Room
         void update();
 
         size_t _missilesIds;
+        u_char _monstersIds;
 
         Stream _broadcastStream;
         unsigned char _broadcastInst;
@@ -31,6 +34,7 @@ class Room
         size_t _lastJoin;
         size_t _lastMissileUpdate;
         size_t _lastPlayerUpdate;
+        size_t _lastMonsterSpawn;
 
     public:
         Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom = false);
@@ -54,4 +58,5 @@ class Room
         Stream &getBroadcastStream();
         void setInstBroadcast(unsigned char inst);
         size_t &getMissilesIds();
+        void addMonster(IMonster::Type type, int x, int y);
 };
