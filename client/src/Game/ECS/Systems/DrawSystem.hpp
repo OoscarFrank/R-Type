@@ -7,6 +7,12 @@ namespace ECS {
     namespace systems {
         class DrawSystem {
             public:
+            /**
+             * @brief Update the sprite of each entity with a sprite component
+             * 
+             * @param ecs 
+             * @param window 
+             */
                 void update(Registry &ecs, sf::RenderWindow &window) {
                     auto &spriteComponents = ecs.get_components<components::SpriteComponent>();
 

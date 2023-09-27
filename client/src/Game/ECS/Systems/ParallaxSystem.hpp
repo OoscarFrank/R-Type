@@ -7,6 +7,12 @@ namespace ECS {
     namespace systems {
         class ParallaxSystem {
         public:
+        /**
+         * @brief Update the position of each entity with a position and a parallax component
+         * 
+         * @param ecs 
+         * @param deltaTime 
+         */
             void update(Registry &ecs, float deltaTime) {
                 auto &parallaxComponents = ecs.get_components<components::ParallaxComponent>();
                 auto &positionComponents = ecs.get_components<components::PositionComponent>();

@@ -8,6 +8,10 @@ namespace ECS {
     namespace components {
         class MovableComponent {
             public:
+            /**
+             * @brief Construct a new Movable Component object
+             * 
+             */
                 MovableComponent(){}
             private:
         };

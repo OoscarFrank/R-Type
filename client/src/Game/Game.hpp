@@ -12,23 +12,49 @@
 namespace game {
     class Game: public EventManager {
         public:
+        /**
+         * @brief Construct a new Game object
+         * 
+         */
             Game();
+        /**
+         * @brief Destroy the Game object
+         * 
+         */
             ~Game();
+        /**
+         * @brief function who's looping on the window and call everythings
+         * 
+         * @return int 
+         */
             int MainLoop();
+        /**
+         * @brief update data for entities
+         * 
+         */
             void update();
+        /**
+         * @brief Get the Player Entity From Id object
+         * 
+         * @param id 
+         * @return entity_t 
+         */
             entity_t getPlayerEntityFromId(unsigned char id);
+        /**
+         * @brief Get the Missile Entity From Id object
+         * 
+         * @param id 
+         * @return entity_t 
+         */
             entity_t getMissileEntityFromId(unsigned char id);
+        /**
+         * @brief Get the Ennemie Entity From Id object
+         * 
+         * @param id 
+         * @return entity_t 
+         */
             entity_t getEnnemieEntityFromId(unsigned char id);
             void sendMoveToServer();
-            sf::Vector2f convertServerCoordsToUserResolution(float x, float y, const sf::Vector2u& screenSize) {
-                const float SERVER_WIDTH = 3840.0f;
-                const float SERVER_HEIGHT = 2160.0f;
-
-                float newX = (x / SERVER_WIDTH) * screenSize.x;
-                float newY = (y / SERVER_HEIGHT) * screenSize.y;
-
-                return sf::Vector2f(newX, newY);
-            }
 
         private:
             sf::Vector2u _screenSize;

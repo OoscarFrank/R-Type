@@ -12,14 +12,41 @@ namespace ECS {
                 float x;
                 float y;
             public:
+            /**
+             * @brief Construct a new Entity Pos object
+             * 
+             * @param entity 
+             * @param x 
+             * @param y 
+             */
                 EntityPos(entity_t entity, float x, float y) : entity(entity), x(x), y(y) {}
+            /**
+             * @brief Get the X position
+             * 
+             * @return float 
+             */
                 float getX() const { return x; }
+            /**
+             * @brief Get the Y position
+             * 
+             * @return float 
+             */
                 float getY() const { return y; }
+            /**
+             * @brief Get the Entity object
+             * 
+             * @return entity_t 
+             */
                 entity_t getEntity() const { return entity; }
             };
 
             MovableSystem() = default;
-
+            /**
+             * @brief Update the position of each entity with a position and a movable component
+             * 
+             * @param ecs 
+             * @param entityPositions 
+             */
             void update(Registry &ecs, std::vector<EntityPos> &entityPositions) {
 
                 for (auto i = entityPositions.begin(); i != entityPositions.end(); ++i) {

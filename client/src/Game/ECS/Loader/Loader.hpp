@@ -7,7 +7,15 @@
 namespace game {
     class Loader {
         public:
+        /**
+         * @brief Construct a new Loader object
+         * 
+         */
             Loader();
+        /**
+         * @brief Destroy the Loader object
+         * 
+         */
             ~Loader();
             enum toLoad {
                 ParallaxFirstbkg,
@@ -16,8 +24,25 @@ namespace game {
                 Rocket,
                 Monster1
             };
+        /**
+         * @brief Load a texture from a path
+         * 
+         * @param path 
+         * @param type 
+         */
             void loadTexture(const std::string path, toLoad type);
+        /**
+         * @brief Unload a texture from a type
+         * 
+         * @param type 
+         */
             void unloadTexture(toLoad type);
+        /**
+         * @brief Get the Texture object
+         * 
+         * @param type 
+         * @return const sf::Texture& 
+         */
             const sf::Texture &getTexture(toLoad type) const;
 
         private:

@@ -7,6 +7,11 @@ namespace ECS {
     namespace systems {
         class PositionSystem {
             public:
+            /**
+             * @brief Update the position of each entity with a position and a velocity component
+             * 
+             * @param ecs 
+             */
                 void update(Registry &ecs) {
                     auto &positionComponents = ecs.get_components<components::PositionComponent>();
                     auto &velocityComponents = ecs.get_components<components::VelocityComponent>();
