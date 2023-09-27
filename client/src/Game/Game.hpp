@@ -5,6 +5,7 @@
 #include "./ECS/Loader/Loader.hpp"
 #include "../Utils.hpp"
 #include "./ECS/Registry.hpp"
+#include "../Network/Network.hpp"
 
 namespace game {
     class Game: public EventManager {
@@ -12,6 +13,7 @@ namespace game {
             Game();
             ~Game();
             int MainLoop();
+            void update();
 
         private:
             sf::Vector2u _screenSize;
@@ -19,5 +21,6 @@ namespace game {
             long _lastTime;
             Loader _manager;
             ECS::Registry ecs;
+            Network _net;
     };
 }

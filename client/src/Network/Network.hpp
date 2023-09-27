@@ -17,6 +17,7 @@ public:
 
     public:
         Packet(const Stream &data, int instruction);
+        Packet();
         ~Packet();
         int getInstruction() const;
         Stream &getData();

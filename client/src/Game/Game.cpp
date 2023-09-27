@@ -7,13 +7,16 @@ using namespace game;
 using entity_t = std::size_t;
 
 Game::Game() :
-    _manager(Loader())
+    _manager(Loader()),
+    _net(Network())
 {
     sf::VideoMode mode = sf::VideoMode::getDesktopMode();
     this->_screenSize = {mode.width, mode.height};
     this->_window.create(sf::VideoMode(mode.width, mode.height), "R-TYPE");
     this->_window.setFramerateLimit(120);
     this->_lastTime = NOW;
+    this->_net.setInst(9);
+    this->_net.send();
 
     // register components
     ecs.register_component<ECS::components::SpriteComponent>();
@@ -53,13 +56,22 @@ Game::~Game()
 {
 }
 
+void Game::update()
+{
+    Network::Packet packet;
+
+    while (this->_net.getQueueIn().tryPop(packet)) {
+        std::cout << "Packet received : " << packet.getData().getDataInt() << std::endl;
+    }
+}
+
 int Game::MainLoop()
 {
     while (this->_window.isOpen()) {
         long currentTime = NOW;
         float deltaTime = (currentTime - _lastTime) / 1.0f;
         _lastTime = currentTime;
-
+        this->update();
         this->EventLoop(this->_window);
         // ALL SYSTEMS CALL
         ECS::systems::ControllableSystem().update(this->ecs, deltaTime);
