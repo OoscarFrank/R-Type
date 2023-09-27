@@ -8,6 +8,7 @@
 #include "../Network/Network.hpp"
 #include <vector>
 #include "./ECS/Systems/Systems.hpp"
+#include "Factory.hpp"
 
 namespace game {
     class Game: public EventManager {
@@ -62,6 +63,7 @@ namespace game {
             long _lastTime;
             Loader _manager;
             ECS::Registry ecs;
+            Factory _factory;
             Network _net;
             float _resMult;
 

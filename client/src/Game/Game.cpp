@@ -1,13 +1,13 @@
 #include "./Game.hpp"
 #include "./ECS/Components/Components.hpp"
 #include "./ECS/Systems/Systems.hpp"
-#include "./ECS/Entities/Entities.hpp"
 
 using namespace game;
 using entity_t = std::size_t;
 
 Game::Game() :
     _manager(Loader()),
+    _factory(Factory(ecs)),
     _net(Network()),
     _roomId(0),
     _playerId(0),
@@ -37,26 +37,9 @@ Game::Game() :
         divider = 2;
     #endif
     _resMult = (float)(this->_screenSize.x / divider)/ SCREEN_WIDTH;
-    // register components
-    ecs.register_component<ECS::components::SpriteComponent>();
-    ecs.register_component<ECS::components::PositionComponent>();
-    ecs.register_component<ECS::components::TextureRectComponent>();
-    ecs.register_component<ECS::components::VelocityComponent>();
-    ecs.register_component<ECS::components::ControllableComponent>();
-    ecs.register_component<ECS::components::ParallaxComponent>();
-    ecs.register_component<ECS::components::MovableComponent>();
 
-    // create parallaxFirst entity
-    entitiesType::ParallaxEntity::create(this->ecs,
-        this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg),
-        ECS::components::PositionComponent{0.0f, 0.0f},
-        -0.15f);
-
-    // create parallaxScd entity
-    entitiesType::ParallaxEntity::create(this->ecs,
-        this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg),
-        ECS::components::PositionComponent{0.0f, 0.0f},
-        -0.20f);
+    this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), -0.15f);
+    this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), -0.20f);
 }
 
 Game::~Game()
@@ -96,22 +79,16 @@ void Game::update()
 
     while (this->_net.getQueueIn().tryPop(packet)) {
         if (packet.getInstruction() == 10) {
-            this->_roomId = packet.getData().getDataUShort();
+        this->_roomId = packet.getData().getDataUShort();
             this->_playerId = packet.getData().getDataUChar();
             this->_manager.loadTexture("./client/assets/entity/player/move.png", Loader::toLoad::Player);
 
-            entity_t newEntity = ecs.spawn_entity();
-            ecs.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{ -1000.0f, -1000.0f });
-            ecs.emplace_component<ECS::components::MovableComponent>(newEntity, ECS::components::MovableComponent{});
-            const sf::Texture &tmp =  this->_manager.getTexture(Loader::Loader::Player);
-            ecs.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{ 0, 0, (int)tmp.getSize().x, (int)tmp.getSize().y, 5, 150.0f });
-            ecs.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{ tmp });
-            ecs.emplace_component<ECS::components::ControllableComponent>(newEntity, ECS::components::ControllableComponent{sf::Keyboard::Up, sf::Keyboard::Down, sf::Keyboard::Left, sf::Keyboard::Right});
+            entity_t newEntity = this->_factory.createPlayer(-1000.0f, -1000.0f, this->_manager.getTexture(Loader::Loader::Player));
             this->_players.push_back(std::make_pair(this->_playerId, newEntity));
+            this->_playerEntity = newEntity;
 
             this->_manager.loadTexture("./client/assets/entity/rocket.png", Loader::toLoad::Rocket);
             this->_manager.loadTexture("./client/assets/entity/monsters/monster1.png", Loader::toLoad::Monster1);
-            this->_playerEntity = newEntity;
         }
 
         if (packet.getInstruction() == 11) {
@@ -139,11 +116,7 @@ void Game::update()
             entity_t res = getMissileEntityFromId(id);
 
             if (res == 0) {
-                entity_t newEntity = ecs.spawn_entity();
-                ecs.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{ (float)x, (float)y });
-                const sf::Texture &tmp = this->_manager.getTexture(Loader::Loader::Rocket);
-                ecs.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{ tmp });
-                ecs.emplace_component<ECS::components::MovableComponent>(newEntity, ECS::components::MovableComponent{});
+                entity_t newEntity = this->_factory.createMissile(x, y, this->_manager.getTexture(Loader::Loader::Rocket));
                 this->_missiles.push_back(std::make_pair(id, newEntity));
             } else {
                 this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(res, x, y));
@@ -160,12 +133,7 @@ void Game::update()
             entity_t res = getEnnemieEntityFromId(id);
 
             if (res == 0) {
-                entity_t newEntity = ecs.spawn_entity();
-                ecs.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{ (float)x, (float)y });
-                const sf::Texture &tmp = this->_manager.getTexture(Loader::Loader::Player);
-                ecs.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{ 0, 0, (int)tmp.getSize().x, (int)tmp.getSize().y, 5, 150.0f });
-                ecs.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{ tmp });
-                ecs.emplace_component<ECS::components::MovableComponent>(newEntity, ECS::components::MovableComponent{});
+                entity_t newEntity = this->_factory.createEnnemie(x, y, this->_manager.getTexture(Loader::Loader::Player));
                 this->_ennemies.push_back(std::make_pair(id, newEntity));
             } else {
                 this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(res, x, y));
@@ -197,14 +165,14 @@ int Game::MainLoop()
         _lastTime = currentTime;
         this->update();
         this->EventLoop(this->_window, this->_net);
-        // ALL SYSTEMS CALL
+        // ALL SYSTEMS CALL HERE (update)
         ECS::systems::ControllableSystem().update(this->ecs, this->_entityMoves);
         ECS::systems::PositionSystem().update(this->ecs);
         ECS::systems::AnimationSystem().update(this->ecs, deltaTime);
         ECS::systems::ParallaxSystem().update(this->ecs, deltaTime);
         ECS::systems::MovableSystem().update(this->ecs, this->_entityPositions);
         this->_window.clear();
-        // DRAW SYSTEM CALL
+        // DRAW SYSTEM CALL HERE (update) (after clear) (before display) (no update) (no event) (no loop) (no system call) (no event loop)
         ECS::systems::DrawSystem().update(this->ecs, this->_window);
         this->_window.display();
         this->sendMoveToServer();
