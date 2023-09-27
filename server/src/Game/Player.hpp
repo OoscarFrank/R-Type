@@ -21,7 +21,7 @@ class Player {
         Player &operator=(const Player &player) = delete;
         Player &operator=(Player &&player) = delete;
 
-        void fireMissile();
+        void fireMissile(size_t &missilesIds);
         void refreshMissiles();
         void move(int dx, int dy);
 
