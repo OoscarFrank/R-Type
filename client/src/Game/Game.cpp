@@ -16,7 +16,13 @@ Game::Game() :
 {
     sf::VideoMode mode = sf::VideoMode::getDesktopMode();
     this->_screenSize = {mode.width, mode.height};
-    this->_window.create(sf::VideoMode(mode.width, mode.height), "R-TYPE");
+
+    if (mode.isValid()) {
+        this->_window.create(mode, "R-TYPE", sf::Style::Fullscreen);
+    } else {
+        this->_window.create(sf::VideoMode(mode.width, mode.height), "R-TYPE");
+    }
+
     this->_window.setFramerateLimit(120);
     this->_lastTime = NOW;
     this->_net.setInst(9);
