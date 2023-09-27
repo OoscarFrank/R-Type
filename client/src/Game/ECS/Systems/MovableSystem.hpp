@@ -21,8 +21,11 @@ namespace ECS {
             MovableSystem() = default;
 
             void update(Registry &ecs, std::vector<EntityPos> &entityPositions) {
+
                 for (auto i = entityPositions.begin(); i != entityPositions.end(); ++i) {
                     ECS::components::PositionComponent &component = ecs.getComponent<ECS::components::PositionComponent>(i->getEntity());
+                    if (!ecs.hasComponent<ECS::components::MovableComponent>(i->getEntity()))
+                        continue;
                     component.setX(i->getX());
                     component.setY(i->getY());
                 }
