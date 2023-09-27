@@ -1,8 +1,7 @@
+class Room;
 #pragma once
 
 #include <cstddef>
-
-class Room;
 
 
 class Missiles

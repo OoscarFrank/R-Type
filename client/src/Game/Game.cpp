@@ -112,7 +112,9 @@ void Game::update()
             unsigned int id = packet.getData().getDataUInt();
             unsigned char type = packet.getData().getDataUChar();
             unsigned short x = packet.getData().getDataUShort();
+            x *= _resMult;
             unsigned short y = packet.getData().getDataUShort();
+            y *= _resMult;
 
             entity_t res = getMissileEntityFromId(id);
 

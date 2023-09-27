@@ -42,5 +42,9 @@ class Player {
         u_char _id;
         int _score;
         size_t _lastMove;
+        size_t _lastFire;
+
+        size_t _timerTotMissilesRefresh;
+        size_t _timerMissileRefresh;
 
 };
