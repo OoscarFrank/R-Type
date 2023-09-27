@@ -27,6 +27,7 @@ namespace game {
             Loader _manager;
             ECS::Registry ecs;
             Network _net;
+            float _resMult;
 
             unsigned short _roomId;
             unsigned char _playerId;

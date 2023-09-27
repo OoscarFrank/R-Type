@@ -2,6 +2,11 @@
 #include "../Registry.hpp"
 #include "../Components/Components.hpp"
 
+#define UP 1
+#define DOWN 2
+#define LEFT 4
+#define RIGHT 8
+
 namespace ECS {
     namespace systems {
         class ControllableSystem {
@@ -38,27 +43,31 @@ namespace ECS {
                         continue;
                     entity_t entity = ecs.entity_from_index(i);
                     EntityMove entityMoveTmp(entity);
+                    char move = 0;
                     for (auto key : ControllableComponent->getControls()) {
                         if (sf::Keyboard::isKeyPressed(key)) {
                             switch (key) {
                                 case sf::Keyboard::Up:
-                                    entityMoveTmp.setMove(1);
+                                    move |= UP;
                                     break;
                                 case sf::Keyboard::Down:
-                                    entityMoveTmp.setMove(2);
+                                    move |= DOWN;
                                     break;
                                 case sf::Keyboard::Left:
-                                    entityMoveTmp.setMove(3);
+                                    move |= LEFT;
                                     break;
                                 case sf::Keyboard::Right:
-                                    entityMoveTmp.setMove(4);
+                                    move |= RIGHT;
                                     break;
                                 default:
                                     break;
                             }
                         }
                     }
-                    entityMoves.push_back(entityMoveTmp);
+                    if (move != 0) {
+                        entityMoveTmp.setMove(move);
+                        entityMoves.push_back(entityMoveTmp);
+                    }
                 }
             }
         };
