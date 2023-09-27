@@ -29,7 +29,6 @@ namespace ECS {
                     component.setX(i->getX());
                     component.setY(i->getY());
                 }
-
                 entityPositions.clear();
             }
         };
