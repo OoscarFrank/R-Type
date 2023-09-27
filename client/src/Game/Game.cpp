@@ -8,7 +8,11 @@ using entity_t = std::size_t;
 
 Game::Game() :
     _manager(Loader()),
-    _net(Network())
+    _net(Network()),
+    _roomId(0),
+    _playerId(0),
+    _startTimeLeft(0),
+    _started(0)
 {
     sf::VideoMode mode = sf::VideoMode::getDesktopMode();
     this->_screenSize = {mode.width, mode.height};
@@ -18,10 +22,9 @@ Game::Game() :
     this->_net.setInst(9);
     this->_net.send();
 
-    this->_roomId = 0;
-    this->_playerId = 0;
-    this->_startTimeLeft = 0;
-    this->_started = 0;
+    this->_manager.loadTexture("./client/assets/parallax/background.png", Loader::toLoad::ParallaxFirstbkg);
+    this->_manager.loadTexture("./client/assets/parallax/background2.png", Loader::toLoad::ParallaxSecondbkg);
+
     // register components
     ecs.register_component<ECS::components::SpriteComponent>();
     ecs.register_component<ECS::components::PositionComponent>();
@@ -65,6 +68,8 @@ void Game::update()
         if (packet.getInstruction() == 10) {
             this->_roomId = packet.getData().getDataUShort();
             this->_playerId = packet.getData().getDataUChar();
+            this->_manager.loadTexture("./client/assets/entity/player/move.png", Loader::toLoad::Player);
+
             entity_t newEntity = ecs.spawn_entity();
             ecs.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{ -1000.0f, -1000.0f });
             ecs.emplace_component<ECS::components::MovableComponent>(newEntity, ECS::components::MovableComponent{});
@@ -72,17 +77,23 @@ void Game::update()
             ecs.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{ 0, 0, (int)tmp.getSize().x, (int)tmp.getSize().y, 5, 150.0f });
             ecs.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{ tmp });
             this->_players.push_back(std::make_pair(this->_playerId, newEntity));
+
+            this->_manager.loadTexture("./client/assets/entity/rocket.png", Loader::toLoad::Rocket);
+            this->_manager.loadTexture("./client/assets/entity/monsters/monster1.png", Loader::toLoad::Monster1);
         }
+
         if (packet.getInstruction() == 11) {
             this->_startTimeLeft = packet.getData().getDataUInt();
             this->_started = packet.getData().getDataUChar();
         }
+
         if (packet.getInstruction() == 3) {
             unsigned char id = packet.getData().getDataUChar();
             unsigned short x = packet.getData().getDataUShort();
             unsigned short y = packet.getData().getDataUShort();
             this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(this->getEntityFromId(id), x, y));
         }
+
         if (packet.getInstruction() == 5) {
             unsigned char id = packet.getData().getDataUChar();
             unsigned short x = packet.getData().getDataUShort();

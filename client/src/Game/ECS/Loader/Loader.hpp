@@ -17,6 +17,7 @@ namespace game {
                 Monster1
             };
             void loadTexture(const std::string path, toLoad type);
+            void unloadTexture(toLoad type);
             const sf::Texture &getTexture(toLoad type) const;
 
         private:
