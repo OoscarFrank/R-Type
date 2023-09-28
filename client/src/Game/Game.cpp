@@ -29,8 +29,8 @@ Game::Game() :
     this->_net.setInst(9);
     this->_net.send();
 
-    this->_manager.loadTexture("./client/assets/parallax/background.png", Loader::toLoad::ParallaxFirstbkg);
-    this->_manager.loadTexture("./client/assets/parallax/background2.png", Loader::toLoad::ParallaxSecondbkg);
+    this->_manager.loadTexture("assets/parallax/background.png", Loader::toLoad::ParallaxFirstbkg);
+    this->_manager.loadTexture("assets/parallax/background2.png", Loader::toLoad::ParallaxSecondbkg);
 
     int  divider = 1;
     #ifdef SFML_SYSTEM_MACOS
@@ -81,14 +81,14 @@ void Game::update()
         if (packet.getInstruction() == 10) {
         this->_roomId = packet.getData().getDataUShort();
             this->_playerId = packet.getData().getDataUChar();
-            this->_manager.loadTexture("./client/assets/entity/player/move.png", Loader::toLoad::Player);
+            this->_manager.loadTexture("assets/player/move.png", Loader::toLoad::Player);
 
             entity_t newEntity = this->_factory.createPlayer(-1000.0f, -1000.0f, this->_manager.getTexture(Loader::Loader::Player));
             this->_players.push_back(std::make_pair(this->_playerId, newEntity));
             this->_playerEntity = newEntity;
 
-            this->_manager.loadTexture("./client/assets/entity/rocket.png", Loader::toLoad::Rocket);
-            this->_manager.loadTexture("./client/assets/entity/monsters/monster1.png", Loader::toLoad::Monster1);
+            this->_manager.loadTexture("assets/entity/rocket.png", Loader::toLoad::Rocket);
+            this->_manager.loadTexture("assets/monsters/monster1.png", Loader::toLoad::Monster1);
         }
 
         if (packet.getInstruction() == 11) {

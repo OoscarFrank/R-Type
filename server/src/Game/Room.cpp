@@ -192,7 +192,7 @@ void Room::update()
             now = NOW;
         }
         if (now - _lastMonsterSpawn >= SPAWN_MONSTERS) {
-            this->addMonster(IMonster::LITTLE, SCREEN_WIDTH, SCREEN_HEIGHT / 2);
+            // this->addMonster(IMonster::LITTLE, SCREEN_WIDTH, SCREEN_HEIGHT / 2);
             _lastMonsterSpawn = NOW;
         }
         for (auto i = _monsters.begin(); i != _monsters.end(); i++) {
@@ -243,6 +243,6 @@ void Room::setInstBroadcast(unsigned char inst)
 
 void Room::addMonster(IMonster::Type type, int x, int y)
 {
-    _monsters.push_back(IMonster::create(type, *this, ++_monstersIds, x, y));
-    std::cout << "Monster spawned in room " << static_cast<int>(_id) << std::endl;
+    // _monsters.push_back(IMonster::create(type, *this, ++_monstersIds, x, y));
+    // std::cout << "Monster spawned in room " << static_cast<int>(_id) << std::endl;
 }
