@@ -3,7 +3,7 @@ name: Check build and compile
 on:
   push:
     branches:
-      - client
+      - dev
 
 jobs:
   build:
