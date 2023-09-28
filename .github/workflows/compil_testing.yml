@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install SFML
+      - name: Install SFML and ASIO
         run: |
           sudo apt-get update
           sudo apt-get install -y libsfml-dev libasio-dev
