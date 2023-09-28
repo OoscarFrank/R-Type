@@ -12,16 +12,19 @@ struct Commands {
     unsigned int _size;
 };
 
-#define SCREEN_HEIGHT       2160
 #define SCREEN_WIDTH        3840
+#define SCREEN_HEIGHT       2160
+
+#define PLAYER_HEIGHT       65 * 2
+#define PLAYER_WIDTH        113 * 2
 
 #define TIME_PLAYER_ALIVE   10 // seconds
 
-#define PLAYER_MOVE_OFFSET  1
+#define PLAYER_MOVE_OFFSET  10
 #define PLAYER_MOVE_UP      1
 #define PLAYER_MOVE_DOWN    2
-#define PLAYER_MOVE_LEFT    3
-#define PLAYER_MOVE_RIGHT   4
+#define PLAYER_MOVE_LEFT    4
+#define PLAYER_MOVE_RIGHT   8
 
 /**
  * @brief IN_COMMANDS
@@ -51,7 +54,7 @@ struct Commands {
  * 11 serv - temps restant avant le debut de la partie (temps, booleen pour savoir si la partie a commence)
  * 13 serv - player joined game (player id)
  * 14 serv - player left game (player id)
- * 15 serv - missile destroyed (id, x, y)
+ * 15 serv - missile destroyed (id, type, x, y)
  */
 #define OUT_COMMANDS { \
     {1, {INT}, 4}, \

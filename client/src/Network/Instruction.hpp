@@ -20,8 +20,8 @@ struct Commands {
 #define PLAYER_MOVE_OFFSET  1
 #define PLAYER_MOVE_UP      1
 #define PLAYER_MOVE_DOWN    2
-#define PLAYER_MOVE_LEFT    3
-#define PLAYER_MOVE_RIGHT   4
+#define PLAYER_MOVE_LEFT    4
+#define PLAYER_MOVE_RIGHT   8
 
 /**
  * @brief IN_COMMANDS

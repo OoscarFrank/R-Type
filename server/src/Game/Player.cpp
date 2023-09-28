@@ -9,25 +9,35 @@ Player::Player(Room &room, std::shared_ptr<Client> client, u_char id):
     _pos(0, 0),
     _id(id),
     _score(0)
-{}
+{
+    _timerMissileRefresh = NOW;
+    _timerTotMissilesRefresh = 0;
+}
 
 void Player::fireMissile(size_t &missilesIds)
 {
-    ++missilesIds;
-    _missiles.push_back(std::make_unique<Missiles>(_pos.first, _pos.second, missilesIds, Missiles::ALlY, _room));
-    // (_room.*_sendToAll)("Missile fired");
-    //! mettre bin pour missile fired (this->_room.getBroadcastStream()...etc)
-    
+    if (NOW - _lastFire >= FIRE_TIME) {
+        ++missilesIds;
+        _missiles.push_back(std::make_unique<Missiles>(_pos.first + PLAYER_WIDTH, _pos.second + PLAYER_HEIGHT / 2, missilesIds, Missiles::ALlY, _room));
+        _lastFire = NOW;
+    }
 }
 
 void Player::refreshMissiles()
 {
-    for (auto i = _missiles.begin(); i != _missiles.end(); i++) {
-        if (!(**i).Refresh()) {
-            _missiles.erase(i);
-            i--;
+    _timerTotMissilesRefresh += NOW - _timerMissileRefresh;
+
+    while (_timerTotMissilesRefresh >= MISSILE_PROGRESS_TIME) {
+        for (auto i = _missiles.begin(); i != _missiles.end(); i++) {
+            if (!(**i).Refresh()) {
+                _missiles.erase(i);
+                i--;
+            }
         }
+        _timerTotMissilesRefresh -= MISSILE_PROGRESS_TIME;
     }
+    _timerMissileRefresh = NOW;
+    
 }
 
 void Player::move(int dx, int dy)
@@ -59,4 +69,14 @@ u_char Player::id() const
 int Player::score() const
 {
     return _score;
+}
+
+size_t Player::getLastMove()
+{
+    return _lastMove;
+}
+
+void Player::setLastMove(size_t lastMove)
+{
+    this->_lastMove = lastMove;
 }

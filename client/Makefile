@@ -5,7 +5,7 @@
 ## Makefile
 ##
 
-NAME    =    r-type_client
+NAME    =    ../r-type_client
 
 # src
 SRC = $(shell find . -type f -name "*.cpp")
@@ -31,7 +31,7 @@ CFLAGS += -std=c++2a -Wall -Wextra -lsfml-graphics -lsfml-window -lsfml-system -
 
 # Flags macOS
 ifeq ($(UNAME_S),Darwin)
-    CFLAGS += -I/opt/homebrew/Cellar/sfml/2.6.0/include -L/opt/homebrew/Cellar/sfml/2.6.0/lib
+    CFLAGS += -I/opt/homebrew/Cellar/sfml/2.6.0/include -L/opt/homebrew/Cellar/sfml/2.6.0/lib -I/opt/homebrew/Cellar/asio/1.28.1/include
 endif
 
 RESET    =    \033[0m

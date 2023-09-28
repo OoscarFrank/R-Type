@@ -30,6 +30,8 @@ class Player {
         const std::vector<std::unique_ptr<Missiles>> &missiles() const;
         u_char id() const;
         int score() const;
+        size_t getLastMove();
+        void setLastMove(size_t);
 
     protected:
     private:
@@ -39,5 +41,10 @@ class Player {
         std::vector<std::unique_ptr<Missiles>> _missiles;
         u_char _id;
         int _score;
+        size_t _lastMove;
+        size_t _lastFire;
+
+        size_t _timerTotMissilesRefresh;
+        size_t _timerMissileRefresh;
 
 };

@@ -17,6 +17,7 @@ public:
 
     public:
         Packet(const Stream &data, int instruction);
+        Packet();
         ~Packet();
         int getInstruction() const;
         Stream &getData();
@@ -29,6 +30,7 @@ public:
     void send();
     void read();
     Stream &getStreamOut();
+    Queue<Network::Packet> &getQueueIn();
     std::pair<size_t, Stream> getNextInst();
 
     class ReadError : public std::exception
@@ -37,6 +39,7 @@ public:
         std::string _message;
         const char *what() const noexcept override { return _message.c_str(); }
     };
+    std::thread _ReaderThread;
 
 
 private:
@@ -49,7 +52,6 @@ private:
     Stream _streamOut;
     unsigned char _instOut;
 
-    std::thread _ReaderThread;
     Stream _streamIn;
     Queue<Network::Packet> _queueIn;
 };

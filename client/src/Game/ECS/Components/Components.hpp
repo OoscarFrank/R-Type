@@ -6,3 +6,4 @@
 #include "VelocityComponent.hpp"
 #include "ControllableComponent.hpp"
 #include "ParallaxComponent.hpp"
+#include "MovableComponent.hpp"

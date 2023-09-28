@@ -7,6 +7,12 @@ namespace ECS {
     namespace systems {
         class AnimationSystem {
             public:
+            /**
+             * @brief Update animation of each entity with a texture rect component
+             * 
+             * @param ecs 
+             * @param deltaTime 
+             */
                 void update(Registry &ecs, float deltaTime) {
                     auto &textureRectComponents = ecs.get_components<components::TextureRectComponent>();
 

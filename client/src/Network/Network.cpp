@@ -94,7 +94,9 @@ Stream &Network::getStreamOut()
     return _streamOut;
 }
 
-
+Network::Packet::Packet()
+{
+}
 
 
 Network::Packet::Packet(const Stream &data, int instruction) : _data(data), _instruction(instruction)
@@ -117,3 +119,7 @@ Stream &Network::Packet::getData()
     return _data;
 }
 
+Queue<Network::Packet> &Network::getQueueIn()
+{
+    return _queueIn;
+}
