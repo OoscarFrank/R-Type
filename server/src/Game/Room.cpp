@@ -173,15 +173,15 @@ void Room::update()
             now = NOW;
         }
         _playersMutex.lock();
-        while (now - _lastMissileUpdate >= REFRESH_MISSILES) {
-            _lastMissileUpdate += REFRESH_MISSILES;
+        if (now - _lastMissileUpdate >= REFRESH_MISSILES) {
+            _lastMissileUpdate = now;
             for (auto i = _players.begin(); i != _players.end(); i++) {
                 (**i).refreshMissiles();
             }
             now = NOW;
         }
-        while (now - _lastPlayerUpdate >= REFRESH_PLAYERS) {
-            _lastPlayerUpdate += REFRESH_PLAYERS;
+        if (now - _lastPlayerUpdate >= REFRESH_PLAYERS) {
+            _lastPlayerUpdate = now;
             for (auto i = _players.begin(); i != _players.end(); i++) {
                 this->setInstBroadcast(0x03);
                 this->_broadcastStream.setDataChar((**i).id());
@@ -192,8 +192,9 @@ void Room::update()
             now = NOW;
         }
         if (now - _lastMonsterSpawn >= SPAWN_MONSTERS) {
+            _lastMonsterSpawn = now;
             this->addMonster(IMonster::LITTLE, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
-            _lastMonsterSpawn = NOW;
+            now = NOW;
         }
         for (auto i = _monsters.begin(); i != _monsters.end();) {
             (**i).refresh();

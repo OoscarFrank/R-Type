@@ -47,14 +47,14 @@ namespace game {
          * @param id 
          * @return entity_t 
          */
-            entity_t getMissileEntityFromId(unsigned char id);
+            entity_t getMissileEntityFromId(unsigned int id);
         /**
          * @brief Get the Ennemie Entity From Id object
          * 
          * @param id 
          * @return entity_t 
          */
-            entity_t getEnnemieEntityFromId(unsigned char id);
+            entity_t getEnnemieEntityFromId(unsigned int id);
             void sendMoveToServer();
 
         private:

@@ -55,7 +55,7 @@ entity_t Game::getPlayerEntityFromId(unsigned char id)
     return 0;
 }
 
-entity_t Game::getMissileEntityFromId(unsigned char id)
+entity_t Game::getMissileEntityFromId(unsigned int id)
 {
     for (auto &missile : this->_missiles) {
         if (missile.first == id)
@@ -64,7 +64,7 @@ entity_t Game::getMissileEntityFromId(unsigned char id)
     return 0;
 }
 
-entity_t Game::getEnnemieEntityFromId(unsigned char id)
+entity_t Game::getEnnemieEntityFromId(unsigned int id)
 {
     for (auto &ennemie : this->_ennemies) {
         if (ennemie.first == id)

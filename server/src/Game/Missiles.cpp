@@ -28,10 +28,11 @@ bool Missiles::Refresh()
         _room.sendBroadcast();
         return false;
     } else {
-        if (_type == ALlY)
-            _x += MISSILE_PROGRESS_STEP;
-        else
-            _x -= MISSILE_PROGRESS_STEP;
+        if (_type == ALlY) {
+            _x += ALLY_MISSILE_PROGRESS_STEP;
+        } else {
+            _x -= ENEMY_MISSILE_PROGRESS_STEP;
+        }
         _room.setInstBroadcast(4);
         _room.getBroadcastStream().setDataInt(_id);
         _room.getBroadcastStream().setDataUChar(_type);
