@@ -27,7 +27,7 @@ int AMonster::id() const
 void AMonster::fireMissile()
 {
     ++_room.getMissilesIds();
-    _missiles.push_back(std::make_unique<Missiles>(_pos.first, _pos.second, _room.getMissilesIds(), Missiles::ENEMY, _room));
+    _missiles.push_back(std::make_unique<Missiles>(_pos.first + PLAYER_WIDTH, _pos.second + PLAYER_HEIGHT / 2, _room.getMissilesIds(), Missiles::ENEMY, _room));
 }
 
 void AMonster::move(int dx, int dy)
@@ -40,6 +40,7 @@ void AMonster::move(int dx, int dy)
     out.setDataShort(_pos.first);
     out.setDataShort(_pos.second);
     _room.sendToAll(out);
+    // std::cout << "Monster " << _id << " moved to " << _pos.first << ", " << _pos.second << std::endl;
 }
 
 std::unique_ptr<IMonster> IMonster::create(Type type, Room &room, int id, int x, int y)

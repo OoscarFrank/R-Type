@@ -17,8 +17,12 @@ void Little::refresh()
     if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= 2) {
         move(-1, 0);
         _lastMove = now;
-        for (auto &missile: _missiles)
-            missile->Refresh();
+        for (auto i = _missiles.begin(); i != _missiles.end();) {
+            if (!(**i).Refresh())
+                i = _missiles.erase(i);
+            else
+                i++;
+        }
     }
 
 }

@@ -192,11 +192,15 @@ void Room::update()
             now = NOW;
         }
         if (now - _lastMonsterSpawn >= SPAWN_MONSTERS) {
-            this->addMonster(IMonster::LITTLE, SCREEN_WIDTH, SCREEN_HEIGHT / 2);
+            this->addMonster(IMonster::LITTLE, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
             _lastMonsterSpawn = NOW;
         }
-        for (auto i = _monsters.begin(); i != _monsters.end(); i++) {
+        for (auto i = _monsters.begin(); i != _monsters.end();) {
             (**i).refresh();
+            if ((**i).position().first < 0)
+                i = _monsters.erase(i);
+            else
+                i++;
         }
         _playersMutex.unlock();
     } else {

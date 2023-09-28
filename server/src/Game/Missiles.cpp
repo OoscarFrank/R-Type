@@ -19,7 +19,7 @@ Missiles::~Missiles()
 
 bool Missiles::Refresh()
 {
-    if (_x > SCREEN_WIDTH) {
+    if (_x > SCREEN_WIDTH || _x < 0) {
         _room.setInstBroadcast(15);
         _room.getBroadcastStream().setDataInt(_id);
         _room.getBroadcastStream().setDataUChar(_type);
@@ -28,7 +28,10 @@ bool Missiles::Refresh()
         _room.sendBroadcast();
         return false;
     } else {
-        _x += MISSILE_PROGRESS_STEP;
+        if (_type == ALlY)
+            _x += MISSILE_PROGRESS_STEP;
+        else
+            _x -= MISSILE_PROGRESS_STEP;
         _room.setInstBroadcast(4);
         _room.getBroadcastStream().setDataInt(_id);
         _room.getBroadcastStream().setDataUChar(_type);
