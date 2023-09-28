@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 project(server)
 
-set(ASIO_DIR ../libs/asio/include)
+set(ASIO_DIR ../extern/asio/include)
 
 find_path(ASIO_INCLUDE_DIR asio.hpp
     PATHS ${ASIO_DIR}
