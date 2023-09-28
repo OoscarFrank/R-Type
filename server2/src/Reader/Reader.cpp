@@ -14,7 +14,7 @@ void Reader::Clock()
 {
     asio::ip::udp::endpoint sender;
     bool pass = false;
-    std::pair<size_t, std::string> tmpInst;
+    std::pair<size_t, Stream> tmpInst;
     enum
     {
         max_length = 1024
@@ -26,13 +26,12 @@ void Reader::Clock()
         pass = false;
         asio::error_code ec;
         size_t len = this->_socket.receive_from(asio::buffer(data, max_length), sender, 0, ec);
-        data[len] = '\0';
 
         for (auto i = this->_clients.begin(); i != this->_clients.end(); i++)
         {
             if ((**i).getEndpoint() == sender) {
                 pass = true;
-                (**i).pushBuffer(std::string(data));
+                (**i).getStreamIn().setDataCharArray(data, len);
                 while ((tmpInst = (**i).getNextInst()).first != 0) {
                     _queueIn.push(Reader::Packet(*i, tmpInst.second, tmpInst.first));
                 }
@@ -43,7 +42,7 @@ void Reader::Clock()
         if (!pass)
         {
             this->_clients.push_back(std::make_shared<Client>(_socket, sender));
-            this->_clients.back()->pushBuffer(std::string(data));
+            this->_clients.back()->getStreamIn().setDataCharArray(data, len);
             while ((tmpInst = this->_clients.back()->getNextInst()).first != 0) {
                 _queueIn.push(Reader::Packet(this->_clients.back(), tmpInst.second, tmpInst.first));
             }
@@ -58,7 +57,7 @@ void Reader::Clock()
     }
 }
 
-Reader::Packet::Packet(std::shared_ptr<Client> client, const std::string &data, int instruction) : _client(client), _data(data), _instruction(instruction)
+Reader::Packet::Packet(std::shared_ptr<Client> client, const Stream &data, int instruction) : _client(client), _data(data), _instruction(instruction)
 {
 }
 
@@ -71,40 +70,12 @@ int Reader::Packet::getInstruction() const
     return _instruction;
 }
 
-const std::string &Reader::Packet::getData() const
-{
-    return _data;
-}
-
 std::shared_ptr<Client> Reader::Packet::getClient() const
 {
     return _client;
 }
 
-int Reader::Packet::getDataInt()
+Stream &Reader::Packet::getData()
 {
-    int out = 0;
-    out += this->_data[0];
-    out += this->_data[1] << 8;
-    out += this->_data[2] << 16;
-    out += this->_data[3] << 24;
-    this->_data = this->_data.substr(4);
-    return out;
-}
-
-short Reader::Packet::getDataShort()
-{
-    short out = 0;
-    out += this->_data[0];
-    out += this->_data[1] << 8;
-    this->_data = this->_data.substr(2);
-    return out;
-}
-
-char Reader::Packet::getDataChar()
-{
-    char out = 0;
-    out += this->_data[0];
-    this->_data = this->_data.substr(1);
-    return out;
+    return _data;
 }

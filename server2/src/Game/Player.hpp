@@ -6,13 +6,14 @@
 #include "../Client.hpp"
 #include "Missiles.hpp"
 #include "../Utils/Instruction.hpp"
+#include "../Utils/Stream.hpp"
+
 
 class Room;
-using Notifier = void (Room::*)(const std::string &);
 
 class Player {
     public:
-        Player(Room &room, Notifier sendToAll, std::shared_ptr<Client> client, u_char id);
+        Player(Room &room, std::shared_ptr<Client> client, u_char id);
         ~Player() = default;
 
         Player(const Player &player) = delete;
@@ -33,7 +34,6 @@ class Player {
     protected:
     private:
         Room &_room;
-        Notifier _sendToAll;
         std::shared_ptr<Client> _client;
         std::pair<int, int> _pos;
         std::vector<std::unique_ptr<Missiles>> _missiles;

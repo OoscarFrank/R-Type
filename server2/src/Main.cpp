@@ -12,8 +12,8 @@ void router(Reader::Packet packet, Game &game)
         switch (packet.getInstruction()) {
             case 2:
                 {
-                    char move = packet.getDataChar();
-                    char nbr = packet.getDataChar();
+                    char move = packet.getData().getDataChar();
+                    char nbr = packet.getData().getDataChar();
                     game.getRoom(packet.getClient()).movePlayer(packet.getClient(), move, nbr);
                 }
                 break;
@@ -24,7 +24,7 @@ void router(Reader::Packet packet, Game &game)
                 }
                 break;
             case 8:
-                game.createRoom(packet, ((packet.getDataChar() == 1) ? true : false));
+                game.createRoom(packet, ((packet.getData().getDataChar() == 1) ? true : false));
                 break;
             case 9:
                 game.searchRoom(packet);

@@ -21,19 +21,19 @@ bool Missiles::Refresh()
 {
     if (_x > SCREEN_WIDTH) {
         _room.setInstBroadcast(15);
-        _room.catIntBroadcast(_id);
-        _room.catCharBroadcast(_type);
-        _room.catShortBroadcast(_x);
-        _room.catShortBroadcast(_y);
+        _room.getBroadcastStream().setDataInt(_id);
+        _room.getBroadcastStream().setDataUChar(_type);
+        _room.getBroadcastStream().setDataShort(_x);
+        _room.getBroadcastStream().setDataShort(_y);
         _room.sendBroadcast();
         return false;
     } else {
         _x += MISSILE_PROGRESS_STEP;
         _room.setInstBroadcast(4);
-        _room.catIntBroadcast(_id);
-        _room.catCharBroadcast(_type);
-        _room.catShortBroadcast(_x);
-        _room.catShortBroadcast(_y);
+        _room.getBroadcastStream().setDataInt(_id);
+        _room.getBroadcastStream().setDataUChar(_type);
+        _room.getBroadcastStream().setDataShort(_x);
+        _room.getBroadcastStream().setDataShort(_y);
         _room.sendBroadcast();
         return true;
     }

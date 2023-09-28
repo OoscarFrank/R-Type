@@ -32,7 +32,7 @@ struct Commands {
  * 12 gui - ping
  *
  */
-#define IN_COMMANDS { \
+#define OUT_COMMANDS { \
     {2, {CHAR, CHAR}, 2}, \
     {5, {}, 0}, \
     {8, {CHAR}, 1}, \
@@ -53,16 +53,16 @@ struct Commands {
  * 14 serv - player left game (player id)
  * 15 serv - missile destroyed (id, x, y)
  */
-#define OUT_COMMANDS { \
+#define IN_COMMANDS { \
     {1, {INT}, 4}, \
     {3, {CHAR, SHORT, SHORT}, 5}, \
     {4, {INT, CHAR, SHORT, SHORT}, 9}, \
     {6, {INT}, 4}, \
     {7, {CHAR, SHORT, SHORT}, 5}, \
     {10, {SHORT, CHAR}, 3}, \
-    {11, {INT, CHAR}, 5} \
+    {11, {INT, CHAR}, 5}, \
     {13, {CHAR}, 1}, \
-    {14, {CHAR}, 1} \
+    {14, {CHAR}, 1}, \
     {15, {INT,CHAR, SHORT, SHORT}, 9} \
 };
 
