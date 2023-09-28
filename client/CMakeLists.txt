@@ -1,20 +1,10 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.23)
 
 project(client VERSION 1.0)
 
-include(FetchContent)
+set(SFML_BINARY_DIR ${CMAKE_BINARY_DIR}/sfml_build)
 
-set(BUILD_SHARED_LIBS OFF)
-FetchContent_Declare(
-	SFML
-	GIT_REPOSITORY https://github.com/SFML/SFML.git
-	GIT_TAG 2.5.1
-)
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED true)
-
-FetchContent_MakeAvailable(SFML)
+add_subdirectory(../libs/submodules ${SFML_BINARY_DIR})
 
 file(GLOB SOURCES "src/*.cpp" "src/**/*.cpp" "src/**/**/*.cpp" "src/**/**/**/*.cpp" "src/**/**/**/**/*.cpp")
 
@@ -28,7 +18,14 @@ add_executable(
 	${SOURCES}
 )
 
+target_compile_features(client PUBLIC cxx_std_20)
+target_compile_options(client PRIVATE -std=c++20)
+
 target_link_libraries(
 	client
+	sfml-system
+	sfml-window
 	sfml-graphics
+	sfml-audio
+	sfml-network
 )

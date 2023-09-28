@@ -4,11 +4,11 @@ using namespace game;
 
 Loader::Loader()
 {
-    loadTexture("./client/assets/parallax/background.png", Loader::toLoad::ParallaxFirstbkg);
-    loadTexture("./client/assets/parallax/background2.png", Loader::toLoad::ParallaxSecondbkg);
-    loadTexture("./client/assets/entity/player/move.png", Loader::toLoad::Player);
-    loadTexture("./client/assets/entity/rocket.png", Loader::toLoad::Rocket);
-    loadTexture("./client/assets/entity/monsters/monster1.png", Loader::toLoad::Monster1);
+    loadTexture("background.png", Loader::toLoad::ParallaxFirstbkg);
+    loadTexture("background2.png", Loader::toLoad::ParallaxSecondbkg);
+    loadTexture("player/move.png", Loader::toLoad::Player);
+    loadTexture("rocket.png", Loader::toLoad::Rocket);
+    loadTexture("monsters/monster1.png", Loader::toLoad::Monster1);
 }
 
 Loader::~Loader()
