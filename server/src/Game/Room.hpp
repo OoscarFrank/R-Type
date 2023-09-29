@@ -50,15 +50,17 @@ class Room
         unsigned int getMaxPlayer() const;
         void addPlayer(std::shared_ptr<Client> client);
         void movePlayer(std::shared_ptr<Client> client, char move, char nbr);
-        void removePlayer(std::shared_ptr<Client> client);
         bool isClientInRoom(std::shared_ptr<Client> client);
         Player &getPlayer(std::shared_ptr<Client> client);
         void sendToAll(const Stream &stream);
         void sendBroadcast();
-        void startGame();
         Stream &getBroadcastStream();
         void setInstBroadcast(unsigned char inst);
         size_t &getMissilesIds();
+
+    private:
+        void removePlayer(std::shared_ptr<Client> client);
+        void startGame();
         void addMonster(IEntity::Type type, int x, int y);
         void checkCollisionPlayer();
         void checkCollisionMonsters();

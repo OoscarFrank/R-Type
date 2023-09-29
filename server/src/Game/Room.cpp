@@ -81,6 +81,8 @@ void Room::movePlayer(std::shared_ptr<Client> client, char move, char nbr)
 {
     auto now = std::chrono::system_clock::now();
     Player &player = getPlayer(client);
+
+    std::unique_lock<std::mutex> lock(_playersMutex);
     if (std::chrono::duration_cast<std::chrono::milliseconds>(now - player.lastMoveTime()).count() >= MOVE_TIME) {
         player.setLastMoveTime(now);
         for (int i = 0; i < nbr; i++) {
@@ -113,6 +115,8 @@ void Room::removePlayer(std::shared_ptr<Client> client)
 
 bool Room::isClientInRoom(std::shared_ptr<Client> client)
 {
+    std::unique_lock<std::mutex> lock(_playersMutex);
+
     for (auto i = _players.begin(); i != _players.end(); i++) {
         if ((**i).client() == client) {
             return true;
@@ -123,6 +127,8 @@ bool Room::isClientInRoom(std::shared_ptr<Client> client)
 
 Player &Room::getPlayer(std::shared_ptr<Client> client)
 {
+    std::unique_lock<std::mutex> lock(_playersMutex);
+
     for (auto i = _players.begin(); i != _players.end(); i++) {
         if ((**i).client() == client) {
             return **i;
@@ -262,7 +268,7 @@ void Room::checkCollisionPlayer()
     for (auto i = _players.begin(); i != _players.end(); i++) {
         for (auto j = _monsters.begin(); j != _monsters.end(); j++) {
             if ((**j).collide(**i)) {
-                _players.erase(i);
+                removePlayer((**i).client());
                 return;
             }
         }
