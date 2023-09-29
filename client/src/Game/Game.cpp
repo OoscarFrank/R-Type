@@ -64,11 +64,11 @@ entity_t Game::getMissileEntityFromId(unsigned int id)
     return 0;
 }
 
-entity_t Game::getEnnemieEntityFromId(unsigned int id)
+entity_t Game::getEnnemiEntityFromId(unsigned int id)
 {
-    for (auto &ennemie : this->_ennemies) {
-        if (ennemie.first == id)
-            return ennemie.second;
+    for (auto &Ennemi : this->_ennemies) {
+        if (Ennemi.first == id)
+            return Ennemi.second;
     }
     return 0;
 }
@@ -153,8 +153,9 @@ void Game::update()
             unsigned short y = packet.getData().getDataUShort();
             y *= _resMult;
 
-            entity_t res = getMissileEntityFromId(id);
+            (void)type;
 
+            entity_t res = getMissileEntityFromId(id);
             if (res == 0) {
                 entity_t newEntity = this->_factory.createMissile(x, y, this->_manager.getTexture(Loader::Loader::Rocket));
                 this->_missiles.push_back(std::make_pair(id, newEntity));
@@ -170,10 +171,10 @@ void Game::update()
             unsigned short y = packet.getData().getDataUShort();
             y *= _resMult;
 
-            entity_t res = getEnnemieEntityFromId(id);
+            entity_t res = getEnnemiEntityFromId(id);
 
             if (res == 0) {
-                entity_t newEntity = this->_factory.createEnnemie(x, y, this->_manager.getTexture(Loader::Loader::Player_move1)); // TO REPLACE
+                entity_t newEntity = this->_factory.createEnnemi(x, y, this->_manager.getTexture(Loader::Loader::Monster1)); // TO REPLACE
                 this->_ennemies.push_back(std::make_pair(id, newEntity));
             } else {
                 this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(res, x, y));
