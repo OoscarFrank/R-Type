@@ -19,8 +19,8 @@ void router(Reader::Packet packet, Game &game)
                 break;
             case 5:
                 {
-                Room &tmpRoom = game.getRoom(packet.getClient());
-                tmpRoom.getPlayer(packet.getClient()).fireMissile(tmpRoom.getMissilesIds());
+                    Room &tmpRoom = game.getRoom(packet.getClient());
+                    tmpRoom.getPlayer(packet.getClient()).fireMissile(Entities::Missile::Type::ALLY);
                 }
                 break;
             case 8:

@@ -3,9 +3,8 @@
 #include <iostream>
 #include <vector>
 #include <thread>
-#include "Player.hpp"
+#include "Entity.hpp"
 #include "../Client.hpp"
-#include "Monsters/Monster.hpp"
 
 class Room
 {
@@ -13,8 +12,8 @@ class Room
         bool _started;
         std::thread _thread;
         std::mutex _playersMutex;
-        std::vector<std::unique_ptr<Player>> _players;
-        std::vector<std::unique_ptr<IMonster>> _monsters;
+        std::vector<std::unique_ptr<Entities::Player>> _players;
+        std::vector<std::unique_ptr<Entities::IEntity>> _monsters;
         unsigned short _id;
         unsigned int _maxPlayer;
         unsigned int _progress;
@@ -51,12 +50,12 @@ class Room
         void movePlayer(std::shared_ptr<Client> client, char move, char nbr);
         void removePlayer(std::shared_ptr<Client> client);
         bool isClientInRoom(std::shared_ptr<Client> client);
-        Player &getPlayer(std::shared_ptr<Client> client);
+        Entities::Player &getPlayer(std::shared_ptr<Client> client);
         void sendToAll(const Stream &stream);
         void sendBroadcast();
         void startGame();
         Stream &getBroadcastStream();
         void setInstBroadcast(unsigned char inst);
         size_t &getMissilesIds();
-        void addMonster(IMonster::Type type, int x, int y);
+        void addMonster(Entities::IEntity::Type type, int x, int y);
 };

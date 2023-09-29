@@ -72,26 +72,29 @@ void Room::addPlayer(std::shared_ptr<Client> client)
     client->getStreamOut().setDataShort(_id);
     client->getStreamOut().setDataChar(newId);
     client->send();
-    _players.push_back(std::make_unique<Player>(*this, client, newId));
+    _players.push_back(std::make_unique<Entities::Player>(*this, client, newId, 0, 0));
 
     _lastJoin = NOW;
 }
 
 void Room::movePlayer(std::shared_ptr<Client> client, char move, char nbr)
 {
-    Player &player = getPlayer(client);
-    if (NOW - player.getLastMove() >= MOVE_TIME) {
+    auto now = std::chrono::system_clock::now();
+    Entities::Player &player = getPlayer(client);
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - player.lastMoveTime()).count() >= MOVE_TIME) {
+        player.setLastMoveTime(now);
         for (int i = 0; i < nbr; i++) {
-            if (move & PLAYER_MOVE_UP && player.position().second > 0)
+            if (move & PLAYER_MOVE_UP)
                 player.move(0, -PLAYER_MOVE_OFFSET);
-            if (move & PLAYER_MOVE_DOWN && player.position().second < SCREEN_HEIGHT - PLAYER_HEIGHT)
+            if (move & PLAYER_MOVE_DOWN)
                 player.move(0, PLAYER_MOVE_OFFSET);
-            if (move & PLAYER_MOVE_LEFT && player.position().first > 0)
+            if (move & PLAYER_MOVE_LEFT)
                 player.move(-PLAYER_MOVE_OFFSET, 0);
-            if (move & PLAYER_MOVE_RIGHT && player.position().first < SCREEN_WIDTH - PLAYER_WIDTH)
+            if (move & PLAYER_MOVE_RIGHT)
                 player.move(PLAYER_MOVE_OFFSET, 0);
         }
-        player.setLastMove(NOW);
+        if (move && nbr)
+            player.sendPos();
     }
 }
 
@@ -118,7 +121,7 @@ bool Room::isClientInRoom(std::shared_ptr<Client> client)
     return false;
 }
 
-Player &Room::getPlayer(std::shared_ptr<Client> client)
+Entities::Player &Room::getPlayer(std::shared_ptr<Client> client)
 {
     for (auto i = _players.begin(); i != _players.end(); i++) {
         if ((**i).client() == client) {
@@ -173,32 +176,32 @@ void Room::update()
             now = NOW;
         }
         _playersMutex.lock();
-        if (now - _lastMissileUpdate >= REFRESH_MISSILES) {
-            _lastMissileUpdate = now;
-            for (auto i = _players.begin(); i != _players.end(); i++) {
-                (**i).refreshMissiles();
-            }
-            now = NOW;
+        for (auto i = _players.begin(); i != _players.end(); i++) {
+            (**i).refresh();
         }
-        if (now - _lastPlayerUpdate >= REFRESH_PLAYERS) {
-            _lastPlayerUpdate = now;
-            for (auto i = _players.begin(); i != _players.end(); i++) {
-                this->setInstBroadcast(0x03);
-                this->_broadcastStream.setDataChar((**i).id());
-                this->_broadcastStream.setDataShort((**i).position().first);
-                this->_broadcastStream.setDataShort((**i).position().second);
-                this->sendBroadcast();
-            }
-            now = NOW;
-        }
+        // if (now - _lastMissileUpdate >= REFRESH_MISSILES) {
+        //     _lastMissileUpdate = now;
+        //     now = NOW;
+        // }
+        // if (now - _lastPlayerUpdate >= REFRESH_PLAYERS) {
+        //     _lastPlayerUpdate = now;
+        //     for (auto i = _players.begin(); i != _players.end(); i++) {
+        //         this->setInstBroadcast(0x03);
+        //         this->_broadcastStream.setDataChar((**i).id());
+        //         this->_broadcastStream.setDataShort((**i).position().first);
+        //         this->_broadcastStream.setDataShort((**i).position().second);
+        //         this->sendBroadcast();
+        //     }
+        //     now = NOW;
+        // }
         if (now - _lastMonsterSpawn >= SPAWN_MONSTERS) {
             _lastMonsterSpawn = now;
-            this->addMonster(IMonster::LITTLE, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
+            this->addMonster(Entities::IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
             now = NOW;
         }
         for (auto i = _monsters.begin(); i != _monsters.end();) {
             (**i).refresh();
-            if ((**i).position().first < 0)
+            if ((**i).isOutOfScreen())
                 i = _monsters.erase(i);
             else
                 i++;
@@ -233,6 +236,10 @@ void Room::startGame()
     this->_broadcastStream.setDataInt(0);
     this->_broadcastStream.setDataChar(1);
     this->sendBroadcast();
+
+    for (auto i = _players.begin(); i != _players.end(); i++) {
+        (**i).sendPos();
+    }
 }
 
 Stream &Room::getBroadcastStream()
@@ -246,8 +253,17 @@ void Room::setInstBroadcast(unsigned char inst)
     _broadcastInst = inst;
 }
 
-void Room::addMonster(IMonster::Type type, int x, int y)
+void Room::addMonster(Entities::IEntity::Type type, int x, int y)
 {
-    _monsters.push_back(IMonster::create(type, *this, ++_monstersIds, x, y));
+    if (type == Entities::IEntity::Type::MISSILE || type == Entities::IEntity::Type::PLAYER)
+        throw std::runtime_error("Invalid monster type");
+
+    switch (type) {
+        case Entities::IEntity::Type::LITTLE_MONSTER:
+            _monsters.push_back(std::make_unique<Entities::LittleMonster>(*this, ++_monstersIds, x, y));
+            break;
+        default:
+            return;
+    }
     std::cout << "Monster spawned in room " << static_cast<int>(_id) << std::endl;
 }
