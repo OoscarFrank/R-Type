@@ -1,5 +1,6 @@
 r-type_client
 extern/
+Asio/
 *.o
 .vscode/
 logs/
