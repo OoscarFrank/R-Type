@@ -72,7 +72,7 @@ void Room::addPlayer(std::shared_ptr<Client> client)
     client->getStreamOut().setDataShort(_id);
     client->getStreamOut().setDataChar(newId);
     client->send();
-    _players.push_back(std::make_unique<Entities::Player>(*this, client, newId, 0, 0));
+    _players.push_back(std::make_unique<Player>(*this, client, newId, 0, 0));
 
     _lastJoin = NOW;
 }
@@ -80,7 +80,7 @@ void Room::addPlayer(std::shared_ptr<Client> client)
 void Room::movePlayer(std::shared_ptr<Client> client, char move, char nbr)
 {
     auto now = std::chrono::system_clock::now();
-    Entities::Player &player = getPlayer(client);
+    Player &player = getPlayer(client);
     if (std::chrono::duration_cast<std::chrono::milliseconds>(now - player.lastMoveTime()).count() >= MOVE_TIME) {
         player.setLastMoveTime(now);
         for (int i = 0; i < nbr; i++) {
@@ -121,7 +121,7 @@ bool Room::isClientInRoom(std::shared_ptr<Client> client)
     return false;
 }
 
-Entities::Player &Room::getPlayer(std::shared_ptr<Client> client)
+Player &Room::getPlayer(std::shared_ptr<Client> client)
 {
     for (auto i = _players.begin(); i != _players.end(); i++) {
         if ((**i).client() == client) {
@@ -179,32 +179,17 @@ void Room::update()
         for (auto i = _players.begin(); i != _players.end(); i++) {
             (**i).refresh();
         }
-        // if (now - _lastMissileUpdate >= REFRESH_MISSILES) {
-        //     _lastMissileUpdate = now;
-        //     now = NOW;
-        // }
-        // if (now - _lastPlayerUpdate >= REFRESH_PLAYERS) {
-        //     _lastPlayerUpdate = now;
-        //     for (auto i = _players.begin(); i != _players.end(); i++) {
-        //         this->setInstBroadcast(0x03);
-        //         this->_broadcastStream.setDataChar((**i).id());
-        //         this->_broadcastStream.setDataShort((**i).position().first);
-        //         this->_broadcastStream.setDataShort((**i).position().second);
-        //         this->sendBroadcast();
-        //     }
-        //     now = NOW;
-        // }
-        if (now - _lastMonsterSpawn >= SPAWN_MONSTERS) {
-            _lastMonsterSpawn = now;
-            this->addMonster(Entities::IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
-            now = NOW;
-        }
         for (auto i = _monsters.begin(); i != _monsters.end();) {
             (**i).refresh();
             if ((**i).isOutOfScreen())
                 i = _monsters.erase(i);
             else
                 i++;
+        }
+        if (now - _lastMonsterSpawn >= SPAWN_MONSTERS) {
+            _lastMonsterSpawn = now;
+            this->addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
+            now = NOW;
         }
         _playersMutex.unlock();
     } else {
@@ -253,14 +238,14 @@ void Room::setInstBroadcast(unsigned char inst)
     _broadcastInst = inst;
 }
 
-void Room::addMonster(Entities::IEntity::Type type, int x, int y)
+void Room::addMonster(IEntity::Type type, int x, int y)
 {
-    if (type == Entities::IEntity::Type::MISSILE || type == Entities::IEntity::Type::PLAYER)
+    if (type == IEntity::Type::MISSILE || type == IEntity::Type::PLAYER)
         throw std::runtime_error("Invalid monster type");
 
     switch (type) {
-        case Entities::IEntity::Type::LITTLE_MONSTER:
-            _monsters.push_back(std::make_unique<Entities::LittleMonster>(*this, ++_monstersIds, x, y));
+        case IEntity::Type::LITTLE_MONSTER:
+            _monsters.push_back(std::make_unique<LittleMonster>(*this, ++_monstersIds, x, y));
             break;
         default:
             return;
