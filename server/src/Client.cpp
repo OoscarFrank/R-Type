@@ -1,5 +1,6 @@
 #include "Client.hpp"
 #include "Utils/Instruction.hpp"
+#include "Utils/Scheduling.hpp"
 #include <bitset>
 
 Client::Client(asio::ip::udp::socket &socket, asio::ip::udp::endpoint endpoint): _socket(socket)
@@ -69,7 +70,7 @@ void Client::send()
 
 bool Client::isAlive()
 {
-    if (std::chrono::system_clock::now() - _lastPing > std::chrono::seconds(TIME_PLAYER_ALIVE))
+    if (std::chrono::system_clock::now() - _lastPing > std::chrono::seconds(PLAYER_ALIVE_MAX_TIME))
         return false;
     return true;
 }

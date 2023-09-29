@@ -26,8 +26,8 @@ void Missile::refresh()
 {
     auto now = std::chrono::system_clock::now();
 
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= 5) { //TODO mettre un define pour le temps de déplacement
-        move(_type == Missile::Type::ALLY ? ALLY_MISSILE_PROGRESS_STEP : -ENEMY_MISSILE_PROGRESS_STEP, 0);
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= MISSILES_REFRESH_TIME) {
+        move(_type == Missile::Type::ALLY ? PLAYER_MISSILE_PROGRESS_STEP : -ENEMY_MISSILE_PROGRESS_STEP, 0);
         Stream out;
         out.setDataUChar(4);
         out.setDataInt(_id);

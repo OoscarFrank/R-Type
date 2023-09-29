@@ -66,7 +66,7 @@ void Player::fireMissile()
 {
     auto now = std::chrono::system_clock::now();
 
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= FIRE_TIME) {
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= PLAYER_FIRE_TIME) {
         ArmedEntity::fireMissile(Missile::Type::ALLY);
         _lastFire = now;
     }

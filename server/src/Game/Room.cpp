@@ -83,17 +83,17 @@ void Room::movePlayer(std::shared_ptr<Client> client, char move, char nbr)
     Player &player = getPlayer(client);
 
     std::unique_lock<std::mutex> lock(_playersMutex);
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - player.lastMoveTime()).count() >= MOVE_TIME) {
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - player.lastMoveTime()).count() >= PLAYER_MOVE_TIME) {
         player.setLastMoveTime(now);
         for (int i = 0; i < nbr; i++) {
             if (move & PLAYER_MOVE_UP)
-                player.move(0, -PLAYER_MOVE_OFFSET);
+                player.move(0, -PLAYER_PROGRESS_STEP);
             if (move & PLAYER_MOVE_DOWN)
-                player.move(0, PLAYER_MOVE_OFFSET);
+                player.move(0, PLAYER_PROGRESS_STEP);
             if (move & PLAYER_MOVE_LEFT)
-                player.move(-PLAYER_MOVE_OFFSET, 0);
+                player.move(-PLAYER_PROGRESS_STEP, 0);
             if (move & PLAYER_MOVE_RIGHT)
-                player.move(PLAYER_MOVE_OFFSET, 0);
+                player.move(PLAYER_PROGRESS_STEP, 0);
         }
         if (move && nbr)
             player.sendPos();
@@ -160,8 +160,8 @@ void Room::update()
 {
     size_t now = NOW;
     if (_started) {
-        while (now - _lastMapRefresh >= REFRESH_MAP) {
-            _lastMapRefresh += REFRESH_MAP;
+        while (now - _lastMapRefresh >= MAP_REFRESH_TIME) {
+            _lastMapRefresh += MAP_REFRESH_TIME;
             _progress += MAP_PROGRESS_STEP;
             this->setInstBroadcast(0x01);
             this->_broadcastStream.setDataInt(_progress);
@@ -183,7 +183,7 @@ void Room::update()
         checkCollisionPlayer();
         checkCollisionMonsters();
 
-        if (now - _lastMonsterSpawn >= SPAWN_MONSTERS) {
+        if (now - _lastMonsterSpawn >= ENEMY_SPAWN_TIME) {
             _lastMonsterSpawn = now;
             this->addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
             now = NOW;
@@ -191,13 +191,13 @@ void Room::update()
         _playersMutex.unlock();
     } else {
         _playersMutex.lock();
-        if (_players.size() == _maxPlayer || now - _lastJoin >= JOIN_TIMEOUT) {
+        if (_players.size() == _maxPlayer || now - _lastJoin >= TIMEOUT_START_GAME) {
             this->startGame();
         } else  {
-            while (now - _lastWaitMessage >= REFRESH_WAIT_MESSAGE) {
-                _lastWaitMessage += REFRESH_WAIT_MESSAGE;
+            while (now - _lastWaitMessage >= SEND_WAIT_MESSAGE_TIME) {
+                _lastWaitMessage += SEND_WAIT_MESSAGE_TIME;
                 this->setInstBroadcast(0x0b);
-                this->_broadcastStream.setDataInt(JOIN_TIMEOUT - (now - _lastJoin));
+                this->_broadcastStream.setDataInt(TIMEOUT_START_GAME - (now - _lastJoin));
                 this->_broadcastStream.setDataChar(_started);
                 this->sendBroadcast();
                 now = NOW;

@@ -18,11 +18,11 @@ void LittleMonster::refresh()
 {
     auto now = std::chrono::system_clock::now();
 
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= 1000) { //TODO mettre un define pour le temps de tir
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= ENEMY_FIRE_TIME) {
         fireMissile(Missile::Type::ENEMY);
         _lastFire = now;
     }
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= 2) { //TODO mettre un define pour le temps de déplacement
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= ENEMY_MOVE_TIME) {
         move(-1, 0);
         Stream out;
         out.setDataChar(7);
