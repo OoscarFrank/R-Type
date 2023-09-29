@@ -9,6 +9,11 @@ LittleMonster::LittleMonster(Room &room, int id, const std::pair<short, short> &
     ArmedEntity(room, id, pos, {LITTLE_MONSTER_WIDTH, LITTLE_MONSTER_HEIGHT})
 {}
 
+LittleMonster::~LittleMonster()
+{
+    //TODO: send to all that monster is dead
+}
+
 void LittleMonster::refresh()
 {
     auto now = std::chrono::system_clock::now();
