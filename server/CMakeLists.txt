@@ -25,10 +25,10 @@ find_package(Threads REQUIRED)
 add_executable(
 	server
 	${dir_src}
-    ${dir_game}
-    ${dir_pool}
-    ${dir_reader}
-    ${dir_utils}
+  ${dir_game}
+  ${dir_pool}
+  ${dir_reader}
+  ${dir_utils}
 )
 
 if(WIN32)

@@ -2,8 +2,14 @@ cmake_minimum_required(VERSION 3.23)
 
 project(client VERSION 1.0)
 
+set (CMAKE_CXX_STANDARD 17)
+
 set(ASIO_DIR ../Asio/asio/include)
-set(SFML_DIR ../SFML/include/SFML)
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+
+set(SFML_STATIC_LIBRARIES TRUE)
 
 find_path(ASIO_INCLUDE_DIR asio.hpp
     PATHS ${ASIO_DIR}
@@ -11,13 +17,6 @@ find_path(ASIO_INCLUDE_DIR asio.hpp
 )
 
 include_directories(${ASIO_INCLUDE_DIR})
-include_directories(${SFML_DIR})
-
-find_library(SFML_GRAPHICS_LIBRARY sfml-graphics HINTS ../SFML/lib)
-find_library(SFML_WINDOW_LIBRARY sfml-window HINTS ../SFML/lib)
-find_library(SFML_SYSTEM_LIBRARY sfml-system HINTS ../SFML/lib)
-find_library(SFML_SYSTEM_LIBRARY sfml-audio HINTS ../SFML/lib)
-find_library(SFML_SYSTEM_LIBRARY sfml-network HINTS ../SFML/lib)
 
 file(GLOB SOURCES "src/*.cpp" "src/**/*.cpp" "src/**/**/*.cpp" "src/**/**/**/*.cpp" "src/**/**/**/**/*.cpp")
 
@@ -29,20 +28,19 @@ file(COPY ${CMAKE_SOURCE_DIR}/assets/entity/player/ DESTINATION ${CMAKE_BINARY_D
 file(COPY ${CMAKE_SOURCE_DIR}/assets/entity/ DESTINATION ${CMAKE_BINARY_DIR}/assets/entity)
 file(COPY ${CMAKE_SOURCE_DIR}/assets/parallax/ DESTINATION ${CMAKE_BINARY_DIR}/assets/parallax)
 
+add_subdirectory(../extern/SFML extern/SFML_build)
+
 add_executable(
 	client
 	${SOURCES}
 )
 
-target_compile_features(client PUBLIC cxx_std_20)
-target_compile_options(client PRIVATE -std=c++20)
-
 target_link_libraries(
 	client
-	${SFML_SYSTEM_LIBRARY}
-	${SFML_WINDOW_LIBRARY}
-	${SFML_GRAPHICS_LIBRARY}
-	${SFML_SYSTEM_LIBRARY}
-	${SFML_SYSTEM_LIBRARY}
+	sfml-system
+    sfml-graphics
+	sfml-audio
+	sfml-window
+	sfml-network
 	Threads::Threads
 )
