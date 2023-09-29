@@ -5,7 +5,7 @@
 Room::Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom)
 {
     _id = id;
-    _playersIds = 1;
+    _playersIds = 0;
     _maxPlayer = 4;
     _progress = 0;
     _lastMapRefresh = 0;
@@ -61,7 +61,7 @@ void Room::addPlayer(std::shared_ptr<Client> client)
         if ((**i).client() == client)
             return;
 
-    u_char newId = _playersIds++;
+    u_char newId = ++_playersIds;
 
     setInstBroadcast(13);
     this->_broadcastStream.setDataChar(newId);
@@ -97,19 +97,6 @@ void Room::movePlayer(std::shared_ptr<Client> client, char move, char nbr)
         }
         if (move && nbr)
             player.sendPos();
-    }
-}
-
-void Room::removePlayer(std::shared_ptr<Client> client)
-{
-    for (auto i = _players.begin(); i != _players.end(); i++) {
-        if ((**i).client() == client) {
-            setInstBroadcast(14);
-            this->_broadcastStream.setDataChar((**i).id());
-            _players.erase(i);
-            sendBroadcast();
-            break;
-        }
     }
 }
 
@@ -159,8 +146,8 @@ void Room::refresh()
     while (true) {
         for (auto i = _players.begin(); i != _players.end(); i++) {
             if (!(**i).client()->isAlive()) {
-                removePlayer((**i).client());
-                std::cout << "Player disconnected in room " << _id << std::endl;
+                std::cout << "Player " << (**i).id() << " disconnected in room " << _id << std::endl;
+                _players.erase(i);
                 break;
             }
         }
@@ -260,7 +247,7 @@ void Room::addMonster(IEntity::Type type, int x, int y)
         default:
             return;
     }
-    std::cout << "Monster spawned in room " << static_cast<int>(_id) << std::endl;
+    std::cout << "Monster " << static_cast<u_int>(_monstersIds) << " spawned in room " << static_cast<int>(_id) << std::endl;
 }
 
 void Room::checkCollisionPlayer()
@@ -268,7 +255,8 @@ void Room::checkCollisionPlayer()
     for (auto i = _players.begin(); i != _players.end(); i++) {
         for (auto j = _monsters.begin(); j != _monsters.end(); j++) {
             if ((**j).collide(**i)) {
-                removePlayer((**i).client());
+                std::cout << "Player " << (**i).id() << " died in room " << _id << std::endl;
+                _players.erase(i);
                 return;
             }
         }

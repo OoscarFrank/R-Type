@@ -27,7 +27,10 @@ Player::Player(Room &room, std::shared_ptr<Client> client, int id, const std::pa
 
 Player::~Player()
 {
-    //TODO: send to all that player is dead
+    Stream out;
+    out.setDataUChar(14);
+    out.setDataUChar(static_cast<u_char>(_id));
+    _room.sendToAll(out);
 }
 
 void Player::refresh()

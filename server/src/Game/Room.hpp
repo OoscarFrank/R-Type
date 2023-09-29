@@ -59,7 +59,6 @@ class Room
         size_t &getMissilesIds();
 
     private:
-        void removePlayer(std::shared_ptr<Client> client);
         void startGame();
         void addMonster(IEntity::Type type, int x, int y);
         void checkCollisionPlayer();
