@@ -64,11 +64,11 @@ entity_t Game::getMissileEntityFromId(unsigned int id)
     return 0;
 }
 
-entity_t Game::getEnnemieEntityFromId(unsigned int id)
+entity_t Game::getEnnemiEntityFromId(unsigned int id)
 {
-    for (auto &ennemie : this->_ennemies) {
-        if (ennemie.first == id)
-            return ennemie.second;
+    for (auto &Ennemi : this->_ennemies) {
+        if (Ennemi.first == id)
+            return Ennemi.second;
     }
     return 0;
 }
@@ -79,16 +79,51 @@ void Game::update()
 
     while (this->_net.getQueueIn().tryPop(packet)) {
         if (packet.getInstruction() == 10) {
-        this->_roomId = packet.getData().getDataUShort();
+            this->_roomId = packet.getData().getDataUShort();
             this->_playerId = packet.getData().getDataUChar();
-            this->_manager.loadTexture("./client/assets/entity/player/move.png", Loader::toLoad::Player);
 
-            entity_t newEntity = this->_factory.createPlayer(-1000.0f, -1000.0f, this->_manager.getTexture(Loader::Loader::Player));
+            this->_manager.loadTexture("./client/assets/entity/player/player_move1.png", Loader::toLoad::Player_move1);
+
+            entity_t newEntity = this->_factory.createPlayer(-1000.0f, -1000.0f, this->_manager.getTexture(Loader::Loader::Player_move1));
             this->_players.push_back(std::make_pair(this->_playerId, newEntity));
             this->_playerEntity = newEntity;
 
             this->_manager.loadTexture("./client/assets/entity/rocket.png", Loader::toLoad::Rocket);
             this->_manager.loadTexture("./client/assets/entity/monsters/monster1.png", Loader::toLoad::Monster1);
+            this->_manager.loadTexture("./client/assets/entity/player/player_move1.png", Loader::toLoad::Player_move1);
+            this->_manager.loadTexture("./client/assets/entity/player/player_move2.png", Loader::toLoad::Player_move2);
+            this->_manager.loadTexture("./client/assets/entity/player/player_move3.png", Loader::toLoad::Player_move3);
+            this->_manager.loadTexture("./client/assets/entity/player/player_move4.png", Loader::toLoad::Player_move4);
+
+        }
+
+        if (packet.getInstruction() == 13) {
+            unsigned int id = static_cast<unsigned int>(packet.getData().getDataUChar());
+            const sf::Texture *texture = nullptr;
+
+            switch (id) {
+                case 1:
+                    texture = &this->_manager.getTexture(Loader::Loader::Player_move1);
+                    break;
+                case 2:
+                    texture = &this->_manager.getTexture(Loader::Loader::Player_move2);
+                    break;
+                case 3:
+                    texture = &this->_manager.getTexture(Loader::Loader::Player_move3);
+                    break;
+                case 4:
+                    texture = &this->_manager.getTexture(Loader::Loader::Player_move4);
+                    break;
+                default:
+                    texture = &this->_manager.getTexture(Loader::Loader::Player_move1);
+                    break;
+            }
+
+            if (texture != nullptr) {
+                entity_t newEntity = this->_factory.createPlayer(500.0f, 500.0f, *texture);
+                this->_players.push_back(std::make_pair(id, newEntity));
+                this->_playerEntity = newEntity;
+            }
         }
 
         if (packet.getInstruction() == 11) {
@@ -105,6 +140,11 @@ void Game::update()
             this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(this->getPlayerEntityFromId(id), x, y));
         }
 
+        if (packet.getInstruction() == 6) {
+            unsigned int score = packet.getData().getDataUInt();
+            std::cout << "Score: " << score << std::endl;
+        }
+
         if (packet.getInstruction() == 4) {
             unsigned int id = packet.getData().getDataUInt();
             unsigned char type = packet.getData().getDataUChar();
@@ -113,8 +153,9 @@ void Game::update()
             unsigned short y = packet.getData().getDataUShort();
             y *= _resMult;
 
-            entity_t res = getMissileEntityFromId(id);
+            (void)type;
 
+            entity_t res = getMissileEntityFromId(id);
             if (res == 0) {
                 entity_t newEntity = this->_factory.createMissile(x, y, this->_manager.getTexture(Loader::Loader::Rocket));
                 this->_missiles.push_back(std::make_pair(id, newEntity));
@@ -130,13 +171,29 @@ void Game::update()
             unsigned short y = packet.getData().getDataUShort();
             y *= _resMult;
 
-            entity_t res = getEnnemieEntityFromId(id);
+            entity_t res = getEnnemiEntityFromId(id);
 
             if (res == 0) {
-                entity_t newEntity = this->_factory.createEnnemie(x, y, this->_manager.getTexture(Loader::Loader::Player));
+                entity_t newEntity = this->_factory.createEnnemi(x, y, this->_manager.getTexture(Loader::Loader::Monster1)); // TO REPLACE
                 this->_ennemies.push_back(std::make_pair(id, newEntity));
             } else {
                 this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(res, x, y));
+            }
+        }
+
+        if (packet.getInstruction() == 15) {
+            unsigned int id = packet.getData().getDataUInt();
+            unsigned short x = packet.getData().getDataUShort();
+            x *= _resMult;
+            unsigned short y = packet.getData().getDataUShort();
+            y *= _resMult;
+
+            entity_t res = getMissileEntityFromId(id);
+
+            if (res != 0) {
+                this->_missiles.erase(std::remove_if(this->_missiles.begin(), this->_missiles.end(), [id](std::pair<unsigned int, entity_t> const &pair) {
+                    return pair.first == id;
+                }), this->_missiles.end());
             }
         }
     }
