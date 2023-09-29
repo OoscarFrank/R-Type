@@ -118,12 +118,7 @@ namespace Entities {
 
     void ArmedEntity::fireMissile(Missile::Type type)
     {
-        auto now = std::chrono::system_clock::now();
-
-        if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= FIRE_TIME) {
-            _missiles.push_back(std::make_unique<Missile>(_room, type, ++_room.getMissilesIds(), _pos.first + PLAYER_WIDTH, _pos.second + PLAYER_HEIGHT / 2));
-            _lastFire = now;
-        }
+        _missiles.push_back(std::make_unique<Missile>(_room, type, ++_room.getMissilesIds(), _pos.first + PLAYER_WIDTH, _pos.second + PLAYER_HEIGHT / 2));
     }
 
     // ---------------------------------------------------------------
@@ -179,6 +174,16 @@ namespace Entities {
         out.setDataShort(_pos.first);
         out.setDataShort(_pos.second);
         _room.sendToAll(out);
+    }
+
+    void Player::fireMissile()
+    {
+        auto now = std::chrono::system_clock::now();
+
+        if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= FIRE_TIME) {
+            ArmedEntity::fireMissile(Missile::Type::ALLY);
+            _lastFire = now;
+        }
     }
 
     const std::chrono::system_clock::time_point &Player::lastMoveTime() const

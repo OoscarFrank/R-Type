@@ -73,10 +73,10 @@ namespace Entities {
             virtual ~ArmedEntity() = default;
 
             virtual void refresh() = 0;
-            virtual void refreshMissiles();
-            virtual void fireMissile(Missile::Type type);
 
         protected:
+            virtual void refreshMissiles();
+            virtual void fireMissile(Missile::Type type);
             std::vector<std::unique_ptr<Missile>> _missiles;
             std::chrono::system_clock::time_point _lastFire;
     };
@@ -90,6 +90,7 @@ namespace Entities {
             virtual void refresh();
             virtual void move(short dx, short dy);
             virtual void sendPos();
+            virtual void fireMissile();
 
             const std::chrono::system_clock::time_point &lastMoveTime() const;
             void setLastMoveTime(const std::chrono::system_clock::time_point &lastMoveTime);
