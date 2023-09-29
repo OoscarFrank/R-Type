@@ -107,6 +107,8 @@ namespace Entities {
 
     void ArmedEntity::refreshMissiles()
     {
+        std::unique_lock<std::mutex> lock(_missilesMutex);
+
         for (auto i = _missiles.begin(); i != _missiles.end();) {
             (**i).refresh();
             if ((**i).isOutOfScreen())
@@ -118,6 +120,7 @@ namespace Entities {
 
     void ArmedEntity::fireMissile(Missile::Type type)
     {
+        std::unique_lock<std::mutex> lock(_missilesMutex);
         _missiles.push_back(std::make_unique<Missile>(_room, type, ++_room.getMissilesIds(), _pos.first + PLAYER_WIDTH, _pos.second + PLAYER_HEIGHT / 2));
     }
 

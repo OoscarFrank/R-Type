@@ -77,8 +77,11 @@ namespace Entities {
         protected:
             virtual void refreshMissiles();
             virtual void fireMissile(Missile::Type type);
-            std::vector<std::unique_ptr<Missile>> _missiles;
             std::chrono::system_clock::time_point _lastFire;
+
+        private:
+            std::vector<std::unique_ptr<Missile>> _missiles;
+            std::mutex _missilesMutex;
     };
 
     class Player: public ArmedEntity {
