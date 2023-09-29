@@ -10,4 +10,5 @@ class LittleMonster: public ArmedEntity {
         virtual ~LittleMonster() = default;
 
         virtual void refresh();
+        virtual bool collide(const IEntity &other) override;
 };

@@ -2,12 +2,12 @@
 #include "../Room.hpp"
 
 Missile::Missile(Room &room, Missile::Type type, int id, short x, short y):
-    AEntity(room, id, x, y),
+    AEntity(room, id, x, y, MISSILE_WIDTH, MISSILE_HEIGHT),
     _type(type)
 {}
 
 Missile::Missile(Room &room, Missile::Type type, int id, const std::pair<short, short> &pos):
-    AEntity(room, id, pos),
+    AEntity(room, id, pos, {MISSILE_WIDTH, MISSILE_HEIGHT}),
     _type(type)
 {}
 
@@ -17,8 +17,8 @@ Missile::~Missile()
     out.setDataUChar(15);
     out.setDataInt(_id);
     out.setDataUChar(_type);
-    out.setDataShort(_pos.first);
-    out.setDataShort(_pos.second);
+    out.setDataShort(_box.x);
+    out.setDataShort(_box.y);
     _room.sendToAll(out);
 }
 
@@ -32,8 +32,8 @@ void Missile::refresh()
         out.setDataUChar(4);
         out.setDataInt(_id);
         out.setDataUChar(_type);
-        out.setDataShort(_pos.first);
-        out.setDataShort(_pos.second);
+        out.setDataShort(_box.x);
+        out.setDataShort(_box.y);
         _room.sendToAll(out);
         _lastMove = now;
     }

@@ -60,4 +60,6 @@ class Room
         void setInstBroadcast(unsigned char inst);
         size_t &getMissilesIds();
         void addMonster(IEntity::Type type, int x, int y);
+        void checkCollisionPlayer();
+        void checkCollisionMonsters();
 };

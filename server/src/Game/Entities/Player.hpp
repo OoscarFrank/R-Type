@@ -10,6 +10,7 @@ class Player: public ArmedEntity {
         virtual ~Player();
 
         virtual void refresh();
+        virtual bool collide(const IEntity &other) override;
         virtual void move(short dx, short dy);
         virtual void sendPos();
         virtual void fireMissile();

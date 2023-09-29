@@ -186,6 +186,10 @@ void Room::update()
             else
                 i++;
         }
+
+        checkCollisionPlayer();
+        checkCollisionMonsters();
+
         if (now - _lastMonsterSpawn >= SPAWN_MONSTERS) {
             _lastMonsterSpawn = now;
             this->addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
@@ -251,4 +255,28 @@ void Room::addMonster(IEntity::Type type, int x, int y)
             return;
     }
     std::cout << "Monster spawned in room " << static_cast<int>(_id) << std::endl;
+}
+
+void Room::checkCollisionPlayer()
+{
+    for (auto i = _players.begin(); i != _players.end(); i++) {
+        for (auto j = _monsters.begin(); j != _monsters.end(); j++) {
+            if ((**j).collide(**i)) {
+                _players.erase(i);
+                return;
+            }
+        }
+    }
+}
+
+void Room::checkCollisionMonsters()
+{
+    for (auto i = _players.begin(); i != _players.end(); i++) {
+        for (auto j = _monsters.begin(); j != _monsters.end(); j++) {
+            if ((**i).collide(**j)) {
+                _monsters.erase(j);
+                return;
+            }
+        }
+    }
 }
