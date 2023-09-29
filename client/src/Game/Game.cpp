@@ -139,6 +139,22 @@ void Game::update()
                 this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(res, x, y));
             }
         }
+
+        if (packet.getInstruction() == 15) {
+            unsigned int id = packet.getData().getDataUInt();
+            unsigned short x = packet.getData().getDataUShort();
+            x *= _resMult;
+            unsigned short y = packet.getData().getDataUShort();
+            y *= _resMult;
+
+            entity_t res = getMissileEntityFromId(id);
+
+            if (res != 0) {
+                this->_missiles.erase(std::remove_if(this->_missiles.begin(), this->_missiles.end(), [id](std::pair<unsigned int, entity_t> const &pair) {
+                    return pair.first == id;
+                }), this->_missiles.end());
+            }
+        }
     }
     this->_net.setInst(12);
     this->_net.send();
