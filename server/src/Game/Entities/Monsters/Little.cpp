@@ -11,7 +11,10 @@ LittleMonster::LittleMonster(Room &room, int id, const std::pair<short, short> &
 
 LittleMonster::~LittleMonster()
 {
-    //TODO: send to all that monster is dead
+    Stream out;
+    out.setDataUChar(16);
+    out.setDataUChar(static_cast<u_char>(_id));
+    _room.sendToAll(out);
 }
 
 void LittleMonster::refresh()
