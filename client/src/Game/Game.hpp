@@ -67,8 +67,8 @@ namespace game {
             Network _net;
             float _resMult;
 
-            unsigned short _roomId;
-            unsigned char _playerId;
+            unsigned int _roomId;
+            unsigned int _playerId;
             entity_t _playerEntity;
 
             unsigned int _startTimeLeft;

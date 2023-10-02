@@ -79,8 +79,8 @@ void Game::update()
 
     while (this->_net.getQueueIn().tryPop(packet)) {
         if (packet.getInstruction() == 10) {
-            this->_roomId = packet.getData().getDataUShort();
-            this->_playerId = packet.getData().getDataUChar();
+            this->_roomId = packet.getData().getDataUInt();
+            this->_playerId = packet.getData().getDataUInt();
 
             this->_manager.loadTexture("./client/assets/entity/player/player_move1.png", Loader::toLoad::Player_move1);
 
@@ -98,7 +98,7 @@ void Game::update()
         }
 
         if (packet.getInstruction() == 13) {
-            unsigned int id = static_cast<unsigned int>(packet.getData().getDataUChar());
+            unsigned int id = packet.getData().getDataUInt();
             const sf::Texture *texture = nullptr;
 
             switch (id) {
@@ -132,7 +132,7 @@ void Game::update()
         }
 
         if (packet.getInstruction() == 3) {
-            unsigned char id = packet.getData().getDataUChar();
+            unsigned char id = packet.getData().getDataUInt();
             unsigned short x = packet.getData().getDataUShort();
             x *= _resMult;
             unsigned short y = packet.getData().getDataUShort();
@@ -165,7 +165,7 @@ void Game::update()
         }
 
         if (packet.getInstruction() == 7) {
-            unsigned char id = packet.getData().getDataUChar();
+            unsigned char id = packet.getData().getDataUInt();
             unsigned short x = packet.getData().getDataUShort();
             x *= _resMult;
             unsigned short y = packet.getData().getDataUShort();
@@ -183,6 +183,7 @@ void Game::update()
 
         if (packet.getInstruction() == 15) {
             unsigned int id = packet.getData().getDataUInt();
+            unsigned char type = packet.getData().getDataUChar();
             unsigned short x = packet.getData().getDataUShort();
             x *= _resMult;
             unsigned short y = packet.getData().getDataUShort();
@@ -234,5 +235,6 @@ int Game::MainLoop()
         this->_window.display();
         this->sendMoveToServer();
     }
+    this->_net.setClosed(true);
     return 0;
 }
