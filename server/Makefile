@@ -27,7 +27,7 @@ FLAGS    =    -g
 UNAME_S := $(shell uname -s)
 
 # Flags Linux
-CFLAGS += -std=c++2a -Wall -Wextra -lsfml-graphics -lsfml-window -lsfml-system -lpthread -fsanitize=address -lasan
+CFLAGS += -std=c++2a -Wall -Wextra -lsfml-graphics -lsfml-window -lsfml-system -lpthread
 
 # Flags macOS
 ifeq ($(UNAME_S),Darwin)
