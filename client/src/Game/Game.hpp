@@ -15,46 +15,46 @@ namespace game {
         public:
         /**
          * @brief Construct a new Game object
-         * 
+         *
          */
             Game();
         /**
          * @brief Destroy the Game object
-         * 
+         *
          */
             ~Game();
         /**
          * @brief function who's looping on the window and call everythings
-         * 
-         * @return int 
+         *
+         * @return int
          */
             int MainLoop();
         /**
          * @brief update data for entities
-         * 
+         *
          */
             void update();
         /**
          * @brief Get the Player Entity From Id object
-         * 
-         * @param id 
-         * @return entity_t 
+         *
+         * @param id
+         * @return entity_t
          */
             entity_t getPlayerEntityFromId(unsigned char id);
         /**
          * @brief Get the Missile Entity From Id object
-         * 
-         * @param id 
-         * @return entity_t 
+         *
+         * @param id
+         * @return entity_t
          */
-            entity_t getMissileEntityFromId(unsigned char id);
+            entity_t getMissileEntityFromId(unsigned int id);
         /**
-         * @brief Get the Ennemie Entity From Id object
-         * 
-         * @param id 
-         * @return entity_t 
+         * @brief Get the Ennemi Entity From Id object
+         *
+         * @param id
+         * @return entity_t
          */
-            entity_t getEnnemieEntityFromId(unsigned char id);
+            entity_t getEnnemiEntityFromId(unsigned int id);
             void sendMoveToServer();
 
         private:
@@ -67,8 +67,8 @@ namespace game {
             Network _net;
             float _resMult;
 
-            unsigned short _roomId;
-            unsigned char _playerId;
+            unsigned int _roomId;
+            unsigned int _playerId;
             entity_t _playerEntity;
 
             unsigned int _startTimeLeft;

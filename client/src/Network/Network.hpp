@@ -32,6 +32,8 @@ public:
     Stream &getStreamOut();
     Queue<Network::Packet> &getQueueIn();
     std::pair<size_t, Stream> getNextInst();
+    void startReceive();
+    void setClosed(bool closed);
 
     class ReadError : public std::exception
     {
@@ -48,6 +50,8 @@ private:
     asio::io_context _ioContext;
     asio::ip::udp::socket _socket;
     asio::ip::udp::endpoint _serverEndpoint;
+    bool _closed;
+
 
     Stream _streamOut;
     unsigned char _instOut;

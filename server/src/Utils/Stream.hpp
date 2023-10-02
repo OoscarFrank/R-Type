@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <iostream>
+#include <string>
 
 
 class Stream
@@ -25,7 +26,8 @@ public:
 
     Stream operator = (const Stream &stream);
 
-    unsigned char operator[](size_t index);
+    unsigned char operator[](size_t index) const;
+    unsigned char &operator[](size_t index);
 
     void setDataCharArray(const char *data, size_t size);
 

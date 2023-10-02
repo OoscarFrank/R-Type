@@ -3,9 +3,10 @@
 #include <iostream>
 #include <vector>
 #include <thread>
-#include "Player.hpp"
+#include "Entities/Entity.hpp"
+#include "Entities/Player.hpp"
+#include "Entities/Monsters/Little.hpp"
 #include "../Client.hpp"
-#include "Monsters/Monster.hpp"
 
 class Room
 {
@@ -14,17 +15,17 @@ class Room
         std::thread _thread;
         std::mutex _playersMutex;
         std::vector<std::unique_ptr<Player>> _players;
-        std::vector<std::unique_ptr<IMonster>> _monsters;
-        unsigned short _id;
+        std::vector<std::unique_ptr<IEntity>> _monsters;
+        u_int _id;
         unsigned int _maxPlayer;
         unsigned int _progress;
-        u_char _playersIds;
+        u_int _playersIds;
         bool _private;
         void refresh();
         void update();
 
         size_t _missilesIds;
-        u_char _monstersIds;
+        u_int _monstersIds;
 
         Stream _broadcastStream;
         unsigned char _broadcastInst;
@@ -37,26 +38,29 @@ class Room
         size_t _lastMonsterSpawn;
 
     public:
-        Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom = false);
+        Room(u_int id, std::shared_ptr<Client> client, bool privateRoom = false);
         ~Room();
         Room(const Room &room) = delete;
         Room(Room &&room) = delete;
         Room &operator=(const Room &room) = delete;
         Room &operator=(Room &&room) = delete;
-        unsigned short getId() const;
+        u_int getId() const;
         unsigned int getNbPlayer() const;
         unsigned int getProgress() const;
         unsigned int getMaxPlayer() const;
         void addPlayer(std::shared_ptr<Client> client);
         void movePlayer(std::shared_ptr<Client> client, char move, char nbr);
-        void removePlayer(std::shared_ptr<Client> client);
         bool isClientInRoom(std::shared_ptr<Client> client);
         Player &getPlayer(std::shared_ptr<Client> client);
         void sendToAll(const Stream &stream);
         void sendBroadcast();
-        void startGame();
         Stream &getBroadcastStream();
         void setInstBroadcast(unsigned char inst);
         size_t &getMissilesIds();
-        void addMonster(IMonster::Type type, int x, int y);
+
+    private:
+        void startGame();
+        void addMonster(IEntity::Type type, int x, int y);
+        void checkCollisionPlayer();
+        void checkCollisionMonsters();
 };

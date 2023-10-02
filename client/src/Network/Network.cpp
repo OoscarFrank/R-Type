@@ -3,15 +3,19 @@
 
 Network::Network(std::string ip, int port) : _socket(_ioContext, asio::ip::udp::v4()), _serverEndpoint(asio::ip::address::from_string(ip), port)
 {
-    _ip = ip;
-    _port = port;
-
     this->_ReaderThread = std::thread(&Network::read, this);
-
+    _closed = false;
 }
 
 Network::~Network()
 {
+    if (_ReaderThread.joinable())
+        _ReaderThread.join();
+}
+
+void Network::setClosed(bool closed)
+{
+    _closed = closed;
 }
 
 void Network::setInst(unsigned char inst)
@@ -37,36 +41,35 @@ void Network::send()
     _instOut = 0;
 }
 
-
 void Network::read()
 {
-    asio::ip::udp::endpoint sender;
-    std::pair<size_t, Stream> tmpInst;
-    enum
-    {
-        max_length = 1024
-    };
-    char data[max_length];
-
-    while (true)
-    {
-        asio::error_code ec;
-        size_t len = this->_socket.receive_from(asio::buffer(data, max_length), _serverEndpoint, 0, ec);
-        this->_streamIn.setDataCharArray(data, len);
-
-        while ((tmpInst = this->getNextInst()).first != 0) {
-            _queueIn.push(Network::Packet(tmpInst.second, tmpInst.first));
-            // std::cout << tmpInst.first << tmpInst.second << std::endl;
-        }
-        if (ec) {
-            Network::ReadError error;
-            error._message = "Error during receive: " + ec.message();
-            throw error;
-        }
-    }
+    startReceive();
+    _ioContext.run();
 }
 
+void Network::startReceive()
+{
+    auto data = std::make_shared<std::array<char, 1024>>();
 
+    
+    if (_closed) {
+        return;
+    }
+    _socket.async_receive_from(
+        asio::buffer(*data), _serverEndpoint,
+        [this, data](const asio::error_code& ec, std::size_t bytes_transferred) {
+            std::pair<size_t, Stream> tmpInst;
+            if (!ec && bytes_transferred > 0) {
+                this->_streamIn.setDataCharArray(data->data(), bytes_transferred);
+                while ((tmpInst = this->getNextInst()).first != 0)
+                    _queueIn.push(Network::Packet(tmpInst.second, tmpInst.first));
+                startReceive();
+            } else if (ec) {
+                std::cerr << "Error inr Network" << std::endl;
+            }
+        }
+    );
+}
 
 std::pair<size_t, Stream> Network::getNextInst()
 {

@@ -9,39 +9,39 @@ namespace game {
         public:
         /**
          * @brief Construct a new Loader object
-         * 
+         *
          */
             Loader();
         /**
          * @brief Destroy the Loader object
-         * 
+         *
          */
             ~Loader();
             enum toLoad {
                 ParallaxFirstbkg,
                 ParallaxSecondbkg,
-                Player,
+                Player_move1, Player_move2, Player_move3, Player_move4,
                 Rocket,
                 Monster1
             };
         /**
          * @brief Load a texture from a path
-         * 
-         * @param path 
-         * @param type 
+         *
+         * @param path
+         * @param type
          */
             void loadTexture(const std::string path, toLoad type);
         /**
          * @brief Unload a texture from a type
-         * 
-         * @param type 
+         *
+         * @param type
          */
             void unloadTexture(toLoad type);
         /**
          * @brief Get the Texture object
-         * 
-         * @param type 
-         * @return const sf::Texture& 
+         *
+         * @param type
+         * @return const sf::Texture&
          */
             const sf::Texture &getTexture(toLoad type) const;
 

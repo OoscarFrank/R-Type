@@ -11,7 +11,7 @@ class Game
 {
     private:
         std::vector<std::unique_ptr<Room>> _rooms;
-        unsigned int _roomIds;
+        u_int _roomIds;
         std::mutex _roomsMutex;
 
     public:
@@ -20,6 +20,6 @@ class Game
         void createRoom(Reader::Packet &packet, bool privateRoom = false);
         void searchRoom(Reader::Packet &packet);
 
-        Room &getRoom(unsigned int id);
+        Room &getRoom(u_int id);
         Room &getRoom(std::shared_ptr<Client> client);
 };
