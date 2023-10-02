@@ -1,4 +1,5 @@
-#pragma once
+#ifndef READER_HPP
+#define READER_HPP
 
 #include <iostream>
 #include <vector>
@@ -46,3 +47,5 @@ private:
     std::vector<std::shared_ptr<Client>> &_clients;
     void Clock();
 };
+
+#endif

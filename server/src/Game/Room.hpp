@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ROOM_HPP
+#define ROOM_HPP
 
 #include <iostream>
 #include <vector>
@@ -64,3 +65,5 @@ class Room
         void checkCollisionPlayer();
         void checkCollisionMonsters();
 };
+
+#endif

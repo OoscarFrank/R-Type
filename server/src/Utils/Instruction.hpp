@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INSTRUCTION_HPP
+#define INSTRUCTION_HPP
 
 #include <vector>
 
@@ -65,3 +66,5 @@ struct Commands {
     {15, {UINT, UCHAR, SHORT, SHORT}, 9} \
     {16, {UINT}, 4} \
 };
+
+#endif

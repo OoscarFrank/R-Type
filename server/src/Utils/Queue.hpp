@@ -1,4 +1,5 @@
-#pragma once
+#ifndef QUEUE_HPP
+#define QUEUE_HPP
 
 #include <iostream>
 #include <vector>
@@ -88,3 +89,5 @@ T Queue<T>::pop()
     _queue.pop();
     return value;
 }
+
+#endif

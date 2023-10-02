@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CLIENT_HPP
+#define CLIENT_HPP
 
 #include <iostream>
 #include <vector>
@@ -36,3 +37,5 @@ public:
     bool isAlive();
     void ping();
 };
+
+#endif

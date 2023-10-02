@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ENTITY_HPP
+#define ENTITY_HPP
 
 #include <iostream>
 #include <vector>
@@ -50,3 +51,5 @@ class AEntity: public IEntity {
         BoundingBox<short> _box;
         std::chrono::system_clock::time_point _lastMove;
 };
+
+#endif

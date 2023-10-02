@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MISSILE_HPP
+#define MISSILE_HPP
 
 #include "Entity.hpp"
 
@@ -18,3 +19,5 @@ class Missile: public AEntity {
     private:
         Missile::Type _type;
 };
+
+#endif

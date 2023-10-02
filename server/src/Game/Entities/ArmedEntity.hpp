@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ARMEDENTITY_HPP
+#define ARMEDENTITY_HPP
 
 #include "Entity.hpp"
 #include "Missile.hpp"
@@ -21,3 +22,5 @@ class ArmedEntity: public AEntity {
         std::vector<std::unique_ptr<Missile>> _missiles;
         std::mutex _missilesMutex;
 };
+
+#endif

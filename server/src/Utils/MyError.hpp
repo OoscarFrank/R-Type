@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MYERROR_HPP
+#define MYERROR_HPP
 
 #include <iostream>
 #include <fstream>
@@ -38,3 +39,5 @@ class MyError: public std::exception {
     protected:
         std::string _msg;
 };
+
+#endif
