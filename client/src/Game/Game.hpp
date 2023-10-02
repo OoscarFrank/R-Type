@@ -40,7 +40,7 @@ namespace game {
          * @param id
          * @return entity_t
          */
-            entity_t getPlayerEntityFromId(unsigned char id);
+            entity_t getPlayerEntityFromId(unsigned int id);
         /**
          * @brief Get the Missile Entity From Id object
          *

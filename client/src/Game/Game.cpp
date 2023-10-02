@@ -46,7 +46,7 @@ Game::~Game()
 {
 }
 
-entity_t Game::getPlayerEntityFromId(unsigned char id)
+entity_t Game::getPlayerEntityFromId(unsigned int id)
 {
     for (auto &player : this->_players) {
         if (player.first == id)
@@ -132,7 +132,7 @@ void Game::update()
         }
 
         if (packet.getInstruction() == 3) {
-            unsigned char id = packet.getData().getDataUInt();
+            unsigned int id = packet.getData().getDataUInt();
             unsigned short x = packet.getData().getDataUShort();
             x *= _resMult;
             unsigned short y = packet.getData().getDataUShort();
@@ -165,7 +165,7 @@ void Game::update()
         }
 
         if (packet.getInstruction() == 7) {
-            unsigned char id = packet.getData().getDataUInt();
+            unsigned int id = packet.getData().getDataUInt();
             unsigned short x = packet.getData().getDataUShort();
             x *= _resMult;
             unsigned short y = packet.getData().getDataUShort();
@@ -195,6 +195,16 @@ void Game::update()
                 this->_missiles.erase(std::remove_if(this->_missiles.begin(), this->_missiles.end(), [id](std::pair<unsigned int, entity_t> const &pair) {
                     return pair.first == id;
                 }), this->_missiles.end());
+            }
+        }
+        if (packet.getInstruction() == 16) {
+            unsigned int id = packet.getData().getDataUInt();
+
+            entity_t res = getEnnemiEntityFromId(id);
+
+            if (res != 0) {
+                std::cout << "ennemi died" << std::endl;
+                this->ecs.kill_entity(res);
             }
         }
     }

@@ -1,10 +1,12 @@
 #pragma once
 
+#include <vector>
 #include <map>
 #include <unordered_map>
 #include <typeindex>
 #include <any>
 #include "StorageComponents.hpp"
+#include <iostream>
 #include "./Components/Components.hpp"
 
 using entity_t = std::size_t;
@@ -71,10 +73,8 @@ namespace ECS {
                 if (_entity_to_index.find(entity) == _entity_to_index.end()) {
                     throw std::runtime_error("Entity not found.");
                 }
-
                 auto &comp_array = get_components<Component>();
                 size_t index = entity;
-
                 if (index >= comp_array.size()) {
                     return false;
                 }
@@ -137,17 +137,35 @@ namespace ECS {
          * @tparam Component 
          * @param e 
          */
-            template <typename Component>
             void kill_entity(entity_t const &e) {
-                if (_entity_to_index.find(e) == _entity_to_index.end())
+                auto it = _entity_to_index.find(e);
+                if (it == _entity_to_index.end()) {
                     throw std::runtime_error("Entity not found.");
-                _entity_to_index[e] = false;
-                for (auto &array : _components_arrays) {
-                    if (array.second.has_value()) {
-                        auto &comp_array = std::any_cast<StorageComponents<Component> &>(array.second);
-                        comp_array.erase(e);
-                    }
                 }
+
+                if (this->hasComponent<components::ControllableComponent>(e))
+                    this->remove_component<components::ControllableComponent>(e);
+
+                if (this->hasComponent<components::MovableComponent>(e))
+                    this->remove_component<components::MovableComponent>(e);
+
+                if (this->hasComponent<components::ParallaxComponent>(e))
+                    this->remove_component<components::ParallaxComponent>(e);
+
+                if (this->hasComponent<components::PositionComponent>(e))
+                    this->remove_component<components::PositionComponent>(e);
+
+                if (this->hasComponent<components::SpriteComponent>(e))
+                    this->remove_component<components::SpriteComponent>(e);
+
+                if (this->hasComponent<components::TextureRectComponent>(e))
+                    this->remove_component<components::TextureRectComponent>(e);
+
+                if (this->hasComponent<components::VelocityComponent>(e))
+                    this->remove_component<components::VelocityComponent>(e);
+
+
+                _entity_to_index.erase(it);
             }
         /**
          * @brief Add a construct component in the registry
@@ -196,6 +214,7 @@ namespace ECS {
 
         private:
             std::unordered_map<std::type_index, std::any> _components_arrays;
+            // std::vector<entity_t> _entity;
             std::map<entity_t, bool> _entity_to_index;
             entity_t _next_entity_id = 0;
             std::vector<entity_t> _entities;

@@ -15,7 +15,6 @@ namespace ECS {
              */
                 void update(Registry &ecs, sf::RenderWindow &window) {
                     auto &spriteComponents = ecs.get_components<components::SpriteComponent>();
-
                     for (size_t i = 0; i < spriteComponents.size(); ++i) {
                         auto &sprite = spriteComponents[i];
 

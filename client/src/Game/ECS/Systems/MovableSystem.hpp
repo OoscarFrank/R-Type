@@ -50,13 +50,18 @@ namespace ECS {
             void update(Registry &ecs, std::vector<EntityPos> &entityPositions) {
 
                 for (auto i = entityPositions.begin(); i != entityPositions.end(); ++i) {
-                    ECS::components::PositionComponent &component = ecs.getComponent<ECS::components::PositionComponent>(i->getEntity());
-                    if (!ecs.hasComponent<ECS::components::MovableComponent>(i->getEntity()))
-                        continue;
-                    component.setX(i->getX());
-                    component.setY(i->getY());
+                    try {
+                        if (ecs.hasComponent<ECS::components::PositionComponent>(i->getEntity())) {
+                            ECS::components::PositionComponent &component = ecs.getComponent<ECS::components::PositionComponent>(i->getEntity());
+                            if (!ecs.hasComponent<ECS::components::MovableComponent>(i->getEntity()))
+                                continue;
+                            component.setX(i->getX());
+                            component.setY(i->getY());
+                        }
+                    } catch (std::exception &e) {
+                        std::cerr << e.what() << std::endl;
+                    }
                 }
-
                 entityPositions.clear();
             }
         };
