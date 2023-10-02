@@ -1,14 +1,14 @@
 #include "Entity.hpp"
 #include "../Room.hpp"
 
-AEntity::AEntity(Room &room, int id, short x, short y, short w, short h):
+AEntity::AEntity(Room &room, u_int id, short x, short y, short w, short h):
     _room(room),
     _id(id),
     _box(x, y, w, h),
     _lastMove(std::chrono::system_clock::now())
 {}
 
-AEntity::AEntity(Room &room, int id, const std::pair<short, short> &pos, const std::pair<short, short> &size):
+AEntity::AEntity(Room &room, u_int id, const std::pair<short, short> &pos, const std::pair<short, short> &size):
     _room(room),
     _id(id),
     _box(pos, size),
@@ -20,7 +20,7 @@ std::pair<short, short> AEntity::position() const
     return {_box.x, _box.y};
 }
 
-int AEntity::id() const
+u_int AEntity::id() const
 {
     return _id;
 }

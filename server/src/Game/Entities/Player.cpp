@@ -1,26 +1,26 @@
 #include "Player.hpp"
 #include "../Room.hpp"
 
-Player::Player(Room &room, std::shared_ptr<Client> client, int id, short x, short y):
+Player::Player(Room &room, std::shared_ptr<Client> client, u_int id, short x, short y):
     ArmedEntity(room, id, x, y, PLAYER_WIDTH, PLAYER_HEIGHT),
     _score(0),
     _client(client)
 {
     Stream out;
     out.setDataUChar(13);
-    out.setDataChar(static_cast<u_char>(_id));
+    out.setDataUInt(_id);
     _room.sendToAll(out);
     sendPos();
 }
 
-Player::Player(Room &room, std::shared_ptr<Client> client, int id, const std::pair<short, short> &pos):
+Player::Player(Room &room, std::shared_ptr<Client> client, u_int id, const std::pair<short, short> &pos):
     ArmedEntity(room, id, pos, {PLAYER_WIDTH, PLAYER_HEIGHT}),
     _score(0),
     _client(client)
 {
     Stream out;
     out.setDataUChar(13);
-    out.setDataChar(static_cast<u_char>(_id));
+    out.setDataUInt(_id);
     _room.sendToAll(out);
     sendPos();
 }
@@ -29,7 +29,7 @@ Player::~Player()
 {
     Stream out;
     out.setDataUChar(14);
-    out.setDataUChar(static_cast<u_char>(_id));
+    out.setDataUInt(_id);
     _room.sendToAll(out);
     _client->send(out);
 }
@@ -57,7 +57,7 @@ void Player::sendPos()
 {
     Stream out;
     out.setDataUChar(3);
-    out.setDataChar(static_cast<u_char>(_id));
+    out.setDataUInt(_id);
     out.setDataShort(_box.x);
     out.setDataShort(_box.y);
     _room.sendToAll(out);

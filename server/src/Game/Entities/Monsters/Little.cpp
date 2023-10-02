@@ -1,11 +1,11 @@
 #include "Little.hpp"
 #include "../../Room.hpp"
 
-LittleMonster::LittleMonster(Room &room, int id, short x, short y):
+LittleMonster::LittleMonster(Room &room, u_int id, short x, short y):
     ArmedEntity(room, id, x, y, LITTLE_MONSTER_WIDTH, LITTLE_MONSTER_HEIGHT)
 {}
 
-LittleMonster::LittleMonster(Room &room, int id, const std::pair<short, short> &pos):
+LittleMonster::LittleMonster(Room &room, u_int id, const std::pair<short, short> &pos):
     ArmedEntity(room, id, pos, {LITTLE_MONSTER_WIDTH, LITTLE_MONSTER_HEIGHT})
 {}
 
@@ -13,7 +13,7 @@ LittleMonster::~LittleMonster()
 {
     Stream out;
     out.setDataUChar(16);
-    out.setDataUChar(static_cast<u_char>(_id));
+    out.setDataUInt(_id);
     _room.sendToAll(out);
 }
 
@@ -29,7 +29,7 @@ void LittleMonster::refresh()
         move(-1, 0);
         Stream out;
         out.setDataChar(7);
-        out.setDataChar(static_cast<u_char>(_id));
+        out.setDataUInt(_id);
         out.setDataShort(_box.x);
         out.setDataShort(_box.y);
         _room.sendToAll(out);

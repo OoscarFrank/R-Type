@@ -17,7 +17,7 @@ class IEntity {
 
         virtual void refresh() = 0;
         virtual std::pair<short, short> position() const = 0;
-        virtual int id() const = 0;
+        virtual u_int id() const = 0;
         virtual bool isOutOfScreen() const = 0;
         virtual bool collide(const IEntity &other) = 0;
         virtual const BoundingBox<short> &box() const = 0;
@@ -31,13 +31,13 @@ class IEntity {
 
 class AEntity: public IEntity {
     public:
-        AEntity(Room &room, int id, short x, short y, short w, short h);
-        AEntity(Room &room, int id, const std::pair<short, short> &pos, const std::pair<short, short> &size);
+        AEntity(Room &room, u_int id, short x, short y, short w, short h);
+        AEntity(Room &room, u_int id, const std::pair<short, short> &pos, const std::pair<short, short> &size);
         virtual ~AEntity() = default;
 
         virtual void refresh() = 0;
         virtual std::pair<short, short> position() const;
-        virtual int id() const;
+        virtual u_int id() const;
         virtual bool isOutOfScreen() const;
         virtual bool collide(const IEntity &other);
         virtual const BoundingBox<short> &box() const;
@@ -46,7 +46,7 @@ class AEntity: public IEntity {
         virtual void move(short dx, short dy);
 
         Room &_room;
-        int _id;
+        u_int _id;
         BoundingBox<short> _box;
         std::chrono::system_clock::time_point _lastMove;
 };
