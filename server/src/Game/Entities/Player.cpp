@@ -31,6 +31,7 @@ Player::~Player()
     out.setDataUChar(14);
     out.setDataUChar(static_cast<u_char>(_id));
     _room.sendToAll(out);
+    _client->send(out);
 }
 
 void Player::refresh()
