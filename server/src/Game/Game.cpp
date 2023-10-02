@@ -37,7 +37,7 @@ void Game::searchRoom(Reader::Packet &packet)
     this->createRoom(packet);
 }
 
-Room &Game::getRoom(unsigned int id)
+Room &Game::getRoom(u_int id)
 {
     std::unique_lock<std::mutex> lock(_roomsMutex);
 

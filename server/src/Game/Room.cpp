@@ -2,7 +2,7 @@
 #include "../Utils/Scheduling.hpp"
 #include <bitset>
 
-Room::Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom)
+Room::Room(u_int id, std::shared_ptr<Client> client, bool privateRoom)
 {
     _id = id;
     _playersIds = 0;
@@ -29,7 +29,7 @@ Room::~Room()
         _thread.join();
 }
 
-unsigned short Room::getId() const
+u_int Room::getId() const
 {
     return _id;
 }
@@ -61,16 +61,16 @@ void Room::addPlayer(std::shared_ptr<Client> client)
         if ((**i).client() == client)
             return;
 
-    u_char newId = ++_playersIds;
+    u_int newId = ++_playersIds;
 
     setInstBroadcast(13);
-    this->_broadcastStream.setDataChar(newId);
+    this->_broadcastStream.setDataUInt(newId);
     sendBroadcast();
 
 
-    client->setInst(0x0a);
-    client->getStreamOut().setDataShort(_id);
-    client->getStreamOut().setDataChar(newId);
+    client->setInst(10);
+    client->getStreamOut().setDataUInt(_id);
+    client->getStreamOut().setDataUInt(newId);
     client->send();
     _players.push_back(std::make_unique<Player>(*this, client, newId, 0, 0));
 
@@ -164,7 +164,7 @@ void Room::update()
             _lastMapRefresh += MAP_REFRESH_TIME;
             _progress += MAP_PROGRESS_STEP;
             this->setInstBroadcast(0x01);
-            this->_broadcastStream.setDataInt(_progress);
+            this->_broadcastStream.setDataUInt(_progress);
             this->sendBroadcast();
             now = NOW;
         }
@@ -196,9 +196,9 @@ void Room::update()
         } else  {
             while (now - _lastWaitMessage >= SEND_WAIT_MESSAGE_TIME) {
                 _lastWaitMessage += SEND_WAIT_MESSAGE_TIME;
-                this->setInstBroadcast(0x0b);
+                this->setInstBroadcast(11);
                 this->_broadcastStream.setDataInt(TIMEOUT_START_GAME - (now - _lastJoin));
-                this->_broadcastStream.setDataChar(_started);
+                this->_broadcastStream.setDataUChar(_started);
                 this->sendBroadcast();
                 now = NOW;
             }
@@ -214,9 +214,9 @@ void Room::startGame()
     _lastPlayerUpdate = NOW;
     _lastMissileUpdate = NOW;
     _lastMonsterSpawn = NOW;
-    this->setInstBroadcast(0x0b);
+    this->setInstBroadcast(11);
     this->_broadcastStream.setDataInt(0);
-    this->_broadcastStream.setDataChar(1);
+    this->_broadcastStream.setDataUChar(1);
     this->sendBroadcast();
 
     for (auto i = _players.begin(); i != _players.end(); i++) {

@@ -5,8 +5,8 @@
 
 class Player: public ArmedEntity {
     public:
-        Player(Room &room, std::shared_ptr<Client> client, int id, short x, short y);
-        Player(Room &room, std::shared_ptr<Client> client, int id, const std::pair<short, short> &pos);
+        Player(Room &room, std::shared_ptr<Client> client, u_int id, short x, short y);
+        Player(Room &room, std::shared_ptr<Client> client, u_int id, const std::pair<short, short> &pos);
         virtual ~Player();
 
         virtual void refresh();

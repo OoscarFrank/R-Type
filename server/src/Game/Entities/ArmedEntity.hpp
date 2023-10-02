@@ -5,8 +5,8 @@
 
 class ArmedEntity: public AEntity {
     public:
-        ArmedEntity(Room &room, int id, short x, short y, short w, short h);
-        ArmedEntity(Room &room, int id, const std::pair<short, short> &pos, const std::pair<short, short> &size);
+        ArmedEntity(Room &room, u_int id, short x, short y, short w, short h);
+        ArmedEntity(Room &room, u_int id, const std::pair<short, short> &pos, const std::pair<short, short> &size);
         virtual ~ArmedEntity() = default;
 
         virtual void refresh() = 0;

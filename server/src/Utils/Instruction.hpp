@@ -3,8 +3,11 @@
 #include <vector>
 
 #define CHAR    1
+#define UCHAR   CHAR
 #define SHORT   2
+#define USHORT  SHORT
 #define INT     4
+#define UINT    INT
 
 struct Commands {
     unsigned char _inst;
@@ -19,7 +22,7 @@ struct Commands {
 
 /**
  * @brief IN_COMMANDS
- * 2 gui - mouvement du player (1/2/3/4, nombre de fois) => 1 = haut, 2 = bas, 3 = gauche, 4 = droite
+ * 2 gui - mouvement du player (move, nombre de fois)
  * 5 gui - spawn d'un missile par le player
  * 8 gui - creation d'une room (booleen pour savoir si la room est privee)
  * 9 gui - match making
@@ -27,9 +30,9 @@ struct Commands {
  *
  */
 #define IN_COMMANDS { \
-    {2, {CHAR, CHAR}, 2}, \
+    {2, {UCHAR, UCHAR}, 2}, \
     {5, {}, 0}, \
-    {8, {CHAR}, 1}, \
+    {8, {UCHAR}, 1}, \
     {9, {}, 0}, \
     {12, {}, 0} \
 };
@@ -50,18 +53,15 @@ struct Commands {
  *
  */
 #define OUT_COMMANDS { \
-    {1, {INT}, 4}, \
-    {3, {CHAR, SHORT, SHORT}, 5}, \
-    {4, {INT, CHAR, SHORT, SHORT}, 9}, \
+    {1, {UINT}, 4}, \
+    {3, {UINT, SHORT, SHORT}, 8}, \
+    {4, {UINT, UCHAR, SHORT, SHORT}, 9}, \
     {6, {INT}, 4}, \
-    {7, {CHAR, SHORT, SHORT}, 5}, \
-    {10, {SHORT, CHAR}, 3}, \
-    {11, {INT, CHAR}, 5}, \
-    {13, {CHAR}, 1}, \
-    {14, {CHAR}, 1}, \
-    {15, {INT,CHAR, SHORT, SHORT}, 9} \
-    {16, {CHAR}, 1} \
+    {7, {UINT, SHORT, SHORT}, 8}, \
+    {10, {UINT, UINT}, 8}, \
+    {11, {INT, UCHAR}, 5}, \
+    {13, {UINT}, 4}, \
+    {14, {UINT}, 4}, \
+    {15, {UINT, UCHAR, SHORT, SHORT}, 9} \
+    {16, {UINT}, 4} \
 };
-
-
-

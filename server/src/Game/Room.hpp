@@ -16,16 +16,16 @@ class Room
         std::mutex _playersMutex;
         std::vector<std::unique_ptr<Player>> _players;
         std::vector<std::unique_ptr<IEntity>> _monsters;
-        unsigned short _id;
+        u_int _id;
         unsigned int _maxPlayer;
         unsigned int _progress;
-        u_char _playersIds;
+        u_int _playersIds;
         bool _private;
         void refresh();
         void update();
 
         size_t _missilesIds;
-        u_char _monstersIds;
+        u_int _monstersIds;
 
         Stream _broadcastStream;
         unsigned char _broadcastInst;
@@ -38,13 +38,13 @@ class Room
         size_t _lastMonsterSpawn;
 
     public:
-        Room(unsigned int id, std::shared_ptr<Client> client, bool privateRoom = false);
+        Room(u_int id, std::shared_ptr<Client> client, bool privateRoom = false);
         ~Room();
         Room(const Room &room) = delete;
         Room(Room &&room) = delete;
         Room &operator=(const Room &room) = delete;
         Room &operator=(Room &&room) = delete;
-        unsigned short getId() const;
+        u_int getId() const;
         unsigned int getNbPlayer() const;
         unsigned int getProgress() const;
         unsigned int getMaxPlayer() const;

@@ -5,8 +5,8 @@
 
 class LittleMonster: public ArmedEntity {
     public:
-        LittleMonster(Room &room, int id, short x, short y);
-        LittleMonster(Room &room, int id, const std::pair<short, short> &pos);
+        LittleMonster(Room &room, u_int id, short x, short y);
+        LittleMonster(Room &room, u_int id, const std::pair<short, short> &pos);
         virtual ~LittleMonster();
 
         virtual void refresh();
