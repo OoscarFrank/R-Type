@@ -94,7 +94,6 @@ void Game::update()
             this->_manager.loadTexture("./client/assets/entity/player/player_move2.png", Loader::toLoad::Player_move2);
             this->_manager.loadTexture("./client/assets/entity/player/player_move3.png", Loader::toLoad::Player_move3);
             this->_manager.loadTexture("./client/assets/entity/player/player_move4.png", Loader::toLoad::Player_move4);
-
         }
 
         if (packet.getInstruction() == 13) {
