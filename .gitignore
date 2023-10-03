@@ -7,6 +7,7 @@ logs/
 test.png
 .DS_Store
 vgcore*
+**/build/
 =======
 # config files
 .vscode/

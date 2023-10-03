@@ -49,7 +49,7 @@ unsigned int Room::getMaxPlayer() const
     return _maxPlayer;
 }
 
-size_t &Room::getMissilesIds()
+u_int &Room::getMissilesIds()
 {
     return _missilesIds;
 }

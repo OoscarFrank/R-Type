@@ -15,6 +15,8 @@ include_directories(${ASIO_INCLUDE_DIR})
 
 aux_source_directory(./src/ dir_src)
 aux_source_directory(./src/Game/ dir_game)
+aux_source_directory(./src/Game/Entities/ dir_entities)
+aux_source_directory(./src/Game/Entities/Monsters/ dir_monsters)
 aux_source_directory(./src/Pool/ dir_pool)
 aux_source_directory(./src/Reader/ dir_reader)
 aux_source_directory(./src/Utils/ dir_utils)
@@ -26,6 +28,8 @@ add_executable(
 	server
 	${dir_src}
   ${dir_game}
+  ${dir_entities}
+  ${dir_monsters}
   ${dir_pool}
   ${dir_reader}
   ${dir_utils}
