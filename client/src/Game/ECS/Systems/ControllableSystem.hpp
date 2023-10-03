@@ -69,39 +69,43 @@ namespace ECS {
              * @param entityMoves 
              */
             void update(Registry &ecs, std::vector<EntityMove> &entityMoves) {
-                auto &ControllableComponents = ecs.get_components<components::ControllableComponent>();
+                try {
+                    auto &ControllableComponents = ecs.get_components<components::ControllableComponent>();
 
-                for (size_t i = 0; i < ControllableComponents.size(); ++i) {
-                    auto &ControllableComponent = ControllableComponents[i];
-                    if (!ControllableComponent)
-                        continue;
-                    entity_t entity = ecs.entity_from_index(i);
-                    EntityMove entityMoveTmp(entity);
-                    char move = 0;
-                    for (auto key : ControllableComponent->getControls()) {
-                        if (sf::Keyboard::isKeyPressed(key)) {
-                            switch (key) {
-                                case sf::Keyboard::Up:
-                                    move |= UP;
-                                    break;
-                                case sf::Keyboard::Down:
-                                    move |= DOWN;
-                                    break;
-                                case sf::Keyboard::Left:
-                                    move |= LEFT;
-                                    break;
-                                case sf::Keyboard::Right:
-                                    move |= RIGHT;
-                                    break;
-                                default:
-                                    break;
+                    for (size_t i = 0; i < ControllableComponents.size(); ++i) {
+                        auto &ControllableComponent = ControllableComponents[i];
+                        if (!ControllableComponent)
+                            continue;
+                        entity_t entity = ecs.entity_from_index(i);
+                        EntityMove entityMoveTmp(entity);
+                        char move = 0;
+                        for (auto key : ControllableComponent->getControls()) {
+                            if (sf::Keyboard::isKeyPressed(key)) {
+                                switch (key) {
+                                    case sf::Keyboard::Up:
+                                        move |= UP;
+                                        break;
+                                    case sf::Keyboard::Down:
+                                        move |= DOWN;
+                                        break;
+                                    case sf::Keyboard::Left:
+                                        move |= LEFT;
+                                        break;
+                                    case sf::Keyboard::Right:
+                                        move |= RIGHT;
+                                        break;
+                                    default:
+                                        break;
+                                }
                             }
                         }
+                        if (move != 0) {
+                            entityMoveTmp.setMove(move);
+                            entityMoves.push_back(entityMoveTmp);
+                        }
                     }
-                    if (move != 0) {
-                        entityMoveTmp.setMove(move);
-                        entityMoves.push_back(entityMoveTmp);
-                    }
+                } catch (std::exception &e) {
+                    std::cerr << e.what() << std::endl;
                 }
             }
         };

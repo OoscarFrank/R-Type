@@ -142,27 +142,30 @@ namespace ECS {
                 if (it == _entity_to_index.end()) {
                     throw std::runtime_error("Entity not found.");
                 }
+                try {
+                    if (this->hasComponent<components::ControllableComponent>(e))
+                        this->remove_component<components::ControllableComponent>(e);
 
-                if (this->hasComponent<components::ControllableComponent>(e))
-                    this->remove_component<components::ControllableComponent>(e);
+                    if (this->hasComponent<components::MovableComponent>(e))
+                        this->remove_component<components::MovableComponent>(e);
 
-                if (this->hasComponent<components::MovableComponent>(e))
-                    this->remove_component<components::MovableComponent>(e);
+                    if (this->hasComponent<components::ParallaxComponent>(e))
+                        this->remove_component<components::ParallaxComponent>(e);
 
-                if (this->hasComponent<components::ParallaxComponent>(e))
-                    this->remove_component<components::ParallaxComponent>(e);
+                    if (this->hasComponent<components::PositionComponent>(e))
+                        this->remove_component<components::PositionComponent>(e);
 
-                if (this->hasComponent<components::PositionComponent>(e))
-                    this->remove_component<components::PositionComponent>(e);
+                    if (this->hasComponent<components::SpriteComponent>(e))
+                        this->remove_component<components::SpriteComponent>(e);
 
-                if (this->hasComponent<components::SpriteComponent>(e))
-                    this->remove_component<components::SpriteComponent>(e);
+                    if (this->hasComponent<components::TextureRectComponent>(e))
+                        this->remove_component<components::TextureRectComponent>(e);
 
-                if (this->hasComponent<components::TextureRectComponent>(e))
-                    this->remove_component<components::TextureRectComponent>(e);
-
-                if (this->hasComponent<components::VelocityComponent>(e))
-                    this->remove_component<components::VelocityComponent>(e);
+                    if (this->hasComponent<components::VelocityComponent>(e))
+                        this->remove_component<components::VelocityComponent>(e);
+                } catch (std::exception &e) {
+                    std::cerr << e.what() << std::endl;
+                }
 
 
                 _entity_to_index.erase(it);
