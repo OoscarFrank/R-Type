@@ -59,7 +59,6 @@ namespace ECS {
                             component.setY(i->getY());
                         }
                     } catch (std::exception &e) {
-                        std::cerr << e.what() << std::endl;
                     }
                 }
                 entityPositions.clear();
