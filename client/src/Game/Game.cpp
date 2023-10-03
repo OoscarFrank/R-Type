@@ -181,6 +181,22 @@ void Game::update()
             }
         }
 
+        if (packet.getInstruction() == 14) {
+            unsigned int id = packet.getData().getDataUInt();
+
+            entity_t res = getPlayerEntityFromId(id);
+
+            if (res != 0) {
+                this->ecs.kill_entity(res);
+                this->_entityPositions.erase(std::remove_if(this->_entityPositions.begin(), this->_entityPositions.end(), [id](ECS::systems::MovableSystem::EntityPos const &pair) {
+                    return pair.getEntity() == id;
+                }), this->_entityPositions.end());
+                this->_players.erase(std::remove_if(this->_players.begin(), this->_players.end(), [id](std::pair<unsigned int, entity_t> const &pair) {
+                    return pair.first == id;
+                }), this->_players.end());
+            }
+        }
+
         if (packet.getInstruction() == 15) {
             unsigned int id = packet.getData().getDataUInt();
             unsigned char type = packet.getData().getDataUChar();
@@ -192,6 +208,7 @@ void Game::update()
             entity_t res = getMissileEntityFromId(id);
 
             if (res != 0) {
+                this->ecs.kill_entity(res);
                 this->_missiles.erase(std::remove_if(this->_missiles.begin(), this->_missiles.end(), [id](std::pair<unsigned int, entity_t> const &pair) {
                     return pair.first == id;
                 }), this->_missiles.end());
@@ -203,8 +220,10 @@ void Game::update()
             entity_t res = getEnnemiEntityFromId(id);
 
             if (res != 0) {
-                std::cout << "ennemi died" << std::endl;
                 this->ecs.kill_entity(res);
+                this->_ennemies.erase(std::remove_if(this->_ennemies.begin(), this->_ennemies.end(), [id](std::pair<unsigned int, entity_t> const &pair) {
+                    return pair.first == id;
+                }), this->_ennemies.end());
             }
         }
     }
