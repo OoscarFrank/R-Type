@@ -44,7 +44,16 @@ target_link_libraries(
   Threads::Threads
 )
 
-install(TARGETS r-type_server RUNTIME DESTINATION bin)
-set(CPACK_GENERATOR "DEB;RPM")
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "martin.d-herouville@epitech.eu")
+install(TARGETS r-type_server RUNTIME DESTINATION .)
+
+if(UNIX)
+  set(CPACK_GENERATOR "DEB;RPM")
+  set(CPACK_DEBIAN_PACKAGE_MAINTAINER "martin.d-herouville@epitech.eu")
+elseif(WIN32)
+  set(CPACK_NSIS_MODIFY_PATH "ON")
+  set(CPACK_NSIS_CREATE_ICONS_EXTRA
+    "CreateShortCut '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\RType_server.lnk' '$INSTDIR\\\\r-type_server' '-p 4243'"
+  )
+endif()
+
 include(CPack)
