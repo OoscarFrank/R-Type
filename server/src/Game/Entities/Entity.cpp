@@ -8,6 +8,7 @@ AEntity::AEntity(Room &room, u_int id, short x, short y, short w, short h):
     _lastMove(std::chrono::system_clock::now())
 {
     _exist = true;
+    _deletable = false;
 }
 
 AEntity::AEntity(Room &room, u_int id, const std::pair<short, short> &pos, const std::pair<short, short> &size):
@@ -17,6 +18,7 @@ AEntity::AEntity(Room &room, u_int id, const std::pair<short, short> &pos, const
     _lastMove(std::chrono::system_clock::now())
 {
     _exist = true;
+    _deletable = false;
 }
 
 std::pair<short, short> AEntity::position() const
@@ -66,4 +68,9 @@ void AEntity::killEntity()
 bool AEntity::getExist() const
 {
     return _exist;
+}
+
+bool AEntity::getDeletable() const
+{
+    return _deletable;
 }

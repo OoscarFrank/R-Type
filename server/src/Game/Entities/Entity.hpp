@@ -23,6 +23,7 @@ class IEntity {
         virtual const BoundingBox<short> &box() const = 0;
         virtual void killEntity() = 0;
         virtual bool getExist() const = 0;
+        virtual bool getDeletable() const = 0;
 
         enum Type {
             MISSILE,
@@ -45,6 +46,7 @@ class AEntity: public IEntity {
         virtual const BoundingBox<short> &box() const;
         virtual void killEntity();
         virtual bool getExist() const;
+        virtual bool getDeletable() const;
 
     protected:
         virtual void move(short dx, short dy);
@@ -53,5 +55,6 @@ class AEntity: public IEntity {
         u_int _id;
         BoundingBox<short> _box;
         bool _exist;
+        bool _deletable;
         std::chrono::system_clock::time_point _lastMove;
 };

@@ -15,6 +15,11 @@ void ArmedEntity::refreshMissiles()
 {
     std::unique_lock<std::mutex> lock(_missilesMutex);
 
+    if (!_exist && _missiles.size() == 0) {
+        _deletable = true;
+        return;
+    }
+
     for (auto i = _missiles.begin(); i != _missiles.end();) {
         (**i).refresh();
         if ((**i).isOutOfScreen())
@@ -27,10 +32,13 @@ void ArmedEntity::refreshMissiles()
 bool ArmedEntity::missilesCollide(const IEntity &other)
 {
     std::unique_lock<std::mutex> lock(_missilesMutex);
-    
-    for (auto &missile: _missiles)
-        if (missile->collide(other))
+
+    for (auto i = _missiles.begin(); i != _missiles.end(); ++i) {
+        if ((**i).collide(other)) {
+            _missiles.erase(i);
             return true;
+        }
+    }
     return false;
 }
 

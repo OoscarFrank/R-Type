@@ -175,6 +175,10 @@ void Room::update()
         }
         for (auto i = _monsters.begin(); i != _monsters.end();) {
             (**i).refresh();
+            if ((**i).getDeletable()) {
+                _monsters.erase(i);
+                continue;
+            }
             if ((**i).getExist() && (**i).isOutOfScreen()) {
                 (**i).killEntity();
             } else
