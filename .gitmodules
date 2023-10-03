@@ -4,3 +4,6 @@
 [submodule "Asio"]
 	path = Asio
 	url = https://github.com/chriskohlhoff/asio.git
+[submodule "extern/SFML_dependencies"]
+	path = extern/SFML_dependencies
+	url = https://github.com/eXpl0it3r/SFML-dependencies.git
