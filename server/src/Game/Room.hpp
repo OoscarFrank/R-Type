@@ -11,7 +11,13 @@
 class Room
 {
     private:
-        bool _started;
+        enum State {
+            WAIT = 0,
+            RUN = 1,
+            END = 2,
+        };
+
+        unsigned char _state;
         std::thread _thread;
         std::mutex _playersMutex;
         std::vector<std::unique_ptr<Player>> _players;
@@ -36,6 +42,7 @@ class Room
         size_t _lastMissileUpdate;
         size_t _lastPlayerUpdate;
         size_t _lastMonsterSpawn;
+        size_t _lastGameOver;
 
     public:
         Room(u_int id, std::shared_ptr<Client> client, bool privateRoom = false);

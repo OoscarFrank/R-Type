@@ -27,11 +27,7 @@ Player::Player(Room &room, std::shared_ptr<Client> client, u_int id, const std::
 
 Player::~Player()
 {
-    Stream out;
-    out.setDataUChar(14);
-    out.setDataUInt(_id);
-    _room.sendToAll(out);
-    _client->send(out);
+    
 }
 
 void Player::refresh()
@@ -67,7 +63,8 @@ void Player::fireMissile()
 {
     auto now = std::chrono::system_clock::now();
 
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= PLAYER_FIRE_TIME) {
+
+    if (_exist && std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= PLAYER_FIRE_TIME) {
         ArmedEntity::fireMissile(Missile::Type::PLAYER);
         _lastFire = now;
     }

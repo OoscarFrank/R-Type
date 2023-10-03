@@ -58,10 +58,10 @@ void AEntity::move(short dx, short dy)
 
 void AEntity::killEntity()
 {
-    Stream out;
-    out.setDataUChar(16);
-    out.setDataUInt(_id);
-    _room.sendToAll(out);
+    // Stream out;
+    // out.setDataUChar(16);
+    // out.setDataUInt(_id);
+    // _room.sendToAll(out);
     _exist = false;
 }
 

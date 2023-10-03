@@ -70,6 +70,7 @@ namespace game {
             unsigned int _roomId;
             unsigned int _playerId;
             entity_t _playerEntity;
+            bool _gameOver;
 
             unsigned int _startTimeLeft;
             unsigned char _started;
