@@ -21,6 +21,8 @@ class IEntity {
         virtual bool isOutOfScreen() const = 0;
         virtual bool collide(const IEntity &other) = 0;
         virtual const BoundingBox<short> &box() const = 0;
+        virtual void killEntity() = 0;
+        virtual bool getExist() const = 0;
 
         enum Type {
             MISSILE,
@@ -41,6 +43,8 @@ class AEntity: public IEntity {
         virtual bool isOutOfScreen() const;
         virtual bool collide(const IEntity &other);
         virtual const BoundingBox<short> &box() const;
+        virtual void killEntity();
+        virtual bool getExist() const;
 
     protected:
         virtual void move(short dx, short dy);
@@ -48,5 +52,6 @@ class AEntity: public IEntity {
         Room &_room;
         u_int _id;
         BoundingBox<short> _box;
+        bool _exist;
         std::chrono::system_clock::time_point _lastMove;
 };

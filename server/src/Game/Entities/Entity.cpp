@@ -6,14 +6,18 @@ AEntity::AEntity(Room &room, u_int id, short x, short y, short w, short h):
     _id(id),
     _box(x, y, w, h),
     _lastMove(std::chrono::system_clock::now())
-{}
+{
+    _exist = true;
+}
 
 AEntity::AEntity(Room &room, u_int id, const std::pair<short, short> &pos, const std::pair<short, short> &size):
     _room(room),
     _id(id),
     _box(pos, size),
     _lastMove(std::chrono::system_clock::now())
-{}
+{
+    _exist = true;
+}
 
 std::pair<short, short> AEntity::position() const
 {
@@ -32,7 +36,9 @@ bool AEntity::isOutOfScreen() const
 
 bool AEntity::collide(const IEntity &other)
 {
-    return _box.collide(other.box());
+    if (_exist && other.getExist())
+        return _box.collide(other.box());
+    return false;
 }
 
 const BoundingBox<short> &AEntity::box() const
@@ -42,6 +48,22 @@ const BoundingBox<short> &AEntity::box() const
 
 void AEntity::move(short dx, short dy)
 {
-    _box.x += dx;
-    _box.y += dy;
+    if (_exist) {
+        _box.x += dx;
+        _box.y += dy;
+    }
+}
+
+void AEntity::killEntity()
+{
+    Stream out;
+    out.setDataUChar(16);
+    out.setDataUInt(_id);
+    _room.sendToAll(out);
+    _exist = false;
+}
+
+bool AEntity::getExist() const
+{
+    return _exist;
 }

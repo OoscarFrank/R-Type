@@ -27,7 +27,7 @@ void ArmedEntity::refreshMissiles()
 bool ArmedEntity::missilesCollide(const IEntity &other)
 {
     std::unique_lock<std::mutex> lock(_missilesMutex);
-
+    
     for (auto &missile: _missiles)
         if (missile->collide(other))
             return true;
@@ -37,5 +37,8 @@ bool ArmedEntity::missilesCollide(const IEntity &other)
 void ArmedEntity::fireMissile(Missile::Type type)
 {
     std::unique_lock<std::mutex> lock(_missilesMutex);
-    _missiles.push_back(std::make_unique<Missile>(_room, type, ++_room.getMissilesIds(), _box.x + PLAYER_WIDTH, _box.y + PLAYER_HEIGHT / 2));
+    if (type == Missile::Type::PLAYER)
+        _missiles.push_back(std::make_unique<Missile>(_room, type, ++_room.getMissilesIds(), _box.x + PLAYER_WIDTH, _box.y + PLAYER_HEIGHT / 2));
+    if (type == Missile::Type::LITTLE_MONSTER)
+        _missiles.push_back(std::make_unique<Missile>(_room, type, ++_room.getMissilesIds(), _box.x, _box.y + LITTLE_MONSTER_HEIGHT / 2));
 }

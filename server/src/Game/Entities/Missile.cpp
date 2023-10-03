@@ -27,7 +27,7 @@ void Missile::refresh()
     auto now = std::chrono::system_clock::now();
 
     if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= MISSILES_REFRESH_TIME) {
-        move(_type == Missile::Type::ALLY ? PLAYER_MISSILE_PROGRESS_STEP : -ENEMY_MISSILE_PROGRESS_STEP, 0);
+        move(_type == Missile::Type::PLAYER ? PLAYER_MISSILE_PROGRESS_STEP : -ENEMY_MISSILE_PROGRESS_STEP, 0);
         Stream out;
         out.setDataUChar(4);
         out.setDataUInt(_id);
