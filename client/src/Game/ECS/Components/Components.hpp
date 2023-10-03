@@ -7,3 +7,4 @@
 #include "ControllableComponent.hpp"
 #include "ParallaxComponent.hpp"
 #include "MovableComponent.hpp"
+#include "ScaleComponent.hpp"

@@ -88,7 +88,7 @@ void Game::update()
             this->_players.push_back(std::make_pair(this->_playerId, newEntity));
             this->_playerEntity = newEntity;
 
-            this->_manager.loadTexture("./client/assets/entity/rocket.png", Loader::toLoad::Rocket);
+            this->_manager.loadTexture("./client/assets/entity/missile/missile.png", Loader::toLoad::Missile);
             this->_manager.loadTexture("./client/assets/entity/monsters/monster1.png", Loader::toLoad::Monster1);
             this->_manager.loadTexture("./client/assets/entity/player/player_move1.png", Loader::toLoad::Player_move1);
             this->_manager.loadTexture("./client/assets/entity/player/player_move2.png", Loader::toLoad::Player_move2);
@@ -156,7 +156,7 @@ void Game::update()
 
             entity_t res = getMissileEntityFromId(id);
             if (res == 0) {
-                entity_t newEntity = this->_factory.createMissile(x, y, this->_manager.getTexture(Loader::Loader::Rocket));
+                entity_t newEntity = this->_factory.createMissile(x, y, this->_manager.getTexture(Loader::Loader::Missile));
                 this->_missiles.push_back(std::make_pair(id, newEntity));
             } else {
                 this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(res, x, y));
@@ -270,6 +270,7 @@ int Game::MainLoop()
         ECS::systems::AnimationSystem().update(this->ecs, deltaTime);
         ECS::systems::ParallaxSystem().update(this->ecs, deltaTime);
         ECS::systems::MovableSystem().update(this->ecs, this->_entityPositions);
+        ECS::systems::ScaleSystem().update(this->ecs);
         this->_window.clear();
         // DRAW SYSTEM CALL HERE (update) (after clear) (before display) (no update) (no event) (no loop) (no system call) (no event loop)
         ECS::systems::DrawSystem().update(this->ecs, this->_window);

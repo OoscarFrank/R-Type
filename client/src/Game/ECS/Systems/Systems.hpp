@@ -6,3 +6,4 @@
 #include "ControllableSystem.hpp"
 #include "ParallaxSystem.hpp"
 #include "MovableSystem.hpp"
+#include "ScaleSystem.hpp"

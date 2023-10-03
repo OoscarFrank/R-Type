@@ -12,6 +12,7 @@ Factory::Factory(ECS::Registry &registry): _registry(registry)
     this->_registry.register_component<ECS::components::ControllableComponent>();
     this->_registry.register_component<ECS::components::ParallaxComponent>();
     this->_registry.register_component<ECS::components::MovableComponent>();
+    this->_registry.register_component<ECS::components::ScaleComponent>();
 }
 
 Factory::~Factory()
@@ -44,6 +45,7 @@ entity_t Factory::createMissile(float x, float y, const sf::Texture &texture)
     _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
     _registry.emplace_component<ECS::components::MovableComponent>(newEntity, ECS::components::MovableComponent{});
     _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
+    _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{8.0, 8.0});
     return newEntity;
 }
 
