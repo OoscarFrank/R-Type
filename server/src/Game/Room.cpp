@@ -127,7 +127,8 @@ Player &Room::getPlayer(std::shared_ptr<Client> client)
 void Room::sendToAll(const Stream &stream)
 {
     for (auto i = _players.begin(); i != _players.end(); i++) {
-        (**i).client()->send(stream);
+        if (*i)
+            (**i).client()->send(stream);
     }
 }
 

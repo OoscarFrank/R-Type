@@ -18,45 +18,45 @@ namespace ECS {
                 public:
                 /**
                  * @brief Construct a new Entity Move object
-                 * 
-                 * @param entity 
+                 *
+                 * @param entity
                  */
                     EntityMove(entity_t entity) : entity(entity) {}
                 /**
                  * @brief Destroy the Entity Move object
-                 * 
+                 *
                  */
                     ~EntityMove() {}
                 /**
                  * @brief Set the Move object
-                 * 
-                 * @param move 
+                 *
+                 * @param move
                  */
                     void setMove(char move) {
                         this->move = move;
                     }
                 /**
                  * @brief Get the Move object
-                 * 
-                 * @return char 
+                 *
+                 * @return char
                  */
                     char getMove() {
                         return move;
                     }
                 /**
                  * @brief Set the Entity object
-                 * 
-                 * @param entity 
+                 *
+                 * @param entity
                  */
                     void setEntity(entity_t entity) {
                         this->entity = entity;
                     }
                 /**
                  * @brief Get the Entity object
-                 * 
-                 * @return entity_t 
+                 *
+                 * @return entity_t
                  */
-                    entity_t getEntity() {
+                    entity_t getEntity() const {
                         return entity;
                     }
             };
@@ -64,9 +64,9 @@ namespace ECS {
             ControllableSystem() = default;
             /**
              * @brief Update controls of each entity with a controllable component
-             * 
-             * @param ecs 
-             * @param entityMoves 
+             *
+             * @param ecs
+             * @param entityMoves
              */
             void update(Registry &ecs, std::vector<EntityMove> &entityMoves) {
                 try {

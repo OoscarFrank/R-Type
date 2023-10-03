@@ -94,7 +94,6 @@ void Game::update()
             this->_manager.loadTexture("./client/assets/entity/player/player_move2.png", Loader::toLoad::Player_move2);
             this->_manager.loadTexture("./client/assets/entity/player/player_move3.png", Loader::toLoad::Player_move3);
             this->_manager.loadTexture("./client/assets/entity/player/player_move4.png", Loader::toLoad::Player_move4);
-
         }
 
         if (packet.getInstruction() == 13) {
@@ -188,9 +187,11 @@ void Game::update()
 
             if (res != 0) {
                 this->ecs.kill_entity(res);
+
                 this->_entityPositions.erase(std::remove_if(this->_entityPositions.begin(), this->_entityPositions.end(), [id](ECS::systems::MovableSystem::EntityPos const &pair) {
                     return pair.getEntity() == id;
                 }), this->_entityPositions.end());
+
                 this->_players.erase(std::remove_if(this->_players.begin(), this->_players.end(), [id](std::pair<unsigned int, entity_t> const &pair) {
                     return pair.first == id;
                 }), this->_players.end());
@@ -209,11 +210,17 @@ void Game::update()
 
             if (res != 0) {
                 this->ecs.kill_entity(res);
+
+                this->_entityPositions.erase(std::remove_if(this->_entityPositions.begin(), this->_entityPositions.end(), [id](ECS::systems::MovableSystem::EntityPos const &pair) {
+                    return pair.getEntity() == id;
+                }), this->_entityPositions.end());
+
                 this->_missiles.erase(std::remove_if(this->_missiles.begin(), this->_missiles.end(), [id](std::pair<unsigned int, entity_t> const &pair) {
                     return pair.first == id;
                 }), this->_missiles.end());
             }
         }
+
         if (packet.getInstruction() == 16) {
             unsigned int id = packet.getData().getDataUInt();
 
@@ -221,6 +228,11 @@ void Game::update()
 
             if (res != 0) {
                 this->ecs.kill_entity(res);
+
+                this->_entityPositions.erase(std::remove_if(this->_entityPositions.begin(), this->_entityPositions.end(), [id](ECS::systems::MovableSystem::EntityPos const &pair) {
+                    return pair.getEntity() == id;
+                }), this->_entityPositions.end());
+
                 this->_ennemies.erase(std::remove_if(this->_ennemies.begin(), this->_ennemies.end(), [id](std::pair<unsigned int, entity_t> const &pair) {
                     return pair.first == id;
                 }), this->_ennemies.end());

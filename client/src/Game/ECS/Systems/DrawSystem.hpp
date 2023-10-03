@@ -9,9 +9,9 @@ namespace ECS {
             public:
             /**
              * @brief Update the sprite of each entity with a sprite component
-             * 
-             * @param ecs 
-             * @param window 
+             *
+             * @param ecs
+             * @param window
              */
                 void update(Registry &ecs, sf::RenderWindow &window) {
                     try {
