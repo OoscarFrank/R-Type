@@ -1,6 +1,6 @@
 <div align="center">
     <h1 align="center">
-        EpitechIntranetStatistics
+        R-Type
     </h1>
 </div>
 
