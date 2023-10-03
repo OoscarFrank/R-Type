@@ -17,9 +17,9 @@ namespace ECS {
         public:
         /**
          * @brief Add a component object to the registry
-         * 
-         * @tparam Component 
-         * @return StorageComponents<Component>& 
+         *
+         * @tparam Component
+         * @return StorageComponents<Component>&
          */
             template<class Component>
             StorageComponents<Component> &register_component() {
@@ -32,9 +32,9 @@ namespace ECS {
 
         /**
          * @brief List components by type
-         * 
-         * @tparam Component 
-         * @return StorageComponents<Component>& 
+         *
+         * @tparam Component
+         * @return StorageComponents<Component>&
          */
             template <class Component>
             StorageComponents<Component> &get_components() {
@@ -47,9 +47,9 @@ namespace ECS {
 
         /**
          * @brief List components by type
-         * 
-         * @tparam Component 
-         * @return StorageComponents<Component> const& 
+         *
+         * @tparam Component
+         * @return StorageComponents<Component> const&
          */
             template <class Component>
             StorageComponents<Component> const &get_components() const {
@@ -62,11 +62,11 @@ namespace ECS {
 
         /**
          * @brief Check if the entity has the component
-         * 
-         * @tparam Component 
-         * @param entity 
-         * @return true 
-         * @return false 
+         *
+         * @tparam Component
+         * @param entity
+         * @return true
+         * @return false
          */
             template <typename Component>
             bool hasComponent(entity_t const &entity) {
@@ -82,10 +82,10 @@ namespace ECS {
             }
         /**
          * @brief Get a component object of the entity
-         * 
-         * @tparam Component 
-         * @param entity 
-         * @return Component& 
+         *
+         * @tparam Component
+         * @param entity
+         * @return Component&
          */
             template <typename Component>
             Component &getComponent(entity_t const &entity) {
@@ -111,8 +111,8 @@ namespace ECS {
         public:
         /**
          * @brief Create new entity
-         * 
-         * @return entity_t 
+         *
+         * @return entity_t
          */
             entity_t spawn_entity() {
                 entity_t entity = _next_entity_id++;
@@ -122,9 +122,9 @@ namespace ECS {
             }
         /**
          * @brief Get an entity from an index
-         * 
-         * @param idx 
-         * @return entity_t 
+         *
+         * @param idx
+         * @return entity_t
          */
             entity_t entity_from_index(std::size_t idx) {
                 if (idx >= _next_entity_id)
@@ -133,50 +133,46 @@ namespace ECS {
             }
         /**
          * @brief Destroy an entity
-         * 
-         * @tparam Component 
-         * @param e 
+         *
+         * @tparam Component
+         * @param e
          */
             void kill_entity(entity_t const &e) {
                 auto it = _entity_to_index.find(e);
                 if (it == _entity_to_index.end()) {
                     throw std::runtime_error("Entity not found.");
                 }
-                try {
-                    if (this->hasComponent<components::ControllableComponent>(e))
-                        this->remove_component<components::ControllableComponent>(e);
 
-                    if (this->hasComponent<components::MovableComponent>(e))
-                        this->remove_component<components::MovableComponent>(e);
+                if (this->hasComponent<components::ControllableComponent>(e))
+                    this->remove_component<components::ControllableComponent>(e);
 
-                    if (this->hasComponent<components::ParallaxComponent>(e))
-                        this->remove_component<components::ParallaxComponent>(e);
+                if (this->hasComponent<components::MovableComponent>(e))
+                    this->remove_component<components::MovableComponent>(e);
 
-                    if (this->hasComponent<components::PositionComponent>(e))
-                        this->remove_component<components::PositionComponent>(e);
+                if (this->hasComponent<components::ParallaxComponent>(e))
+                    this->remove_component<components::ParallaxComponent>(e);
 
-                    if (this->hasComponent<components::SpriteComponent>(e))
-                        this->remove_component<components::SpriteComponent>(e);
+                if (this->hasComponent<components::PositionComponent>(e))
+                    this->remove_component<components::PositionComponent>(e);
 
-                    if (this->hasComponent<components::TextureRectComponent>(e))
-                        this->remove_component<components::TextureRectComponent>(e);
+                if (this->hasComponent<components::SpriteComponent>(e))
+                    this->remove_component<components::SpriteComponent>(e);
 
-                    if (this->hasComponent<components::VelocityComponent>(e))
-                        this->remove_component<components::VelocityComponent>(e);
-                } catch (std::exception &e) {
-                    std::cerr << e.what() << std::endl;
-                }
+                if (this->hasComponent<components::TextureRectComponent>(e))
+                    this->remove_component<components::TextureRectComponent>(e);
 
+                if (this->hasComponent<components::VelocityComponent>(e))
+                    this->remove_component<components::VelocityComponent>(e);
 
                 _entity_to_index.erase(it);
             }
         /**
          * @brief Add a construct component in the registry
-         * 
-         * @tparam Component 
-         * @param to 
-         * @param component 
-         * @return StorageComponents<Component>::reference_type 
+         *
+         * @tparam Component
+         * @param to
+         * @param component
+         * @return StorageComponents<Component>::reference_type
          */
             template <typename Component>
             typename StorageComponents<Component>::reference_type add_component(entity_t const &to, Component &&component) {
@@ -187,12 +183,12 @@ namespace ECS {
             }
         /**
          * @brief Copy a component in the registry
-         * 
-         * @tparam Component 
-         * @tparam Params 
-         * @param to 
-         * @param params 
-         * @return StorageComponents<Component>::reference_type 
+         *
+         * @tparam Component
+         * @tparam Params
+         * @param to
+         * @param params
+         * @return StorageComponents<Component>::reference_type
          */
             template <typename Component, typename...Params>
             typename StorageComponents<Component>::reference_type emplace_component(entity_t const &to, Params &&...params) {
@@ -203,9 +199,9 @@ namespace ECS {
             }
         /**
          * @brief Remove a component from the registry
-         * 
-         * @tparam Component 
-         * @param from 
+         *
+         * @tparam Component
+         * @param from
          */
             template <typename Component>
             void remove_component(entity_t const &from) {
