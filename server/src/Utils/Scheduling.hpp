@@ -6,8 +6,8 @@
 #define PLAYER_HEIGHT       65 * 2
 #define PLAYER_WIDTH        113 * 2
 
-#define LITTLE_MONSTER_HEIGHT      65 * 2
-#define LITTLE_MONSTER_WIDTH       113 * 2
+#define LITTLE_MONSTER_HEIGHT      192 * 2
+#define LITTLE_MONSTER_WIDTH       192 * 2
 
 #define MISSILE_HEIGHT      1
 #define MISSILE_WIDTH       1

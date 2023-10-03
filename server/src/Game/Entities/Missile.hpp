@@ -5,8 +5,8 @@
 class Missile: public AEntity {
     public:
         enum Type {
-            ALLY = 1,
-            ENEMY = 2,
+            PLAYER = 1,
+            LITTLE_MONSTER = 2,
         };
 
         Missile(Room &room, Missile::Type type, u_int id, short x, short y);

@@ -11,18 +11,19 @@ LittleMonster::LittleMonster(Room &room, u_int id, const std::pair<short, short>
 
 LittleMonster::~LittleMonster()
 {
-    Stream out;
-    out.setDataUChar(16);
-    out.setDataUInt(_id);
-    _room.sendToAll(out);
+    
 }
 
 void LittleMonster::refresh()
 {
     auto now = std::chrono::system_clock::now();
 
+    refreshMissiles();
+    if (!_exist) {
+        return;
+    }
     if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= ENEMY_FIRE_TIME) {
-        fireMissile(Missile::Type::ENEMY);
+        fireMissile(Missile::Type::LITTLE_MONSTER);
         _lastFire = now;
     }
     if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= ENEMY_MOVE_TIME) {
@@ -35,7 +36,7 @@ void LittleMonster::refresh()
         _room.sendToAll(out);
         _lastMove = now;
     }
-    refreshMissiles();
+    
 }
 
 bool LittleMonster::collide(const IEntity &other)

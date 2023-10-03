@@ -175,9 +175,13 @@ void Room::update()
         }
         for (auto i = _monsters.begin(); i != _monsters.end();) {
             (**i).refresh();
-            if ((**i).isOutOfScreen())
-                i = _monsters.erase(i);
-            else
+            if ((**i).getDeletable()) {
+                _monsters.erase(i);
+                continue;
+            }
+            if ((**i).getExist() && (**i).isOutOfScreen()) {
+                (**i).killEntity();
+            } else
                 i++;
         }
 
@@ -248,7 +252,7 @@ void Room::addMonster(IEntity::Type type, int x, int y)
         default:
             return;
     }
-    std::cout << "Monster " << static_cast<u_int>(_monstersIds) << " spawned in room " << static_cast<int>(_id) << std::endl;
+    // std::cout << "Monster " << static_cast<u_int>(_monstersIds) << " spawned in room " << static_cast<int>(_id) << std::endl;
 }
 
 void Room::checkCollisionPlayer()
@@ -267,9 +271,14 @@ void Room::checkCollisionPlayer()
 void Room::checkCollisionMonsters()
 {
     for (auto i = _players.begin(); i != _players.end(); i++) {
+        if (!(**i).getExist())
+            continue;
         for (auto j = _monsters.begin(); j != _monsters.end(); j++) {
+            if (!(**j).getExist())
+                continue;
             if ((**i).collide(**j)) {
-                _monsters.erase(j);
+                (**j).killEntity();
+                // _monsters.erase(j);
                 return;
             }
         }
