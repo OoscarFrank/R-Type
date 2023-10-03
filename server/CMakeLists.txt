@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.19)
-project(server)
+project(r-type_server)
 
 set(ASIO_DIR ../Asio/asio/include)
 
@@ -25,7 +25,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 add_executable(
-	server
+	r-type_server
 	${dir_src}
   ${dir_game}
   ${dir_entities}
@@ -36,10 +36,15 @@ add_executable(
 )
 
 if(WIN32)
-  target_compile_definitions(server PRIVATE _WIN32_WINNT=0x0A00 WIN32_LEAN_AND_MEAN)
+  target_compile_definitions(r-type_server PRIVATE _WIN32_WINNT=0x0A00 WIN32_LEAN_AND_MEAN)
 endif()
 
 target_link_libraries(
-  server
+  r-type_server
   Threads::Threads
 )
+
+install(TARGETS r-type_server RUNTIME DESTINATION bin)
+set(CPACK_GENERATOR "DEB;RPM")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "martin.d-herouville@epitech.eu")
+include(CPack)
