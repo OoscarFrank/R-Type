@@ -28,6 +28,7 @@ Game::Game() :
     this->_lastTime = NOW;
     this->_net.setInst(9);
     this->_net.send();
+    this->_gameOver = false;
 
     this->_manager.loadTexture("./client/assets/parallax/background.png", Loader::toLoad::ParallaxFirstbkg);
     this->_manager.loadTexture("./client/assets/parallax/background2.png", Loader::toLoad::ParallaxSecondbkg);
@@ -78,7 +79,7 @@ void Game::update()
     Network::Packet packet;
 
     while (this->_net.getQueueIn().tryPop(packet)) {
-        if (packet.getInstruction() == 10) {
+        if (packet.getInstruction() == 10) {    //you join room
             this->_roomId = packet.getData().getDataUInt();
             this->_playerId = packet.getData().getDataUInt();
 
@@ -96,7 +97,7 @@ void Game::update()
             this->_manager.loadTexture("./client/assets/entity/player/player_move4.png", Loader::toLoad::Player_move4);
         }
 
-        if (packet.getInstruction() == 13) {
+        if (packet.getInstruction() == 13) {    //player join game
             unsigned int id = packet.getData().getDataUInt();
             const sf::Texture *texture = nullptr;
 
@@ -125,12 +126,12 @@ void Game::update()
             }
         }
 
-        if (packet.getInstruction() == 11) {
+        if (packet.getInstruction() == 11) {    //timeout matchmaking
             this->_startTimeLeft = packet.getData().getDataUInt();
             this->_started = packet.getData().getDataUChar();
         }
 
-        if (packet.getInstruction() == 3) {
+        if (packet.getInstruction() == 3) {     //players position
             unsigned int id = packet.getData().getDataUInt();
             unsigned short x = packet.getData().getDataUShort();
             x *= _resMult;
@@ -139,12 +140,12 @@ void Game::update()
             this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(this->getPlayerEntityFromId(id), x, y));
         }
 
-        if (packet.getInstruction() == 6) {
+        if (packet.getInstruction() == 6) {     //player score
             unsigned int score = packet.getData().getDataUInt();
             std::cout << "Score: " << score << std::endl;
         }
 
-        if (packet.getInstruction() == 4) {
+        if (packet.getInstruction() == 4) {     //missile position
             unsigned int id = packet.getData().getDataUInt();
             unsigned char type = packet.getData().getDataUChar();
             unsigned short x = packet.getData().getDataUShort();
@@ -163,7 +164,7 @@ void Game::update()
             }
         }
 
-        if (packet.getInstruction() == 7) {
+        if (packet.getInstruction() == 7) {     //ennemi position
             unsigned int id = packet.getData().getDataUInt();
             unsigned short x = packet.getData().getDataUShort();
             x *= _resMult;
@@ -180,7 +181,7 @@ void Game::update()
             }
         }
 
-        if (packet.getInstruction() == 14) {
+        if (packet.getInstruction() == 18) {    //player died
             unsigned int id = packet.getData().getDataUInt();
 
             entity_t res = getPlayerEntityFromId(id);
@@ -198,7 +199,25 @@ void Game::update()
             }
         }
 
-        if (packet.getInstruction() == 15) {
+        if (packet.getInstruction() == 14) {    //player disconneted
+            unsigned int id = packet.getData().getDataUInt();
+
+            entity_t res = getPlayerEntityFromId(id);
+
+            if (res != 0) {
+                this->ecs.kill_entity(res);
+
+                this->_entityPositions.erase(std::remove_if(this->_entityPositions.begin(), this->_entityPositions.end(), [id](ECS::systems::MovableSystem::EntityPos const &pair) {
+                    return pair.getEntity() == id;
+                }), this->_entityPositions.end());
+
+                this->_players.erase(std::remove_if(this->_players.begin(), this->_players.end(), [id](std::pair<unsigned int, entity_t> const &pair) {
+                    return pair.first == id;
+                }), this->_players.end());
+            }
+        }
+
+        if (packet.getInstruction() == 15) {    //missile destroyed
             unsigned int id = packet.getData().getDataUInt();
             unsigned char type = packet.getData().getDataUChar();
             unsigned short x = packet.getData().getDataUShort();
@@ -221,7 +240,7 @@ void Game::update()
             }
         }
 
-        if (packet.getInstruction() == 16) {
+        if (packet.getInstruction() == 16) {        //ennemi died
             unsigned int id = packet.getData().getDataUInt();
 
             entity_t res = getEnnemiEntityFromId(id);
@@ -238,6 +257,11 @@ void Game::update()
                 }), this->_ennemies.end());
             }
         }
+
+        if (packet.getInstruction() == 17) {    //game over
+            unsigned char type = packet.getData().getDataUChar();
+            _gameOver = true;
+        }
     }
     this->_net.setInst(12);
     this->_net.send();
@@ -246,7 +270,7 @@ void Game::update()
 void Game::sendMoveToServer()
 {
     for (auto i = this->_entityMoves.begin(); i != this->_entityMoves.end(); ++i) {
-        if ((*i).getEntity() == this->_playerEntity) {
+        if (!_gameOver && (*i).getEntity() == this->_playerEntity) {
             this->_net.setInst(2);
             this->_net.getStreamOut().setDataUChar((*i).getMove());
             this->_net.getStreamOut().setDataUChar(1);

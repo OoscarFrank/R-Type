@@ -36,7 +36,6 @@ void LittleMonster::refresh()
         _room.sendToAll(out);
         _lastMove = now;
     }
-    
 }
 
 bool LittleMonster::collide(const IEntity &other)

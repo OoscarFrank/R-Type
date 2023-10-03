@@ -61,11 +61,12 @@ void Network::startReceive()
             std::pair<size_t, Stream> tmpInst;
             if (!ec && bytes_transferred > 0) {
                 this->_streamIn.setDataCharArray(data->data(), bytes_transferred);
-                while ((tmpInst = this->getNextInst()).first != 0)
+                while ((tmpInst = this->getNextInst()).first != 0) {
                     _queueIn.push(Network::Packet(tmpInst.second, tmpInst.first));
+                }
                 startReceive();
             } else if (ec) {
-                std::cerr << "Error inr Network" << std::endl;
+                std::cerr << "Error in Network" << std::endl;
             }
         }
     );
@@ -78,14 +79,19 @@ std::pair<size_t, Stream> Network::getNextInst()
     std::vector<Commands> inst = IN_COMMANDS;
     std::pair<size_t, Stream> out;
 
+
     for (auto i = inst.begin(); i != inst.end(); ++i) {
-        if (this->_streamIn[0] == i->_inst) {
-            if (this->_streamIn.size() < i->_size + 1)
-                return std::make_pair(0, Stream());
-            out.first = i->_inst;
-            out.second = this->_streamIn.subStream(1, i->_size);
-            this->_streamIn = this->_streamIn.subStream(i->_size + 1);
-            return out;
+        try {
+            if (this->_streamIn[0] == i->_inst) {
+                if (this->_streamIn.size() < i->_size + 1)
+                    return std::make_pair(0, Stream());
+                out.first = i->_inst;
+                out.second = this->_streamIn.subStream(1, i->_size);
+                this->_streamIn = this->_streamIn.subStream(i->_size + 1);
+                return out;
+            }
+        } catch (std::exception &e) {
+            std::cerr << e.what() << std::endl;
         }
     }
     this->_streamIn.clear();

@@ -50,7 +50,8 @@ struct Commands {
  * 14 serv - player left game (player id)
  * 15 serv - missile destroyed (id, type, x, y)
  * 16 serv - ennemi died (id)
- *
+ * 17 serv - game over (type)
+ * 18 serv - player died (id)
  */
 #define OUT_COMMANDS { \
     {1, {UINT}, 4}, \
@@ -62,6 +63,8 @@ struct Commands {
     {11, {INT, UCHAR}, 5}, \
     {13, {UINT}, 4}, \
     {14, {UINT}, 4}, \
-    {15, {UINT, UCHAR, SHORT, SHORT}, 9} \
-    {16, {UINT}, 4} \
+    {15, {UINT, UCHAR, SHORT, SHORT}, 9}, \
+    {16, {UINT}, 4}, \
+    {17, {UCHAR}, 1}, \
+    {18, {UINT}, 4} \
 };
