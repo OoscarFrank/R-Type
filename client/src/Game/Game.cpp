@@ -82,18 +82,18 @@ void Game::update()
             this->_roomId = packet.getData().getDataUInt();
             this->_playerId = packet.getData().getDataUInt();
 
-            this->_manager.loadTexture("./client/assets/entity/player/player_move1.png", Loader::toLoad::Player_move1);
+            this->_manager.loadTexture("assets/entity/player/player_move1.png", Loader::toLoad::Player_move1);
 
             entity_t newEntity = this->_factory.createPlayer(-1000.0f, -1000.0f, this->_manager.getTexture(Loader::Loader::Player_move1));
             this->_players.push_back(std::make_pair(this->_playerId, newEntity));
             this->_playerEntity = newEntity;
 
-            this->_manager.loadTexture("./client/assets/entity/rocket.png", Loader::toLoad::Rocket);
-            this->_manager.loadTexture("./client/assets/entity/monsters/monster1.png", Loader::toLoad::Monster1);
-            this->_manager.loadTexture("./client/assets/entity/player/player_move1.png", Loader::toLoad::Player_move1);
-            this->_manager.loadTexture("./client/assets/entity/player/player_move2.png", Loader::toLoad::Player_move2);
-            this->_manager.loadTexture("./client/assets/entity/player/player_move3.png", Loader::toLoad::Player_move3);
-            this->_manager.loadTexture("./client/assets/entity/player/player_move4.png", Loader::toLoad::Player_move4);
+            this->_manager.loadTexture("assets/entity/rocket.png", Loader::toLoad::Rocket);
+            this->_manager.loadTexture("assets/entity/monsters/monster1.png", Loader::toLoad::Monster1);
+            this->_manager.loadTexture("assets/entity/player/player_move1.png", Loader::toLoad::Player_move1);
+            this->_manager.loadTexture("assets/entity/player/player_move2.png", Loader::toLoad::Player_move2);
+            this->_manager.loadTexture("assets/entity/player/player_move3.png", Loader::toLoad::Player_move3);
+            this->_manager.loadTexture("assets/entity/player/player_move4.png", Loader::toLoad::Player_move4);
 
         }
 

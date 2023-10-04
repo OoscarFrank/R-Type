@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.23)
 
 project(client VERSION 1.0)
 
-set (CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 
 set(ASIO_DIR ../Asio/asio/include)
 
@@ -34,6 +34,9 @@ add_executable(
 	client
 	${SOURCES}
 )
+
+target_compile_features(sfml-audio PRIVATE cxx_std_11)
+target_compile_features(client PRIVATE cxx_std_20)
 
 target_link_libraries(
 	client
