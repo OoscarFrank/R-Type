@@ -12,6 +12,7 @@ else
     echo "This is a different Linux distribution"
 fi
 
+rm -rf lib/
 rm -rf build/
 mkdir build
 cd build
