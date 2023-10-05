@@ -1,0 +1,131 @@
+name: Build and Release on new tag
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  compile-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Apt update
+        run: sudo apt update
+
+      - name: Install CMake 3.19
+        run: |
+          wget https://github.com/Kitware/CMake/releases/download/v3.19.8/cmake-3.19.8-Linux-x86_64.sh
+          chmod +x cmake-3.19.8-Linux-x86_64.sh
+          sudo ./cmake-3.19.8-Linux-x86_64.sh --prefix=/usr/local --skip-license
+          echo 'export PATH="/usr/local/bin:$PATH"' >> $HOME/.bashrc
+          source $HOME/.bashrc
+
+      - name: Install Make
+        run: sudo apt install -y make
+
+      - name: Install rpmbuild
+        run: sudo apt install -y rpm
+
+      - name: Build server
+        run: |
+          cd server/
+          ./build.sh
+
+      - name: Test server
+        run: |
+          ls ./server/build | grep "r-type_server"
+          ls ./server/build | grep "r-type_server-0.1.1-Linux.deb"
+          ls ./server/build | grep "r-type_server-0.1.1-Linux.rpm"
+
+      - name: Upload artifact server .deb
+        uses: actions/upload-artifact@v3
+        with:
+          name: deb
+          path: ./server/build/r-type_server-0.1.1-Linux.deb
+          if-no-files-found: error
+
+      - name: Upload artifact server .rpm
+        uses: actions/upload-artifact@v3
+        with:
+          name: rpm
+          path: ./server/build/r-type_server-0.1.1-Linux.rpm
+          if-no-files-found: error
+
+  compile-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Build server
+        run: |
+          cd server/
+          ./build.ps1
+
+      - name: Test server
+        run: |
+          Get-ChildItem -Path ./server/build/Release | Where-Object { $_.Name -like "*r-type_server.exe*" }
+          Get-ChildItem -Path ./server/build | Where-Object { $_.Name -like "*r-type_server-0.1.1-win64.exe" }
+
+      - name: Upload artifact server .exe
+        uses: actions/upload-artifact@v3
+        with:
+          name: exe
+          path: ./server/build/Release/r-type_server.exe
+          if-no-files-found: error
+
+      - name: Upload artifact server installer .exe
+        uses: actions/upload-artifact@v3
+        with:
+          name: exe_installer
+          path: ./server/build/r-type_server-0.1.1-win64.exe
+          if-no-files-found: error
+
+  create-release:
+    needs: [compile-linux, compile-windows]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Rename artifacts
+        run: |
+          mv ./exe_installer/r-type_server-0.1.1-win64.exe ./exe_installer/r-type_server-${{ github.ref_name }}-win64-installer.exe
+          mv ./exe/r-type_server.exe ./exe/r-type_server-${{ github.ref_name }}.exe
+          mv ./deb/r-type_server-0.1.1-Linux.deb ./deb/r-type_server-${{ github.ref_name }}-linux-installer.deb
+          mv ./rpm/r-type_server-0.1.1-Linux.rpm ./rpm/r-type_server-${{ github.ref_name }}-linux-installer.rpm
+
+      - name: Test
+        run: |
+          ls -lR
+
+      - name: Install gh cli
+        run: |
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+          && sudo apt update \
+          && sudo apt install gh -y
+
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create ${{ github.ref_name }} \
+          ./exe_installer/r-type_server-${{ github.ref_name }}-win64-installer.exe \
+          ./exe/r-type_server-${{ github.ref_name }}.exe \
+          ./deb/r-type_server-${{ github.ref_name }}-linux-installer.deb \
+          ./rpm/r-type_server-${{ github.ref_name }}-linux-installer.rpm \
+          --generate-notes --repo="$GITHUB_REPOSITORY"
