@@ -6,7 +6,7 @@ if [ "$ID" == "ubuntu" ]; then
     sudo apt-get install libfreetype6 x11-xserver-utils libflac-dev libogg-dev libvorbis-dev libopenal-dev
     echo "Dependencies on Ubuntu for SFML installed"
 elif [ "$ID" == "fedora" ]; then
-    sudo dnf install freetype-devel xorg-x11-server-Xorg flac-devel libogg-devel libvorbis-devel openal-soft-devel
+    sudo dnf install freetype-devel libX11-devel libXrandr-devel libudev-devel xorg-x11-server-Xorg mesa-libGL-devel flac-devel libogg-devel libvorbis-devel openal-soft-devel
     echo "Dependencies on Fedora for SFML installed"
 else
     echo "This is a different Linux distribution"
