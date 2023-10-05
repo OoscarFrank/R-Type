@@ -54,3 +54,25 @@ target_link_libraries(
 	sfml-network
 	Threads::Threads
 )
+
+install(TARGETS ${PROJECT_NAME} DESTINATION .)
+install(FILES ${CMAKE_SOURCE_DIR}/../extern/dll/sfml-audio-2.dll DESTINATION .)
+install(FILES ${CMAKE_SOURCE_DIR}/../extern/dll/sfml-graphics-2.dll DESTINATION .)
+install(FILES ${CMAKE_SOURCE_DIR}/../extern/dll/sfml-network-2.dll DESTINATION .)
+install(FILES ${CMAKE_SOURCE_DIR}/../extern/dll/sfml-system-2.dll DESTINATION .)
+install(FILES ${CMAKE_SOURCE_DIR}/../extern/dll/sfml-window-2.dll DESTINATION .)
+install(FILES ${CMAKE_SOURCE_DIR}/../extern/SFML/extlibs/bin/x64/openal32.dll DESTINATION .)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/assets/parallax/ DESTINATION assets/parallax)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/assets/entity/ DESTINATION assets/entity)
+
+if(UNIX)
+  set(CPACK_GENERATOR "DEB;RPM")
+  set(CPACK_DEBIAN_PACKAGE_MAINTAINER "martin.d-herouville@epitech.eu")
+elseif(WIN32)
+  set(CPACK_NSIS_MODIFY_PATH "ON")
+  set(CPACK_NSIS_CREATE_ICONS_EXTRA
+    "CreateShortCut '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\RType_client.lnk' '$INSTDIR\\\\r-type_client' '5'"
+  )
+endif()
+
+include(CPack)
