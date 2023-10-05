@@ -1,5 +1,4 @@
 r-type_client
-extern/
 Asio/
 *.o
 .vscode/
@@ -8,6 +7,7 @@ test.png
 .DS_Store
 vgcore*
 **/build/
+client/lib/
 =======
 # config files
 .vscode/
