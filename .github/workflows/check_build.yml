@@ -7,7 +7,7 @@ on:
       - ci-cd
 
 jobs:
-  build-linux:
+  compile-linux:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,12 +35,25 @@ jobs:
         run: |
           cd server/
           ./build.sh
+          cd ..
+
+      - name: Build client
+        run: |
+          cd client/
+          ./build.sh
+          cd ..
 
       - name: Test server
         run: |
           ls ./server/build | grep "r-type_server"
           ls ./server/build | grep "r-type_server-0.1.1-Linux.deb"
           ls ./server/build | grep "r-type_server-0.1.1-Linux.rpm"
+
+      - name: Test client
+        run: |
+          ls ./client/build | grep "r-type_client"
+          ls ./client/build | grep "r-type_client-0.1.1-Linux.deb"
+          ls ./client/build | grep "r-type_client-0.1.1-Linux.rpm"
 
   compile-windows:
     runs-on: windows-latest
@@ -56,8 +69,20 @@ jobs:
         run: |
           cd server/
           ./build.ps1
+          cd ..
+
+      - name: Build client
+        run: |
+          cd client/
+          ./build.ps1
+          cd ..
 
       - name: Test server
         run: |
           Get-ChildItem -Path ./server/build/Release | Where-Object { $_.Name -like "*r-type_server.exe*" }
           Get-ChildItem -Path ./server/build | Where-Object { $_.Name -like "*r-type_server-0.1.1-win64.exe" }
+
+      - name: Test client
+        run: |
+          Get-ChildItem -Path ./client/build/Release | Where-Object { $_.Name -like "*r-type_client.exe*" }
+          Get-ChildItem -Path ./client/build | Where-Object { $_.Name -like "*r-type_client-0.1.1-win64.exe" }

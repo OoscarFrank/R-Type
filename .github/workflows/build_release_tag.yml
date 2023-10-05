@@ -34,6 +34,13 @@ jobs:
         run: |
           cd server/
           ./build.sh
+          cd ..
+
+      - name: Build client
+        run: |
+          cd client/
+          ./build.sh
+          cd ..
 
       - name: Test server
         run: |
@@ -41,18 +48,38 @@ jobs:
           ls ./server/build | grep "r-type_server-0.1.1-Linux.deb"
           ls ./server/build | grep "r-type_server-0.1.1-Linux.rpm"
 
+      - name: Test client
+        run: |
+          ls ./client/build | grep "r-type_client"
+          ls ./client/build | grep "r-type_client-0.1.1-Linux.deb"
+          ls ./client/build | grep "r-type_client-0.1.1-Linux.rpm"
+
       - name: Upload artifact server .deb
         uses: actions/upload-artifact@v3
         with:
-          name: deb
+          name: server_deb
           path: ./server/build/r-type_server-0.1.1-Linux.deb
           if-no-files-found: error
 
       - name: Upload artifact server .rpm
         uses: actions/upload-artifact@v3
         with:
-          name: rpm
+          name: server_rpm
           path: ./server/build/r-type_server-0.1.1-Linux.rpm
+          if-no-files-found: error
+
+      - name: Upload artifact client .deb
+        uses: actions/upload-artifact@v3
+        with:
+          name: client_deb
+          path: ./client/build/r-type_client-0.1.1-Linux.deb
+          if-no-files-found: error
+
+      - name: Upload artifact client .rpm
+        uses: actions/upload-artifact@v3
+        with:
+          name: client_rpm
+          path: ./client/build/r-type_client-0.1.1-Linux.rpm
           if-no-files-found: error
 
   compile-windows:
@@ -69,24 +96,50 @@ jobs:
         run: |
           cd server/
           ./build.ps1
+          cd ..
+
+      - name: Build client
+        run: |
+          cd client/
+          ./build.ps1
+          cd ..
 
       - name: Test server
         run: |
           Get-ChildItem -Path ./server/build/Release | Where-Object { $_.Name -like "*r-type_server.exe*" }
           Get-ChildItem -Path ./server/build | Where-Object { $_.Name -like "*r-type_server-0.1.1-win64.exe" }
 
+      - name: Test client
+        run: |
+          Get-ChildItem -Path ./client/build/Release | Where-Object { $_.Name -like "*r-type_client.exe*" }
+          Get-ChildItem -Path ./client/build | Where-Object { $_.Name -like "*r-type_client-0.1.1-win64.exe" }
+
       - name: Upload artifact server .exe
         uses: actions/upload-artifact@v3
         with:
-          name: exe
+          name: server_exe
           path: ./server/build/Release/r-type_server.exe
           if-no-files-found: error
 
       - name: Upload artifact server installer .exe
         uses: actions/upload-artifact@v3
         with:
-          name: exe_installer
+          name: server_exe_installer
           path: ./server/build/r-type_server-0.1.1-win64.exe
+          if-no-files-found: error
+
+      - name: Upload artifact client .exe
+        uses: actions/upload-artifact@v3
+        with:
+          name: client_exe
+          path: ./client/build/Release/r-type_client.exe
+          if-no-files-found: error
+
+      - name: Upload artifact client installer .exe
+        uses: actions/upload-artifact@v3
+        with:
+          name: client_exe_installer
+          path: ./client/build/r-type_client-0.1.1-win64.exe
           if-no-files-found: error
 
   create-release:
@@ -101,10 +154,14 @@ jobs:
 
       - name: Rename artifacts
         run: |
-          mv ./exe_installer/r-type_server-0.1.1-win64.exe ./exe_installer/r-type_server-${{ github.ref_name }}-win64-installer.exe
-          mv ./exe/r-type_server.exe ./exe/r-type_server-${{ github.ref_name }}.exe
-          mv ./deb/r-type_server-0.1.1-Linux.deb ./deb/r-type_server-${{ github.ref_name }}-linux-installer.deb
-          mv ./rpm/r-type_server-0.1.1-Linux.rpm ./rpm/r-type_server-${{ github.ref_name }}-linux-installer.rpm
+          mv ./server_exe_installer/r-type_server-0.1.1-win64.exe ./server_exe_installer/r-type_server-${{ github.ref_name }}-win64-installer.exe
+          mv ./server_exe/r-type_server.exe ./server_exe/r-type_server-${{ github.ref_name }}.exe
+          mv ./server_deb/r-type_server-0.1.1-Linux.deb ./server_deb/r-type_server-${{ github.ref_name }}-linux-installer.deb
+          mv ./server_rpm/r-type_server-0.1.1-Linux.rpm ./server_rpm/r-type_server-${{ github.ref_name }}-linux-installer.rpm
+          mv ./client_exe_installer/r-type_client-0.1.1-win64.exe ./client_exe_installer/r-type_client-${{ github.ref_name }}-win64-installer.exe
+          mv ./client_exe/r-type_client.exe ./client_exe/r-type_client-${{ github.ref_name }}.exe
+          mv ./client_deb/r-type_client-0.1.1-Linux.deb ./client_deb/r-type_client-${{ github.ref_name }}-linux-installer.deb
+          mv ./client_rpm/r-type_client-0.1.1-Linux.rpm ./client_rpm/r-type_client-${{ github.ref_name }}-linux-installer.rpm
 
       - name: Test
         run: |
@@ -124,8 +181,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create ${{ github.ref_name }} \
-          ./exe_installer/r-type_server-${{ github.ref_name }}-win64-installer.exe \
-          ./exe/r-type_server-${{ github.ref_name }}.exe \
-          ./deb/r-type_server-${{ github.ref_name }}-linux-installer.deb \
-          ./rpm/r-type_server-${{ github.ref_name }}-linux-installer.rpm \
+          ./server_exe_installer/r-type_server-${{ github.ref_name }}-win64-installer.exe \
+          ./server_exe/r-type_server-${{ github.ref_name }}.exe \
+          ./server_deb/r-type_server-${{ github.ref_name }}-linux-installer.deb \
+          ./server_rpm/r-type_server-${{ github.ref_name }}-linux-installer.rpm \
+          ./client_exe_installer/r-type_client-${{ github.ref_name }}-win64-installer.exe \
+          ./client_exe/r-type_client-${{ github.ref_name }}.exe \
+          ./client_deb/r-type_client-${{ github.ref_name }}-linux-installer.deb \
+          ./client_rpm/r-type_client-${{ github.ref_name }}-linux-installer.rpm \
           --generate-notes --repo="$GITHUB_REPOSITORY"
