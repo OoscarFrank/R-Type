@@ -1,43 +1,67 @@
 <div align="center">
     <h1 align="center">
-        R-Type
+        RType
     </h1>
 </div>
 
----
+## Description
 
-### 🔧 Installation
+RType is a 2D game based on the original R-Type game. It is a side-scrolling shoot'em up in which the player controls a spaceship to fight against enemies. The player can move the spaceship in two directions, shoot and use a special attack. The goal is to reach the end of the level by destroying all enemies.
 
-1. Clone the repository:
+This repository contains the client and server of the game. The client is the game itself where the user controls his player, and the server is used to manage the game sessions and the players.
 
-```sh
-git clone git@github.com:EpitechPromo2026/B-CPP-500-MLH-5-1-rtype-martin.d-herouville.git
+## Download
+
+The game is currently available on Ubuntu, Fedora and Windows.
+
+You can download the latest release of the game [here](https://github.com/EpitechPromo2026/B-CPP-500-MLH-5-1-rtype-martin.d-herouville/releases). There is a Windows installer, a windows executable and a DEB/RPM image.
+
+## Installation
+
+If you want to build the game from the source code, you will need to install the following dependencies:
+
+- [CMake](https://cmake.org/)
+
+You can find the installation instructions for each OS in the [INSTALL.md](INSTALL.md) file.
+
+## Usage
+
+### Server
+
+The server is used to manage the game sessions and the players. It is the server that will create the game sessions and manage the players' connections.
+
+To launch the server, you can use the following command:
+
+```bash
+./r-type_server -p {port}
 ```
 
-## 🤝 Contributing
+The port is optional, if you don't specify it, the server will use the default port 4242.
 
-Contributions are always welcome! Please follow these steps:
+### Client
 
-1. Fork the project repository. This creates a copy of the project on your account that you can modify without affecting the original project.
-2. Clone the forked repository to your local machine using a Git client like Git or GitHub Desktop.
-3. Create a new branch with a descriptive name (e.g., `new-feature-branch` or `bugfix-issue-123`).
+The client is the game itself. It is the client that will connect to the server and allow the user to play.
 
-```sh
-git checkout -b new-feature-branch
+To launch the client, you can use the following command:
+
+```bash
+./r-type_client -h {host} -p {port}
 ```
 
-4. Make changes to the project's codebase.
-5. Commit your changes to your local branch with a clear commit message that explains the changes you've made.
+The host and port are optional, if you don't specify them, the client will use the default host 127.0.0.1 and port 4242.
 
-```sh
-git commit -m 'Implemented new feature.'
-```
+## Screenshots
 
-6. Push your changes to your forked repository on GitHub using the following command
+![Screenshot 1]()
 
-```sh
-git push origin new-feature-branch
-```
+## Contributing
 
-7. Create a new pull request to the original project repository. In the pull request, describe the changes you've made and why they're necessary.
-The project maintainers will review your changes and provide feedback or merge them into the main branch.
+Contributions are always welcome! You can find the contribution guidelines in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+
+## Authors
+
+- [Martin D'Herouville](https://github.com/Mazettt)
+- [David Benistant](https://github.com/usernameisunvaible)
+- [Thomas Ott](https://github.com/RedBoardDev)
+- [Oscar Frank](https://github.com/OoscarFrank)
+- [Lucas Binder](https://github.com/LucasB9)
