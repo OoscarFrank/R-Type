@@ -30,7 +30,7 @@ You can find the installation instructions for each OS in the [INSTALL.md](INSTA
 
 The server is used to manage the game sessions and the players. It is the server that will create the game sessions and manage the players' connections.
 
-### On Linux
+#### On Linux
 
 To launch the server on Linux, you can use the following command:
 
@@ -40,7 +40,7 @@ To launch the server on Linux, you can use the following command:
 
 The port is optional, if you don't specify it, the server will use the default port 4242.
 
-### On Windows
+#### On Windows
 
 To launch the server on Windows, you can use the following command:
 
@@ -53,7 +53,7 @@ The port is optional, if you don't specify it, the server will use the default p
 
 The client is the game itself. It is the client that will connect to the server and allow the user to play.
 
-### On Linux
+#### On Linux
 
 To launch the client on Linux, you can use the following command:
 
@@ -63,7 +63,7 @@ To launch the client on Linux, you can use the following command:
 
 The host and port are optional, if you don't specify them, the client will use the default host 127.0.0.1 and port 4242.
 
-### On Windows
+#### On Windows
 
 To launch the client on Windows, you can use the following command:
 
