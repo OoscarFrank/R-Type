@@ -16,8 +16,8 @@ fi
 
 cd server
 ./build.sh
-
 cd ..
 
 cd client
 ./build.sh
+cd ..
