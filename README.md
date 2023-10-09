@@ -30,7 +30,9 @@ You can find the installation instructions for each OS in the [INSTALL.md](INSTA
 
 The server is used to manage the game sessions and the players. It is the server that will create the game sessions and manage the players' connections.
 
-To launch the server, you can use the following command:
+### On Linux
+
+To launch the server on Linux, you can use the following command:
 
 ```bash
 ./r-type_server -p {port}
@@ -38,14 +40,35 @@ To launch the server, you can use the following command:
 
 The port is optional, if you don't specify it, the server will use the default port 4242.
 
+### On Windows
+
+To launch the server on Windows, you can use the following command:
+
+```bash
+r-type_server.exe -p {port}
+```
+The port is optional, if you don't specify it, the server will use the default port 4242.
+
 ### Client
 
 The client is the game itself. It is the client that will connect to the server and allow the user to play.
 
-To launch the client, you can use the following command:
+### On Linux
+
+To launch the client on Linux, you can use the following command:
 
 ```bash
 ./r-type_client -h {host} -p {port}
+```
+
+The host and port are optional, if you don't specify them, the client will use the default host 127.0.0.1 and port 4242.
+
+### On Windows
+
+To launch the client on Windows, you can use the following command:
+
+```bash
+r-type_client -h {host} -p {port}
 ```
 
 The host and port are optional, if you don't specify them, the client will use the default host 127.0.0.1 and port 4242.
