@@ -18,11 +18,7 @@ You can download the latest release of the game [here](https://github.com/Epitec
 
 ## Installation
 
-If you want to build the game from the source code, you will need to install the following dependencies:
-
-- [CMake](https://cmake.org/)
-
-You can find the installation instructions for each OS in the [INSTALL.md](INSTALL.md) file.
+If you want to build the game from the source code, you can find the installation instructions for each OS in the [INSTALL.md](INSTALL.md) file.
 
 ## Usage
 
