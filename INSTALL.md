@@ -49,4 +49,4 @@ cmake ..
 make
 ```
 
-To run the server and the client on Linux, I will redirect you to the [Usage](./README.md#usage) section.
+To run the server and the client on Linux, I will redirect you to the [Usage](./README.md#usage) section in the README.
