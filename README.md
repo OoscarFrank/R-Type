@@ -71,7 +71,7 @@ The host and port are optional, if you don't specify them, the client will use t
 
 ## Screenshots
 
-![Screenshot 1]()
+![](./screenshots/screenshot_actual_game.png)
 
 ## Contributing
 
