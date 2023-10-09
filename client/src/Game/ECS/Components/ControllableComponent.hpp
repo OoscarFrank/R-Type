@@ -24,16 +24,16 @@ namespace ECS {
                     return _controls;
                 }
 
-                const unsigned char &getMove() const {
-                    return _move;
+                int getEvent() const {
+                    return _event;
                 }
-                void setMove(unsigned char move) {
-                    _move = move;
+                void setEvent(int event) {
+                    _event = event;
                 }
 
             private:
                 std::vector<sf::Keyboard::Key> _controls;
-                unsigned char _move;
+                int _event = 0;
         };
     }
 }

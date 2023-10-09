@@ -6,6 +6,7 @@
 #define DOWN 2
 #define LEFT 4
 #define RIGHT 8
+#define SPACE 16
 
 namespace ECS
 {
@@ -14,40 +15,40 @@ namespace ECS
         class ControllableSystem
         {
         public:
-            class EntityMove
+            class EntityEvent
             {
             private:
                 entity_t entity;
-                char move;
+                int event = 0;
             public:
                 /**
                  * @brief Construct a new Entity Move object
                  *
                  * @param entity
                  */
-                EntityMove(entity_t entity) : entity(entity) {}
+                EntityEvent(entity_t entity) : entity(entity) {}
                 /**
                  * @brief Destroy the Entity Move object
                  *
                  */
-                ~EntityMove() {}
+                ~EntityEvent() {}
                 /**
                  * @brief Set the Move object
                  *
                  * @param move
                  */
-                void setMove(char move)
+                void setEvent(int event)
                 {
-                    this->move = move;
+                    this->event = event;
                 }
                 /**
                  * @brief Get the Move object
                  *
-                 * @return char
+                 * @return int
                  */
-                char getMove()
+                int getEvent()
                 {
-                    return move;
+                    return event;
                 }
                 /**
                  * @brief Set the Entity object
@@ -76,56 +77,55 @@ namespace ECS
              * @param ecs
              * @param entityMoves
              */
-            void update(Registry &ecs, std::vector<EntityMove> &entityMoves, sf::RenderWindow &window, unsigned char &move)
+            void update(Registry &ecs, std::vector<EntityEvent> &entityMoves, sf::RenderWindow &window, int &eventMemory)
             {
-                try
-                {
+                try {
                     auto &ControllableComponents = ecs.get_components<components::ControllableComponent>();
                     sf::Event event;
-
-                    
-                    while (window.pollEvent(event))
-                    {
-                        if (event.type == sf::Event::Closed)
-                        {
+                    while (window.pollEvent(event)) {
+                        if (event.type == sf::Event::Closed) {
                             window.close();
                             return;
                         }
-                        if (event.type == sf::Event::KeyPressed)
-                        {
+                        if (event.type == sf::Event::KeyPressed) {
                             switch (event.key.code)
                             {
                             case sf::Keyboard::Up:
-                                move |= UP;
+                                eventMemory |= UP;
                                 break;
                             case sf::Keyboard::Down:
-                                move |= DOWN;
+                                eventMemory |= DOWN;
                                 break;
                             case sf::Keyboard::Left:
-                                move |= LEFT;
+                                eventMemory |= LEFT;
                                 break;
                             case sf::Keyboard::Right:
-                                move |= RIGHT;
+                                eventMemory |= RIGHT;
+                                break;
+                            case sf::Keyboard::Space:
+                                eventMemory |= SPACE;
                                 break;
                             default:
                                 break;
                             }
                         }
-                        if (event.type == sf::Event::KeyReleased)
-                        {
+                        if (event.type == sf::Event::KeyReleased) {
                             switch (event.key.code)
                             {
                             case sf::Keyboard::Up:
-                                move ^= UP;
+                                eventMemory ^= UP;
                                 break;
                             case sf::Keyboard::Down:
-                                move ^= DOWN;
+                                eventMemory ^= DOWN;
                                 break;
                             case sf::Keyboard::Left:
-                                move ^= LEFT;
+                                eventMemory ^= LEFT;
                                 break;
                             case sf::Keyboard::Right:
-                                move ^= RIGHT;
+                                eventMemory ^= RIGHT;
+                                break;
+                            case sf::Keyboard::Space:
+                                eventMemory ^= SPACE;
                                 break;
                             default:
                                 break;
@@ -138,52 +138,53 @@ namespace ECS
                         auto &ControllableComponent = ControllableComponents[i];
                         if (!ControllableComponent)
                             continue;
-                        unsigned char p_move = ControllableComponent->getMove();
+                        int p_move = ControllableComponent->getEvent();
                         for (auto &key : ControllableComponent->getControls()) {
-                            
                             switch (key) {
                                 case sf::Keyboard::Up:
-                                    if (move & UP && !(p_move & UP))
-                                        ControllableComponent->setMove(p_move | UP);
-                                    else if (!(move & UP) && p_move & UP)
-                                        ControllableComponent->setMove(p_move ^ UP);
+                                    if (+eventMemory & UP && !(p_move & UP))
+                                        ControllableComponent->setEvent(p_move | UP);
+                                    else if (!(eventMemory & UP) && p_move & UP)
+                                        ControllableComponent->setEvent(p_move ^ UP);
                                     break;
                                 case sf::Keyboard::Down:
-                                    if (move & DOWN && !(p_move & DOWN))
-                                        ControllableComponent->setMove(p_move | DOWN);
-                                    else if (!(move & DOWN) && p_move & DOWN)
-                                        ControllableComponent->setMove(p_move ^ DOWN);
+                                    if (eventMemory & DOWN && !(p_move & DOWN))
+                                        ControllableComponent->setEvent(p_move | DOWN);
+                                    else if (!(eventMemory & DOWN) && p_move & DOWN)
+                                        ControllableComponent->setEvent(p_move ^ DOWN);
                                     break;
                                 case sf::Keyboard::Left:
-                                    if (move & LEFT && !(p_move & LEFT))
-                                        ControllableComponent->setMove(p_move | LEFT);
-                                    else if (!(move & LEFT) && p_move & LEFT)
-                                        ControllableComponent->setMove(p_move ^ LEFT);
+                                    if (eventMemory & LEFT && !(p_move & LEFT))
+                                        ControllableComponent->setEvent(p_move | LEFT);
+                                    else if (!(eventMemory & LEFT) && p_move & LEFT)
+                                        ControllableComponent->setEvent(p_move ^ LEFT);
                                     break;
                                 case sf::Keyboard::Right:
-                                    if (move & RIGHT && !(p_move & RIGHT))
-                                        ControllableComponent->setMove(p_move | RIGHT);
-                                    else if (!(move & RIGHT) && p_move & RIGHT)
-                                        ControllableComponent->setMove(p_move ^ RIGHT);
+                                    if (eventMemory & RIGHT && !(p_move & RIGHT))
+                                        ControllableComponent->setEvent(p_move | RIGHT);
+                                    else if (!(eventMemory & RIGHT) && p_move & RIGHT)
+                                        ControllableComponent->setEvent(p_move ^ RIGHT);
+                                    break;
+                                case sf::Keyboard::Space:
+                                    if (eventMemory & SPACE && !(p_move & SPACE))
+                                        ControllableComponent->setEvent(p_move | SPACE);
+                                    else if (!(eventMemory & SPACE) && p_move & SPACE)
+                                        ControllableComponent->setEvent(p_move ^ SPACE);
                                     break;
                                 default:
                                     break;
                             }
-                            
                         }
-                        entity_t entity = ecs.entity_from_index(i);
-                        EntityMove entityMoveTmp(entity);
-
-                        if (ControllableComponent->getMove() != 0)
-                        {
-                            entityMoveTmp.setMove(ControllableComponent->getMove());
+                        if (ControllableComponent->getEvent() != 0) {
+                            entity_t entity = ecs.entity_from_index(i);
+                            EntityEvent entityMoveTmp(entity);
+                            entityMoveTmp.setEvent(ControllableComponent->getEvent());
                             entityMoves.push_back(entityMoveTmp);
                         }
                     }
                 
                 }
-                catch (std::exception &e)
-                {
+                catch (std::exception &e) {
                     std::cerr << e.what() << std::endl;
                 }
             

@@ -19,17 +19,17 @@ void EventManager::EventLoop(sf::RenderWindow &window, Network &_net)
     //     }
     // }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-        // if (_net._ReaderThread.joinable())
-        //     _net._ReaderThread.join();
-        window.close();
-        return;
-    }
+    // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+    //     // if (_net._ReaderThread.joinable())
+    //     //     _net._ReaderThread.join();
+    //     window.close();
+    //     return;
+    // }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-        _net.setInst(5);
-        _net.send();
-    }
+    // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+    //     _net.setInst(5);
+    //     _net.send();
+    // }
 }
 
 bool EventManager::isKeyPressed(EventManager::keys key)

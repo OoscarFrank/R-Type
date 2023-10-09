@@ -209,7 +209,7 @@ void Room::update()
 
         if (now - _lastMonsterSpawn >= ENEMY_SPAWN_TIME) {
             _lastMonsterSpawn = now;
-            // this->addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
+            this->addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
             now = NOW;
         }
         _playersMutex.unlock();

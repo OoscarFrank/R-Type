@@ -75,12 +75,12 @@ namespace game {
             unsigned int _startTimeLeft;
             unsigned char _started;
 
-            unsigned char moveMemory;
+            int eventMemory;
 
             std::vector<std::pair<size_t, entity_t>> _players;
             std::vector<std::pair<size_t, entity_t>> _missiles;
             std::vector<std::pair<size_t, entity_t>> _ennemies;
             std::vector<ECS::systems::MovableSystem::EntityPos> _entityPositions;
-            std::vector<ECS::systems::ControllableSystem::EntityMove> _entityMoves;
+            std::vector<ECS::systems::ControllableSystem::EntityEvent> _entityEvents;
     };
 }

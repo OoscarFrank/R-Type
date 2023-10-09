@@ -28,7 +28,7 @@ Game::Game() :
     this->_lastTime = NOW;
     this->_net.setInst(9);
     this->_net.send();
-    this->moveMemory = 0;
+    this->eventMemory = 0;
     this->_gameOver = false;
 
     this->_manager.loadTexture(client::getAssetPath("parallax/background.png"), Loader::toLoad::ParallaxFirstbkg);
@@ -271,16 +271,23 @@ void Game::update()
 
 void Game::sendMoveToServer()
 {
-    for (auto i = this->_entityMoves.begin(); i != this->_entityMoves.end(); ++i) {
+    for (auto i = this->_entityEvents.begin(); i != this->_entityEvents.end(); ++i) {
         if (!_gameOver && (*i).getEntity() == this->_playerEntity) {
-            this->_net.setInst(2);
-            this->_net.getStreamOut().setDataUChar((*i).getMove());
-            this->_net.getStreamOut().setDataUChar(1);
-            this->_net.send();
-            // std::cout << "send move" << std::endl;
+            char move = (*i).getEvent() & (UP | DOWN | LEFT | RIGHT);
+            if ((*i).getEvent() & move) {
+                this->_net.setInst(2);
+                this->_net.getStreamOut().setDataUChar((*i).getEvent() & move);
+                this->_net.getStreamOut().setDataUChar(1);
+                this->_net.send();
+            }
+            if ((*i).getEvent() & SPACE) {
+                this->_net.setInst(5);
+                this->_net.send();
+            }
         }
+        
     }
-    this->_entityMoves.clear();
+    this->_entityEvents.clear();
 }
 
 int Game::MainLoop()
@@ -292,7 +299,7 @@ int Game::MainLoop()
         this->update();
         this->EventLoop(this->_window, this->_net);
         // ALL SYSTEMS CALL HERE (update)
-        ECS::systems::ControllableSystem().update(this->ecs, this->_entityMoves, this->_window, this->moveMemory);
+        ECS::systems::ControllableSystem().update(this->ecs, this->_entityEvents, this->_window, this->eventMemory);
         ECS::systems::PositionSystem().update(this->ecs);
         ECS::systems::AnimationSystem().update(this->ecs, deltaTime);
         ECS::systems::ParallaxSystem().update(this->ecs, deltaTime);
