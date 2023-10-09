@@ -12,12 +12,12 @@ EventManager::~EventManager()
 
 void EventManager::EventLoop(sf::RenderWindow &window, Network &_net)
 {
-    while (window.pollEvent(this->_event)) {
-        if (this->_event.type == sf::Event::Closed) {
-            window.close();
-            return;
-        }
-    }
+    // while (window.pollEvent(this->_event)) {
+    //     if (this->_event.type == sf::Event::Closed) {
+    //         window.close();
+    //         return;
+    //     }
+    // }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
         // if (_net._ReaderThread.joinable())

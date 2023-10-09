@@ -7,7 +7,7 @@ Client::Client(asio::ip::udp::socket &socket, asio::ip::udp::endpoint endpoint):
 {
     this->_endpoint = endpoint;
     this->_instOut = 0;
-    this->lastActivity = NOW;
+    this->_lastActivity = NOW;
 }
 
 Client::~Client()

@@ -16,7 +16,7 @@ private:
     Stream _streamOut;
     unsigned char _instOut;
 
-    size_t lastActivity;
+    size_t _lastActivity;
     std::chrono::system_clock::time_point _lastPing = std::chrono::system_clock::now();
 
 public:

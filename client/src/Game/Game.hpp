@@ -74,6 +74,9 @@ namespace game {
 
             unsigned int _startTimeLeft;
             unsigned char _started;
+
+            unsigned char moveMemory;
+
             std::vector<std::pair<size_t, entity_t>> _players;
             std::vector<std::pair<size_t, entity_t>> _missiles;
             std::vector<std::pair<size_t, entity_t>> _ennemies;

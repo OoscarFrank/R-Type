@@ -27,8 +27,6 @@ class Room
         unsigned int _progress;
         u_int _playersIds;
         bool _private;
-        void refresh();
-        void update();
 
         size_t _missilesIds;
         u_int _monstersIds;
@@ -43,6 +41,13 @@ class Room
         size_t _lastPlayerUpdate;
         size_t _lastMonsterSpawn;
         size_t _lastGameOver;
+
+        void refresh();
+        void update();
+        void startGame();
+        void addMonster(IEntity::Type type, int x, int y);
+        void checkCollisionPlayer();
+        void checkCollisionMonsters();
 
     public:
         Room(u_int id, std::shared_ptr<Client> client, bool privateRoom = false);
@@ -65,9 +70,4 @@ class Room
         void setInstBroadcast(unsigned char inst);
         size_t &getMissilesIds();
 
-    private:
-        void startGame();
-        void addMonster(IEntity::Type type, int x, int y);
-        void checkCollisionPlayer();
-        void checkCollisionMonsters();
 };

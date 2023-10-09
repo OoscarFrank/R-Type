@@ -28,6 +28,7 @@ Game::Game() :
     this->_lastTime = NOW;
     this->_net.setInst(9);
     this->_net.send();
+    this->moveMemory = 0;
     this->_gameOver = false;
 
     this->_manager.loadTexture("./client/assets/parallax/background.png", Loader::toLoad::ParallaxFirstbkg);
@@ -275,6 +276,7 @@ void Game::sendMoveToServer()
             this->_net.getStreamOut().setDataUChar((*i).getMove());
             this->_net.getStreamOut().setDataUChar(1);
             this->_net.send();
+            // std::cout << "send move" << std::endl;
         }
     }
     this->_entityMoves.clear();
@@ -289,7 +291,7 @@ int Game::MainLoop()
         this->update();
         this->EventLoop(this->_window, this->_net);
         // ALL SYSTEMS CALL HERE (update)
-        ECS::systems::ControllableSystem().update(this->ecs, this->_entityMoves);
+        ECS::systems::ControllableSystem().update(this->ecs, this->_entityMoves, this->_window, this->moveMemory);
         ECS::systems::PositionSystem().update(this->ecs);
         ECS::systems::AnimationSystem().update(this->ecs, deltaTime);
         ECS::systems::ParallaxSystem().update(this->ecs, deltaTime);

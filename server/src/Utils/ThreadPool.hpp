@@ -34,7 +34,7 @@ class ThreadPool {
          */
         template<typename T>
         void submit(T func);
-        /**
+        /**a
          * @brief Get the number of threads currently running
          *
          * @return size_t

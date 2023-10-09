@@ -63,16 +63,23 @@ void Room::addPlayer(std::shared_ptr<Client> client)
 
     u_int newId = ++_playersIds;
 
-    setInstBroadcast(13);
-    this->_broadcastStream.setDataUInt(newId);
-    sendBroadcast();
 
 
     client->setInst(10);
     client->getStreamOut().setDataUInt(_id);
     client->getStreamOut().setDataUInt(newId);
     client->send();
+
+
+    for (auto i = _players.begin(); i != _players.end(); i++) {
+        client->setInst(13);
+        client->getStreamOut().setDataUInt((**i).id());
+        client->send();
+    }
+
     _players.push_back(std::make_unique<Player>(*this, client, newId, 0, 0));
+
+    
 
     _lastJoin = NOW;
 }
@@ -95,8 +102,9 @@ void Room::movePlayer(std::shared_ptr<Client> client, char move, char nbr)
             if (move & PLAYER_MOVE_RIGHT)
                 player.move(PLAYER_PROGRESS_STEP, 0);
         }
-        if (move && nbr)
+        if (move && nbr) {
             player.sendPos();
+        }
     }
 }
 
@@ -201,7 +209,7 @@ void Room::update()
 
         if (now - _lastMonsterSpawn >= ENEMY_SPAWN_TIME) {
             _lastMonsterSpawn = now;
-            this->addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
+            // this->addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
             now = NOW;
         }
         _playersMutex.unlock();
@@ -247,6 +255,7 @@ void Room::startGame()
     this->sendBroadcast();
 
     for (auto i = _players.begin(); i != _players.end(); i++) {
+
         (**i).sendPos();
     }
 }
