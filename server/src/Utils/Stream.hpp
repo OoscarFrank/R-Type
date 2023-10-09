@@ -1,7 +1,9 @@
-#pragma once
+#ifndef STREAM_HPP
+#define STREAM_HPP
 
 #include <vector>
 #include <iostream>
+#include <string>
 
 
 class Stream
@@ -61,3 +63,5 @@ public:
 };
 
 std::ostream &operator<<(std::ostream &os,const Stream &steam);
+
+#endif

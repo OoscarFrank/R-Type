@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PLAYER_HPP
+#define PLAYER_HPP
 
 #include "Entity.hpp"
 #include "ArmedEntity.hpp"
@@ -25,3 +26,5 @@ class Player: public ArmedEntity {
         int _score;
         std::shared_ptr<Client> _client;
 };
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ENTITY_HPP
+#define ENTITY_HPP
 
 #include <iostream>
 #include <vector>
@@ -58,3 +59,5 @@ class AEntity: public IEntity {
         bool _deletable;
         std::chrono::system_clock::time_point _lastMove;
 };
+
+#endif
