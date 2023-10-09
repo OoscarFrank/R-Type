@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BOUNDINGBOX_HPP
+#define BOUNDINGBOX_HPP
 
 #include <iostream>
 
@@ -85,3 +86,5 @@ bool BoundingBox<T>::collide(T x_, T y_, T w_, T h_) const
 {
     return x < x_ + w_ && x + width > x_ && y < y_ + h_ && y + height > y_;
 }
+
+#endif

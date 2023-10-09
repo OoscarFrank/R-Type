@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LITTLEMONSTER_HPP
+#define LITTLEMONSTER_HPP
 
 #include "../Entity.hpp"
 #include "../ArmedEntity.hpp"
@@ -12,3 +13,5 @@ class LittleMonster: public ArmedEntity {
         virtual void refresh();
         virtual bool collide(const IEntity &other) override;
 };
+
+#endif

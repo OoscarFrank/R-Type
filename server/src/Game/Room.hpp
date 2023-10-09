@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ROOM_HPP
+#define ROOM_HPP
 
 #include <iostream>
 #include <vector>
@@ -30,7 +31,7 @@ class Room
         void refresh();
         void update();
 
-        size_t _missilesIds;
+        u_int _missilesIds;
         u_int _monstersIds;
 
         Stream _broadcastStream;
@@ -63,7 +64,7 @@ class Room
         void sendBroadcast();
         Stream &getBroadcastStream();
         void setInstBroadcast(unsigned char inst);
-        size_t &getMissilesIds();
+        u_int &getMissilesIds();
 
     private:
         void startGame();
@@ -71,3 +72,5 @@ class Room
         void checkCollisionPlayer();
         void checkCollisionMonsters();
 };
+
+#endif

@@ -30,8 +30,8 @@ Game::Game() :
     this->_net.send();
     this->_gameOver = false;
 
-    this->_manager.loadTexture("./client/assets/parallax/background.png", Loader::toLoad::ParallaxFirstbkg);
-    this->_manager.loadTexture("./client/assets/parallax/background2.png", Loader::toLoad::ParallaxSecondbkg);
+    this->_manager.loadTexture(client::getAssetPath("parallax/background.png"), Loader::toLoad::ParallaxFirstbkg);
+    this->_manager.loadTexture(client::getAssetPath("parallax/background2.png"), Loader::toLoad::ParallaxSecondbkg);
 
     int  divider = 1;
     #ifdef SFML_SYSTEM_MACOS
@@ -83,18 +83,19 @@ void Game::update()
             this->_roomId = packet.getData().getDataUInt();
             this->_playerId = packet.getData().getDataUInt();
 
-            this->_manager.loadTexture("./client/assets/entity/player/player_move1.png", Loader::toLoad::Player_move1);
+            this->_manager.loadTexture(client::getAssetPath("entity/player/player_move1.png"), Loader::toLoad::Player_move1);
 
             entity_t newEntity = this->_factory.createPlayer(-1000.0f, -1000.0f, this->_manager.getTexture(Loader::Loader::Player_move1));
             this->_players.push_back(std::make_pair(this->_playerId, newEntity));
             this->_playerEntity = newEntity;
 
-            this->_manager.loadTexture("./client/assets/entity/missile/missile.png", Loader::toLoad::Missile);
-            this->_manager.loadTexture("./client/assets/entity/monsters/monster1.png", Loader::toLoad::Monster1);
-            this->_manager.loadTexture("./client/assets/entity/player/player_move1.png", Loader::toLoad::Player_move1);
-            this->_manager.loadTexture("./client/assets/entity/player/player_move2.png", Loader::toLoad::Player_move2);
-            this->_manager.loadTexture("./client/assets/entity/player/player_move3.png", Loader::toLoad::Player_move3);
-            this->_manager.loadTexture("./client/assets/entity/player/player_move4.png", Loader::toLoad::Player_move4);
+            this->_manager.loadTexture(client::getAssetPath("entity/missile/missile.png"), Loader::toLoad::Missile);
+            this->_manager.loadTexture(client::getAssetPath("entity/monsters/monster1.png"), Loader::toLoad::Monster1);
+            this->_manager.loadTexture(client::getAssetPath("entity/player/player_move1.png"), Loader::toLoad::Player_move1);
+            this->_manager.loadTexture(client::getAssetPath("entity/player/player_move2.png"), Loader::toLoad::Player_move2);
+            this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
+            this->_manager.loadTexture(client::getAssetPath("entity/player/player_move4.png"), Loader::toLoad::Player_move4);
+
         }
 
         if (packet.getInstruction() == 13) {    //player join game

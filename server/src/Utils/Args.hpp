@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ARGS_HPP
+#define ARGS_HPP
 
 #include <iostream>
 #include <vector>
@@ -153,3 +154,5 @@ std::vector<T> Args::getFlagValues(const std::string &flag, const std::vector<T>
     }
     return res;
 }
+
+#endif

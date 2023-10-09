@@ -1,10 +1,13 @@
 r-type_client
+Asio/
 *.o
 .vscode/
 logs/
 test.png
 .DS_Store
 vgcore*
+**/build/
+client/lib/
 =======
 # config files
 .vscode/

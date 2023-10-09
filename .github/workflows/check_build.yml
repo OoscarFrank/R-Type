@@ -1,0 +1,88 @@
+name: Check build on pull requests
+
+on:
+  pull_request:
+    branches:
+      - main
+      - ci-cd
+
+jobs:
+  compile-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Apt update
+        run: sudo apt update
+
+      - name: Install CMake 3.19
+        run: |
+          wget https://github.com/Kitware/CMake/releases/download/v3.19.8/cmake-3.19.8-Linux-x86_64.sh
+          chmod +x cmake-3.19.8-Linux-x86_64.sh
+          sudo ./cmake-3.19.8-Linux-x86_64.sh --prefix=/usr/local --skip-license
+          echo 'export PATH="/usr/local/bin:$PATH"' >> $HOME/.bashrc
+          source $HOME/.bashrc
+
+      - name: Install Make
+        run: sudo apt install -y make
+
+      - name: Install rpmbuild
+        run: sudo apt install -y rpm
+
+      - name: Build server
+        run: |
+          cd server/
+          ./build.sh
+          cd ..
+
+      - name: Build client
+        run: |
+          cd client/
+          ./build.sh
+          cd ..
+
+      - name: Test server
+        run: |
+          ls ./server/build | grep "r-type_server"
+          ls ./server/build | grep "r-type_server-0.1.1-Linux.deb"
+          ls ./server/build | grep "r-type_server-0.1.1-Linux.rpm"
+
+      - name: Test client
+        run: |
+          ls ./client/build | grep "r-type_client"
+          ls ./client/build | grep "r-type_client-0.1.1-Linux.deb"
+          ls ./client/build | grep "r-type_client-0.1.1-Linux.rpm"
+
+  compile-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Build server
+        run: |
+          cd server/
+          ./build.ps1
+          cd ..
+
+      - name: Build client
+        run: |
+          cd client/
+          ./build.ps1
+          cd ..
+
+      - name: Test server
+        run: |
+          Get-ChildItem -Path ./server/build/Release | Where-Object { $_.Name -like "*r-type_server.exe*" }
+          Get-ChildItem -Path ./server/build | Where-Object { $_.Name -like "*r-type_server-0.1.1-win64.exe" }
+
+      - name: Test client
+        run: |
+          Get-ChildItem -Path ./client/build/Release | Where-Object { $_.Name -like "*r-type_client.exe*" }
+          Get-ChildItem -Path ./client/build | Where-Object { $_.Name -like "*r-type_client-0.1.1-win64.exe" }

@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef GAME_HPP
+#define GAME_HPP
 
 #include <iostream>
 #include "Room.hpp"
@@ -23,3 +23,5 @@ class Game
         Room &getRoom(u_int id);
         Room &getRoom(std::shared_ptr<Client> client);
 };
+
+#endif

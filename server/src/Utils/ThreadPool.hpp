@@ -1,4 +1,5 @@
-#pragma once
+#ifndef THREADPOOL_HPP
+#define THREADPOOL_HPP
 
 #include <iostream>
 #include <functional>
@@ -77,3 +78,5 @@ void ThreadPool::submit(T func)
     if (_threads.empty())
         _newThread();
 }
+
+#endif
