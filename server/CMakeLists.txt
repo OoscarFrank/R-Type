@@ -6,6 +6,10 @@ set(ASIO_DIR ../Asio/asio/include)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 
+if(UNIX)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Release)
+endif()
+
 find_path(ASIO_INCLUDE_DIR asio.hpp
     PATHS ${ASIO_DIR}
     PATH_SUFFIXES asio
@@ -25,7 +29,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 add_executable(
-	r-type_server
+	${PROJECT_NAME}
 	${dir_src}
   ${dir_game}
   ${dir_entities}
@@ -36,15 +40,21 @@ add_executable(
 )
 
 if(WIN32)
-  target_compile_definitions(r-type_server PRIVATE _WIN32_WINNT=0x0A00 WIN32_LEAN_AND_MEAN)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0A00 WIN32_LEAN_AND_MEAN)
 endif()
 
 target_link_libraries(
-  r-type_server
+  ${PROJECT_NAME}
   Threads::Threads
 )
 
-install(TARGETS r-type_server RUNTIME DESTINATION .)
+if(UNIX)
+  install(TARGETS ${PROJECT_NAME} DESTINATION /usr/bin/)
+  install(FILES ${CMAKE_SOURCE_DIR}/assets/logo.png DESTINATION /usr/share/${PROJECT_NAME}/)
+  install(FILES ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}.desktop DESTINATION /usr/share/applications/)
+elseif(WIN32)
+  install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
+endif()
 
 if(UNIX)
   set(CPACK_GENERATOR "DEB;RPM")
