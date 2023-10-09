@@ -9,6 +9,10 @@ if (Test-Path -Path "build") {
 New-Item -ItemType Directory -Name "build"
 Set-Location "build"
 Invoke-Expression "cmake .."
-Invoke-Expression "msbuild .\r-type_server.vcxproj /p:Configuration=Release"
-Invoke-Expression "msbuild .\PACKAGE.vcxproj /p:Configuration=Release"
+try {
+    Invoke-Expression "msbuild .\r-type_server.vcxproj /p:Configuration=Release"
+    Invoke-Expression "msbuild .\PACKAGE.vcxproj /p:Configuration=Release"
+} catch {
+    Invoke-Expression "./r-type_server.sln"
+}
 Set-Location ".."
