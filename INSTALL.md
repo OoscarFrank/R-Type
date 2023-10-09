@@ -13,8 +13,8 @@ Building a game like R-Type from its source code is a complex process that requi
 Before you begin, ensure that you have all the necessary prerequisites installed on your system. This may include:
 
 - A C/C++ development environment (such as g++ for Linux or Visual Studio for Windows).
-- A dependency manager such as [CMake](https://cmake.org/).
-- The necessary low-level and platform-specific graphical or sound system libraries such as [OpenGL](https://www.opengl.org/) and X11.
+- [CMake](https://cmake.org/).
+- The necessary low-level and platform-specific graphical or sound system libraries such as [OpenGL](https://www.opengl.org/) and X11 on Linux.
 
 ### Step 2: Download the Source Code
 
@@ -31,22 +31,33 @@ These commands will get all the source code from the game and init all the neces
 
 ### Step 3: Build Configuration
 
-In our R-Type you have several ways to build the different build tools.
+To build the different build tools we have scripts who make the job.
 
-#### CMake
-
-To build the project with CMake, first of all, you need to create a folder 'build' in the server and in the client folders.
+On Linux, run this command:
 
 ```bash
-mkdir client/build server/build
+./build_project.sh
 ```
 
-After that, you will run the next command in each folder (client, server) to build all the necessary files:
-
-```bash
-cd build/
-cmake ..
-make
-```
+It create the necessary files in the build folder in client and server.
 
 To run the server and the client on Linux, I will redirect you to the [Usage](./README.md#usage) section in the README.
+
+If you are on Windows let's run de .sln file that the CMake just generated.
+
+In the client\build folder:
+
+```bash
+r-type_client.sln
+```
+In the server\build folder:
+
+```bash
+r-type_server.sln
+```
+
+Visual Studio will open like this:
+
+![](./screenshots/sln_screenshot.png)
+
+
