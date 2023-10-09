@@ -12,7 +12,7 @@ Building a game like R-Type from its source code is a complex process that requi
 
 Before you begin, ensure that you have all the necessary prerequisites installed on your system. This may include:
 
-- A C/C++ development environment (such as G++ for Linux or Visual Studio for Windows).
+- A C/C++ development environment (such as g++ for Linux or Visual Studio for Windows).
 - A dependency manager such as [CMake](https://cmake.org/).
 - The necessary low-level and platform-specific graphical or sound system libraries such as [OpenGL](https://www.opengl.org/) and X11.
 
@@ -27,7 +27,7 @@ git submodule init
 git submodule update
 ```
 
-This commands will get all the source code from the game and init all the necessary dependencies for the good of the project.
+These commands will get all the source code from the game and init all the necessary dependencies for the good of the project.
 
 ### Step 3: Build Configuration
 
@@ -49,4 +49,4 @@ cmake ..
 make
 ```
 
-To run the server on Linux, I will redirect you to the [Usage](./README.md#usage) section.
+To run the server and the client on Linux, I will redirect you to the [Usage](./README.md#usage) section.
