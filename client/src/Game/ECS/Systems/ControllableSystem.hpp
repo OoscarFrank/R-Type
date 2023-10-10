@@ -90,6 +90,9 @@ namespace ECS
                         if (event.type == sf::Event::KeyPressed) {
                             switch (event.key.code)
                             {
+                            case sf::Keyboard::Escape:
+                                window.close();
+                                return;
                             case sf::Keyboard::Up:
                                 eventMemory |= UP;
                                 break;
@@ -182,12 +185,12 @@ namespace ECS
                             entityMoves.push_back(entityMoveTmp);
                         }
                     }
-                
+
                 }
                 catch (std::exception &e) {
                     std::cerr << e.what() << std::endl;
                 }
-            
+
             }
         };
     }

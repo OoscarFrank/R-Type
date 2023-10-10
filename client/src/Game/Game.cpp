@@ -285,7 +285,7 @@ void Game::sendMoveToServer()
                 this->_net.send();
             }
         }
-        
+
     }
     this->_entityEvents.clear();
 }
@@ -297,7 +297,6 @@ int Game::MainLoop()
         float deltaTime = (currentTime - _lastTime) / 1.0f;
         _lastTime = currentTime;
         this->update();
-        this->EventLoop(this->_window, this->_net);
         // ALL SYSTEMS CALL HERE (update)
         ECS::systems::ControllableSystem().update(this->ecs, this->_entityEvents, this->_window, this->eventMemory);
         ECS::systems::PositionSystem().update(this->ecs);

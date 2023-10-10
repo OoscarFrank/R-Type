@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../Core.hpp"
-#include "./EventManager.hpp"
 #include "./ECS/Loader/Loader.hpp"
 #include "../Utils.hpp"
 #include "./ECS/Registry.hpp"
@@ -11,7 +10,7 @@
 #include "Factory.hpp"
 
 namespace game {
-    class Game: public EventManager {
+    class Game {
         public:
         /**
          * @brief Construct a new Game object
