@@ -84,11 +84,8 @@ void Game::update()
             this->_roomId = packet.getData().getDataUInt();
             this->_playerId = packet.getData().getDataUInt();
 
-            this->_manager.loadTexture(client::getAssetPath("entity/player/player_move1.png"), Loader::toLoad::Player_move1);
+            // this->_manager.loadTexture(client::getAssetPath("entity/player/player_move1.png"), Loader::toLoad::Player_move1);
 
-            entity_t newEntity = this->_factory.createPlayer(-1000.0f, -1000.0f, this->_manager.getTexture(Loader::Loader::Player_move1));
-            this->_players.push_back(std::make_pair(this->_playerId, newEntity));
-            this->_playerEntity = newEntity;
 
             this->_manager.loadTexture(client::getAssetPath("entity/missile/missile.png"), Loader::toLoad::Missile);
             this->_manager.loadTexture(client::getAssetPath("entity/monsters/monster1.png"), Loader::toLoad::Monster1);
@@ -97,12 +94,57 @@ void Game::update()
             this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
             this->_manager.loadTexture(client::getAssetPath("entity/player/player_move4.png"), Loader::toLoad::Player_move4);
 
+            // const sf::Texture *texture = nullptr;
+            // std::shared_ptr<sf::Texture> texture;
+
+            // switch (_playerId) {
+            //     case 1:
+            //         texture = std::make_shared<sf::Texture>(this->_manager.getTexture(Loader::Loader::Player_move1));
+            //         break;
+            //     case 2:
+            //         texture = std::make_shared<sf::Texture>(this->_manager.getTexture(Loader::Loader::Player_move2));
+            //         break;
+            //     case 3:
+            //         texture = std::make_shared<sf::Texture>(this->_manager.getTexture(Loader::Loader::Player_move3));
+            //         break;
+            //     case 4:
+            //         texture = std::make_shared<sf::Texture>(this->_manager.getTexture(Loader::Loader::Player_move4));
+            //         break;
+            //     default:
+            //         texture = std::make_shared<sf::Texture>(this->_manager.getTexture(Loader::Loader::Player_move1));
+            //         break;
+            // }
+
+            const sf::Texture *texture = nullptr;
+
+            switch (_playerId) {
+                case 1:
+                    texture = &this->_manager.getTexture(Loader::Loader::Player_move1);
+                    break;
+                case 2:
+                    texture = &this->_manager.getTexture(Loader::Loader::Player_move2);
+                    break;
+                case 3:
+                    texture = &this->_manager.getTexture(Loader::Loader::Player_move3);
+                    break;
+                case 4:
+                    texture = &this->_manager.getTexture(Loader::Loader::Player_move4);
+                    break;
+                default:
+                    texture = &this->_manager.getTexture(Loader::Loader::Player_move1);
+                    break;
+            }
+
+            entity_t newEntity = this->_factory.createPlayer(-1000.0f, -1000.0f, *texture);
+            this->_players.push_back(std::make_pair(this->_playerId, newEntity));
+            this->_playerEntity = newEntity;
         }
 
         if (packet.getInstruction() == 13) {    //player join game
             unsigned int id = packet.getData().getDataUInt();
             const sf::Texture *texture = nullptr;
 
+            std::cout << id << std::endl;
             switch (id) {
                 case 1:
                     texture = &this->_manager.getTexture(Loader::Loader::Player_move1);
@@ -124,7 +166,6 @@ void Game::update()
             if (texture != nullptr) {
                 entity_t newEntity = this->_factory.createPlayer(500.0f, 500.0f, *texture);
                 this->_players.push_back(std::make_pair(id, newEntity));
-                this->_playerEntity = newEntity;
             }
         }
 
@@ -212,6 +253,8 @@ void Game::update()
                 this->_entityPositions.erase(std::remove_if(this->_entityPositions.begin(), this->_entityPositions.end(), [id](ECS::systems::MovableSystem::EntityPos const &pair) {
                     return pair.getEntity() == id;
                 }), this->_entityPositions.end());
+
+                std::cout << id << std::endl;
 
                 this->_players.erase(std::remove_if(this->_players.begin(), this->_players.end(), [id](std::pair<unsigned int, entity_t> const &pair) {
                     return pair.first == id;

@@ -64,6 +64,7 @@ void Room::addPlayer(std::shared_ptr<Client> client)
     u_int newId = ++_playersIds;
 
 
+    std::cout << newId << std::endl;
 
     client->setInst(10);
     client->getStreamOut().setDataUInt(_id);
@@ -72,15 +73,13 @@ void Room::addPlayer(std::shared_ptr<Client> client)
 
 
     for (auto i = _players.begin(); i != _players.end(); i++) {
+        std::cout << (**i).id() << std::endl;
         client->setInst(13);
         client->getStreamOut().setDataUInt((**i).id());
         client->send();
     }
 
     _players.push_back(std::make_unique<Player>(*this, client, newId, 0, 0));
-
-    
-
     _lastJoin = NOW;
 }
 
@@ -153,16 +152,18 @@ void Room::sendBroadcast()
 void Room::refresh()
 {
     while (true) {
+        _playersMutex.lock();
         for (auto i = _players.begin(); i != _players.end(); i++) {
             if (!(**i).client()->isAlive()) {
                 std::cout << "Player " << (**i).id() << " disconnected in room " << _id << std::endl;
-                _players.erase(i);
                 this->setInstBroadcast(14);
                 this->_broadcastStream.setDataUInt((**i).id());
                 this->sendBroadcast();
+                _players.erase(i);
                 break;
             }
         }
+        _playersMutex.unlock();
         update();
         // std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
@@ -209,7 +210,7 @@ void Room::update()
 
         if (now - _lastMonsterSpawn >= ENEMY_SPAWN_TIME) {
             _lastMonsterSpawn = now;
-            this->addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
+            // this->addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
             now = NOW;
         }
         _playersMutex.unlock();
@@ -292,7 +293,6 @@ void Room::checkCollisionPlayer()
         for (auto j = _monsters.begin(); j != _monsters.end(); j++) {
             if ((**j).collide(**i)) {
                 std::cout << "Player " << (**i).id() << " died in room " << _id << std::endl;
-                // _players.erase(i);
                 (**i).killEntity();
                 this->setInstBroadcast(18);
                 this->_broadcastStream.setDataUInt((**i).id());
