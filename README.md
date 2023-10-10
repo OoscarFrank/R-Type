@@ -31,7 +31,7 @@ The server is used to manage the game sessions and the players. It is the server
 To launch the server on Linux, you can use the following command:
 
 ```bash
-cd server/build
+cd server/build/Release
 ./r-type_server -p {port}
 ```
 
@@ -42,7 +42,7 @@ The port is optional, if you don't specify it, the server will use the default p
 To launch the server on Windows, you can use the following command:
 
 ```bash
-cd server\build
+cd server\build\Release
 .\r-type_server.exe -p {port}
 ```
 The port is optional, if you don't specify it, the server will use the default port 4242.
@@ -56,7 +56,7 @@ The client is the game itself. It is the client that will connect to the server 
 To launch the client on Linux, you can use the following command:
 
 ```bash
-cd client/build
+cd client/build/Release
 ./r-type_client -h {host} -p {port}
 ```
 
@@ -67,7 +67,7 @@ The host and port are optional, if you don't specify them, the client will use t
 To launch the client on Windows, you can use the following command:
 
 ```bash
-cd client\build
+cd client\build\Release
 .\r-type_client -h {host} -p {port}
 ```
 

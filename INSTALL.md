@@ -14,6 +14,7 @@ Before you begin, ensure that you have all the necessary prerequisites installed
 
 - A C/C++ development environment (such as g++ for Linux or Visual Studio for Windows).
 - [CMake](https://cmake.org/).
+- RPM package for Linux.
 - The necessary low-level and platform-specific graphical or sound system libraries such as [OpenGL](https://www.opengl.org/) and X11, and some other libraries used by SFML: (If you are on Windows, Ubuntu or Fedora, all these libraries are already included in the project)
     -   [OpenAL-Soft](https://github.com/kcat/openal-soft)
     -   [stb_image and stb_image_write](https://github.com/nothings/stb)
