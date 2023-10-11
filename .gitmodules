@@ -1,0 +1,7 @@
+[submodule "extern/SFML"]
+	path = extern/SFML
+	url = https://github.com/SFML/SFML.git
+	branch = 2.5.x
+[submodule "Asio"]
+	path = Asio
+	url = https://github.com/chriskohlhoff/asio.git
