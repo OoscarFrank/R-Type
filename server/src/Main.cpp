@@ -52,7 +52,7 @@ void exec(int port)
     std::cout << "Server listening on port " << port << std::endl;
 
     int nbThread = std::thread::hardware_concurrency() - 3;
-    ThreadPool reqPool(nbThread / 2, 20);   //! set to 10
+    ThreadPool reqPool(nbThread / 2, 10);
     while (true) {
         Reader::Packet value = queueIn.pop();
         reqPool.submit([value, &game]() {

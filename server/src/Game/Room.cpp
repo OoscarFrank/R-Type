@@ -63,17 +63,12 @@ void Room::addPlayer(std::shared_ptr<Client> client)
 
     u_int newId = ++_playersIds;
 
-
-    std::cout << newId << std::endl;
-
     client->setInst(10);
     client->getStreamOut().setDataUInt(_id);
     client->getStreamOut().setDataUInt(newId);
     client->send();
 
-
     for (auto i = _players.begin(); i != _players.end(); i++) {
-        std::cout << (**i).id() << std::endl;
         client->setInst(13);
         client->getStreamOut().setDataUInt((**i).id());
         client->send();
@@ -210,11 +205,11 @@ void Room::update()
 
         if (now - _lastMonsterSpawn >= ENEMY_SPAWN_TIME) {
             _lastMonsterSpawn = now;
-            // this->addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
+            this->addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
             now = NOW;
         }
         _playersMutex.unlock();
-    } 
+    }
     if (_state == WAIT) {
         _playersMutex.lock();
         if (_players.size() == _maxPlayer || now - _lastJoin >= TIMEOUT_START_GAME) {

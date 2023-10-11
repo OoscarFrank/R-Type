@@ -84,36 +84,12 @@ void Game::update()
             this->_roomId = packet.getData().getDataUInt();
             this->_playerId = packet.getData().getDataUInt();
 
-            // this->_manager.loadTexture(client::getAssetPath("entity/player/player_move1.png"), Loader::toLoad::Player_move1);
-
-
             this->_manager.loadTexture(client::getAssetPath("entity/missile/missile.png"), Loader::toLoad::Missile);
             this->_manager.loadTexture(client::getAssetPath("entity/monsters/monster1.png"), Loader::toLoad::Monster1);
             this->_manager.loadTexture(client::getAssetPath("entity/player/player_move1.png"), Loader::toLoad::Player_move1);
             this->_manager.loadTexture(client::getAssetPath("entity/player/player_move2.png"), Loader::toLoad::Player_move2);
             this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
             this->_manager.loadTexture(client::getAssetPath("entity/player/player_move4.png"), Loader::toLoad::Player_move4);
-
-            // const sf::Texture *texture = nullptr;
-            // std::shared_ptr<sf::Texture> texture;
-
-            // switch (_playerId) {
-            //     case 1:
-            //         texture = std::make_shared<sf::Texture>(this->_manager.getTexture(Loader::Loader::Player_move1));
-            //         break;
-            //     case 2:
-            //         texture = std::make_shared<sf::Texture>(this->_manager.getTexture(Loader::Loader::Player_move2));
-            //         break;
-            //     case 3:
-            //         texture = std::make_shared<sf::Texture>(this->_manager.getTexture(Loader::Loader::Player_move3));
-            //         break;
-            //     case 4:
-            //         texture = std::make_shared<sf::Texture>(this->_manager.getTexture(Loader::Loader::Player_move4));
-            //         break;
-            //     default:
-            //         texture = std::make_shared<sf::Texture>(this->_manager.getTexture(Loader::Loader::Player_move1));
-            //         break;
-            // }
 
             const sf::Texture *texture = nullptr;
 
@@ -144,7 +120,6 @@ void Game::update()
             unsigned int id = packet.getData().getDataUInt();
             const sf::Texture *texture = nullptr;
 
-            std::cout << id << std::endl;
             switch (id) {
                 case 1:
                     texture = &this->_manager.getTexture(Loader::Loader::Player_move1);
@@ -253,8 +228,6 @@ void Game::update()
                 this->_entityPositions.erase(std::remove_if(this->_entityPositions.begin(), this->_entityPositions.end(), [id](ECS::systems::MovableSystem::EntityPos const &pair) {
                     return pair.getEntity() == id;
                 }), this->_entityPositions.end());
-
-                std::cout << id << std::endl;
 
                 this->_players.erase(std::remove_if(this->_players.begin(), this->_players.end(), [id](std::pair<unsigned int, entity_t> const &pair) {
                     return pair.first == id;
