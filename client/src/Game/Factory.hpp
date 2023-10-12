@@ -16,6 +16,7 @@ namespace game {
          *
          */
             ~Factory();
+            entity_t createButton(float x, float y, const sf::Texture &texture);
         /**
          * @brief Create a Player object
          *

@@ -22,7 +22,10 @@ namespace game {
                 ParallaxSecondbkg,
                 Player_move1, Player_move2, Player_move3, Player_move4,
                 Missile,
-                Monster1
+                Monster1,
+                CreateRoomButton,
+                JoinRoomButton,
+                QuitButton
             };
         /**
          * @brief Load a texture from a path

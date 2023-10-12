@@ -23,6 +23,12 @@ namespace ECS {
              * @return float 
              */
                 float getBackgroundWidth() const { return _backgroundWidth; }
+            /**
+             * @brief Set the Scroll Speed of the parallax
+             * 
+             * @param scrollSpeed 
+             */
+                void setScrollSpeed(float scrollSpeed) { _scrollSpeed = scrollSpeed; }
 
             private:
                 float _scrollSpeed;

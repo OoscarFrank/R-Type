@@ -8,3 +8,5 @@
 #include "ParallaxComponent.hpp"
 #include "MovableComponent.hpp"
 #include "ScaleComponent.hpp"
+#include "ButtonComponent.hpp"
+#include "AnimationComponent.hpp"

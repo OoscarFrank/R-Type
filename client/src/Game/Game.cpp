@@ -33,6 +33,9 @@ Game::Game() :
 
     this->_manager.loadTexture(client::getAssetPath("parallax/background.png"), Loader::toLoad::ParallaxFirstbkg);
     this->_manager.loadTexture(client::getAssetPath("parallax/background2.png"), Loader::toLoad::ParallaxSecondbkg);
+    this->_manager.loadTexture("./assets/entity/buttons/CreateRoomButton.png", Loader::toLoad::CreateRoomButton);
+    this->_manager.loadTexture("./assets/entity/buttons/JoinRoomButton.png", Loader::toLoad::JoinRoomButton);
+    this->_manager.loadTexture("./assets/entity/buttons/QuitButton.png", Loader::toLoad::QuitButton);
 
     int  divider = 1;
     #ifdef SFML_SYSTEM_MACOS
@@ -40,8 +43,11 @@ Game::Game() :
     #endif
     _resMult = (float)(this->_screenSize.x / divider)/ SCREEN_WIDTH;
 
-    this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), -0.15f);
-    this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), -0.20f);
+    this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), -0.03f);
+    this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), -0.05f);
+    this->_factory.createButton(100.0f, 100.0f, this->_manager.getTexture(Loader::Loader::CreateRoomButton));
+    this->_factory.createButton(100.0f, 200.0f, this->_manager.getTexture(Loader::Loader::JoinRoomButton));
+    this->_factory.createButton(100.0f, 300.0f, this->_manager.getTexture(Loader::Loader::QuitButton));
 }
 
 Game::~Game()
