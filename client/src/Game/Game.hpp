@@ -81,5 +81,6 @@ namespace game {
             std::vector<std::pair<size_t, entity_t>> _ennemies;
             std::vector<ECS::systems::MovableSystem::EntityPos> _entityPositions;
             std::vector<ECS::systems::ControllableSystem::EntityEvent> _entityEvents;
+            std::vector<entity_t> _parallax;
     };
 }
