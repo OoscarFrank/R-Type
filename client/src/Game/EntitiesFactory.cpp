@@ -1,4 +1,4 @@
-#include "Factory.hpp"
+#include "EntitiesFactory.hpp"
 
 using namespace game;
 

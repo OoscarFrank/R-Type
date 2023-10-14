@@ -7,7 +7,7 @@
 #include "../Network/Network.hpp"
 #include <vector>
 #include "./ECS/Systems/Systems.hpp"
-#include "Factory.hpp"
+#include "EntitiesFactory.hpp"
 
 namespace game {
     class Game {
