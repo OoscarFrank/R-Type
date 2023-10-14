@@ -30,6 +30,8 @@ file(COPY ${CMAKE_SOURCE_DIR}/assets/entity/monsters/ DESTINATION ${CMAKE_BINARY
 file(COPY ${CMAKE_SOURCE_DIR}/assets/entity/player/ DESTINATION ${CMAKE_BINARY_DIR}/Release/assets/player)
 file(COPY ${CMAKE_SOURCE_DIR}/assets/entity/ DESTINATION ${CMAKE_BINARY_DIR}/Release/assets/entity)
 file(COPY ${CMAKE_SOURCE_DIR}/assets/parallax/ DESTINATION ${CMAKE_BINARY_DIR}/Release/assets/parallax)
+file(COPY ${CMAKE_SOURCE_DIR}/assets/screens/ DESTINATION ${CMAKE_BINARY_DIR}/Release/assets/screens)
+file(COPY ${CMAKE_SOURCE_DIR}/assets/entity/buttons DESTINATION ${CMAKE_BINARY_DIR}/Release/assets/entity/buttons)
 
 if(WIN32)
   file(COPY ${CMAKE_SOURCE_DIR}/../extern/dll/ DESTINATION ${CMAKE_BINARY_DIR}/Release/)

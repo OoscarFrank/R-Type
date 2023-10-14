@@ -25,8 +25,6 @@ Game::Game() :
 
     this->_window.setFramerateLimit(120);
     this->_lastTime = NOW;
-    // this->_net.setInst(9);
-    // this->_net.send();
     this->eventMemory = 0;
     this->_gameOver = false;
     this->_menuEntity = -1;
@@ -34,10 +32,10 @@ Game::Game() :
     this->_manager.loadTexture(client::getAssetPath("parallax/background.png"), Loader::toLoad::ParallaxFirstbkg);
     this->_manager.loadTexture(client::getAssetPath("parallax/background2.png"), Loader::toLoad::ParallaxSecondbkg);
 
-    this->_manager.loadTexture("./assets/entity/buttons/CreateRoomButton.png", Loader::toLoad::CreateRoomButton);
-    this->_manager.loadTexture("./assets/entity/buttons/JoinRoomButton.png", Loader::toLoad::JoinRoomButton);
-    this->_manager.loadTexture("./assets/entity/buttons/QuitButton.png", Loader::toLoad::QuitButton);
-    this->_manager.loadTexture("./assets/LooserScreen.png", Loader::toLoad::LooserScreen);
+    this->_manager.loadTexture(client::getAssetPath("entity/buttons/CreateRoomButton.png"), Loader::toLoad::CreateRoomButton);
+    this->_manager.loadTexture(client::getAssetPath("entity/buttons/JoinRoomButton.png"), Loader::toLoad::JoinRoomButton);
+    this->_manager.loadTexture(client::getAssetPath("entity/buttons/QuitButton.png"), Loader::toLoad::QuitButton);
+    this->_manager.loadTexture(client::getAssetPath("screens/LooserScreen.png"), Loader::toLoad::LooserScreen);
 
     int  divider = 1;
     #ifdef SFML_SYSTEM_MACOS
