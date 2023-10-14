@@ -7,6 +7,7 @@
 #define LEFT 4
 #define RIGHT 8
 #define SPACE 16
+#define ENTER 32
 
 namespace ECS
 {
@@ -108,6 +109,9 @@ namespace ECS
                             case sf::Keyboard::Space:
                                 eventMemory |= SPACE;
                                 break;
+                            case sf::Keyboard::Enter:
+                                eventMemory |= ENTER;
+                                break;
                             default:
                                 break;
                             }
@@ -129,6 +133,9 @@ namespace ECS
                                 break;
                             case sf::Keyboard::Space:
                                 eventMemory ^= SPACE;
+                                break;
+                            case sf::Keyboard::Enter:
+                                eventMemory ^= ENTER;
                                 break;
                             default:
                                 break;
@@ -173,6 +180,12 @@ namespace ECS
                                         ControllableComponent->setEvent(p_move | SPACE);
                                     else if (!(eventMemory & SPACE) && p_move & SPACE)
                                         ControllableComponent->setEvent(p_move ^ SPACE);
+                                    break;
+                                case sf::Keyboard::Enter:
+                                    if (eventMemory & ENTER && !(p_move & ENTER))
+                                        ControllableComponent->setEvent(p_move | ENTER);
+                                    else if (!(eventMemory & ENTER) && p_move & ENTER)
+                                        ControllableComponent->setEvent(p_move ^ ENTER);
                                     break;
                                 default:
                                     break;

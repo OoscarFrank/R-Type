@@ -26,10 +26,11 @@ Game::Game() :
 
     this->_window.setFramerateLimit(120);
     this->_lastTime = NOW;
-    this->_net.setInst(9);
-    this->_net.send();
+    // this->_net.setInst(9);
+    // this->_net.send();
     this->eventMemory = 0;
     this->_gameOver = false;
+    this->_menuEntity = -1;
 
     this->_manager.loadTexture(client::getAssetPath("parallax/background.png"), Loader::toLoad::ParallaxFirstbkg);
     this->_manager.loadTexture(client::getAssetPath("parallax/background2.png"), Loader::toLoad::ParallaxSecondbkg);
@@ -42,16 +43,17 @@ Game::Game() :
     #ifdef SFML_SYSTEM_MACOS
         divider = 2;
     #endif
-    _resMult = (float)(this->_screenSize.x / divider)/ SCREEN_WIDTH;
+    this->_resMult = (float)(this->_screenSize.x / divider)/ SCREEN_WIDTH;
 
-    entity_t newEntity = this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), -0.035f);
-    _parallax.push_back(newEntity);
-    newEntity = this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), -0.05f);
-    _parallax.push_back(newEntity);
+    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), -0.035f));
+    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), -0.05f));
 
-    this->_factory.createButton(100.0f, 100.0f, this->_manager.getTexture(Loader::Loader::CreateRoomButton));
-    this->_factory.createButton(100.0f, 200.0f, this->_manager.getTexture(Loader::Loader::JoinRoomButton));
-    this->_factory.createButton(100.0f, 300.0f, this->_manager.getTexture(Loader::Loader::QuitButton));
+    this->_menuEntity = this->ecs.spawn_entity();
+    this->ecs.emplace_component<ECS::components::ControllableComponent>(this->_menuEntity, ECS::components::ControllableComponent{sf::Keyboard::Key::Up, sf::Keyboard::Key::Down, sf::Keyboard::Key::Left, sf::Keyboard::Key::Right, sf::Keyboard::Key::Enter});
+
+    this->_buttons.push_back(this->_factory.createButton(100.0f, 100.0f, this->_manager.getTexture(Loader::Loader::CreateRoomButton)));
+    this->_buttons.push_back(this->_factory.createButton(100.0f, 200.0f, this->_manager.getTexture(Loader::Loader::JoinRoomButton)));
+    this->_buttons.push_back(this->_factory.createButton(100.0f, 300.0f, this->_manager.getTexture(Loader::Loader::QuitButton)));
 }
 
 Game::~Game()
@@ -91,6 +93,9 @@ void Game::update()
 
     while (this->_net.getQueueIn().tryPop(packet)) {
         if (packet.getInstruction() == 10) {    //you join room
+            for (auto &button : this->_buttons) {
+                this->ecs.kill_entity(button);
+            }
             this->_roomId = packet.getData().getDataUInt();
             this->_playerId = packet.getData().getDataUInt();
 
@@ -162,9 +167,7 @@ void Game::update()
                     this->ecs.modify_component<ECS::components::ParallaxComponent>(parallax, [](ECS::components::ParallaxComponent &comp) {
                         comp.setScrollSpeed(comp.getScrollSpeed() * 4.0f);
                     });
-
                 }
-
             }
         }
 
@@ -320,7 +323,14 @@ void Game::sendMoveToServer()
                 this->_net.send();
             }
         }
-
+        if (this->_menuEntity != -1 && (*i).getEntity() == this->_menuEntity) {
+            if ((*i).getEvent() & ENTER) {
+                this->ecs.kill_entity(this->_menuEntity);
+                this->_menuEntity = -1;
+                this->_net.setInst(9);
+                this->_net.send();
+            }
+        }
     }
     this->_entityEvents.clear();
 }
@@ -332,7 +342,7 @@ int Game::MainLoop()
         float deltaTime = (currentTime - _lastTime) / 1.0f;
         _lastTime = currentTime;
         this->update();
-        // ALL SYSTEMS CALL HERE (update)
+        // ALL SYSTEMS CALL HERE
         ECS::systems::ControllableSystem().update(this->ecs, this->_entityEvents, this->_window, this->eventMemory);
         ECS::systems::PositionSystem().update(this->ecs);
         ECS::systems::AnimationSystem().update(this->ecs, deltaTime);
@@ -340,7 +350,7 @@ int Game::MainLoop()
         ECS::systems::MovableSystem().update(this->ecs, this->_entityPositions);
         ECS::systems::ScaleSystem().update(this->ecs);
         this->_window.clear();
-        // DRAW SYSTEM CALL HERE (update) (after clear) (before display) (no update) (no event) (no loop) (no system call) (no event loop)
+        // DRAW SYSTEM CALL HERE
         ECS::systems::DrawSystem().update(this->ecs, this->_window);
         this->_window.display();
         this->sendMoveToServer();

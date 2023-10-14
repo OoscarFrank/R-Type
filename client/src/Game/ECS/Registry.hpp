@@ -245,8 +245,6 @@ namespace ECS
 
             callback(optionalComponent.value());
         }
-
-
         /**
          * @brief Remove a component from the registry
          *
