@@ -25,7 +25,8 @@ namespace game {
                 Monster1,
                 CreateRoomButton,
                 JoinRoomButton,
-                QuitButton
+                QuitButton,
+                LooserScreen
             };
         /**
          * @brief Load a texture from a path

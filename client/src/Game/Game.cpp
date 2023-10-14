@@ -23,7 +23,6 @@ Game::Game() :
         this->_window.create(sf::VideoMode(mode.width, mode.height), "R-TYPE");
     }
 
-
     this->_window.setFramerateLimit(120);
     this->_lastTime = NOW;
     // this->_net.setInst(9);
@@ -38,6 +37,7 @@ Game::Game() :
     this->_manager.loadTexture("./assets/entity/buttons/CreateRoomButton.png", Loader::toLoad::CreateRoomButton);
     this->_manager.loadTexture("./assets/entity/buttons/JoinRoomButton.png", Loader::toLoad::JoinRoomButton);
     this->_manager.loadTexture("./assets/entity/buttons/QuitButton.png", Loader::toLoad::QuitButton);
+    this->_manager.loadTexture("./assets/LooserScreen.png", Loader::toLoad::LooserScreen);
 
     int  divider = 1;
     #ifdef SFML_SYSTEM_MACOS
@@ -223,6 +223,8 @@ void Game::update()
 
         if (packet.getInstruction() == 18) {    //player died
             unsigned int id = packet.getData().getDataUInt();
+
+            this->_looser.push_back(this->_factory.createLooserScreen(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::LooserScreen)));
 
             entity_t res = getPlayerEntityFromId(id);
 

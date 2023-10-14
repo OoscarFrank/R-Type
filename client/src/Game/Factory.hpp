@@ -17,6 +17,7 @@ namespace game {
          */
             ~Factory();
             entity_t createButton(float x, float y, const sf::Texture &texture);
+            entity_t createLooserScreen(float x, float y, const sf::Texture &texture);
         /**
          * @brief Create a Player object
          *

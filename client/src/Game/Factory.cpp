@@ -31,6 +31,15 @@ entity_t Factory::createButton(float x, float y, const sf::Texture &texture)
     return newEntity;
 }
 
+entity_t Factory::createLooserScreen(float x, float y, const sf::Texture &texture)
+{
+    entity_t newEntity = _registry.spawn_entity();
+    _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
+    _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{0, 0, (int)texture.getSize().x, (int)texture.getSize().y, 1, 0.0f});
+    _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
+    return newEntity;
+}
+
 entity_t Factory::createPlayer(float x, float y, const sf::Texture &texture)
 {
     entity_t newEntity = _registry.spawn_entity();
