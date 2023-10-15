@@ -58,33 +58,6 @@ Game::~Game()
 {
 }
 
-entity_t Game::getPlayerEntityFromId(unsigned int id)
-{
-    for (auto &player : this->_players) {
-        if (player.first == id)
-            return player.second;
-    }
-    return 0;
-}
-
-entity_t Game::getMissileEntityFromId(unsigned int id)
-{
-    for (auto &missile : this->_missiles) {
-        if (missile.first == id)
-            return missile.second;
-    }
-    return 0;
-}
-
-entity_t Game::getEnnemiEntityFromId(unsigned int id)
-{
-    for (auto &Ennemi : this->_ennemies) {
-        if (Ennemi.first == id)
-            return Ennemi.second;
-    }
-    return 0;
-}
-
 void Game::update()
 {
     Network::Packet packet;
@@ -209,7 +182,7 @@ void Game::update()
             unsigned short y = packet.getData().getDataUShort();
             y *= _resMult;
 
-            entity_t res = getEnnemiEntityFromId(id);
+            entity_t res = EntityManager::getEnnemiEntityFromId(id);
 
             if (res == 0) {
                 entity_t newEntity = this->_factory.createEnnemi(x, y, this->_manager.getTexture(Loader::Loader::Monster1)); // TO REPLACE
@@ -283,7 +256,7 @@ void Game::update()
         if (packet.getInstruction() == 16) {        //ennemi died
             unsigned int id = packet.getData().getDataUInt();
 
-            entity_t res = getEnnemiEntityFromId(id);
+            entity_t res = EntityManager::getEnnemiEntityFromId(id);
 
             if (res != 0) {
                 this->ecs.kill_entity(res);
