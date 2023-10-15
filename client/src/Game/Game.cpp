@@ -380,8 +380,8 @@ void Game::handlePlayerDeath(Network::Packet &packet)
 {
     unsigned int id = packet.getData().getDataUInt();
     entity_t res = getPlayerEntityFromId(id);
-
-    this->_looser.push_back(this->_factory.createLooserScreen(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::LooserScreen)));
+    if (res == this->_playerEntity)
+        this->_looser.push_back(this->_factory.createLooserScreen(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::LooserScreen)));
     if (res != 0) {
         this->ecs.kill_entity(res);
 
