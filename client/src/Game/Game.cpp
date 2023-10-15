@@ -37,7 +37,7 @@ Game::Game() :
     this->_manager.loadTexture(client::getAssetPath("entity/buttons/QuitButton.png"), Loader::toLoad::QuitButton);
     this->_manager.loadTexture(client::getAssetPath("screens/LooserScreen.png"), Loader::toLoad::LooserScreen);
 
-    int  divider = 1;
+    int divider = 1;
     #ifdef SFML_SYSTEM_MACOS
         divider = 2;
     #endif
@@ -111,7 +111,7 @@ void Game::update()
 void Game::sendMoveToServer()
 {
     for (auto i = this->_entityEvents.begin(); i != this->_entityEvents.end(); ++i) {
-        if (!_gameOver && (*i).getEntity() == this->_playerEntity) {
+        if (!this->_gameOver && (*i).getEntity() == this->_playerEntity) {
             char move = (*i).getEvent() & (UP | DOWN | LEFT | RIGHT);
             if ((*i).getEvent() & move) {
                 this->_net.setInst(2);
@@ -140,8 +140,8 @@ int Game::MainLoop()
 {
     while (this->_window.isOpen()) {
         long currentTime = NOW;
-        float deltaTime = (currentTime - _lastTime) / 1.0f;
-        _lastTime = currentTime;
+        float deltaTime = (currentTime - this->_lastTime) / 1.0f;
+        this->_lastTime = currentTime;
         this->update();
         // ALL SYSTEMS CALL HERE
         ECS::systems::ControllableSystem().update(this->ecs, this->_entityEvents, this->_window, this->eventMemory);
@@ -162,20 +162,18 @@ int Game::MainLoop()
 
 
 
-
-
-
-
-
 // UPDATE HANDLE FUNCTIONS
 
 void Game::handlePlayerPosition(Network::Packet &packet)
 {
     unsigned int id = packet.getData().getDataUInt();
+
     unsigned short x = packet.getData().getDataUShort();
-    x *= _resMult;
+    x *= this->_resMult;
+
     unsigned short y = packet.getData().getDataUShort();
-    y *= _resMult;
+    y *= this->_resMult;
+
     this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(this->getPlayerEntityFromId(id), x, y));
 }
 
@@ -183,14 +181,16 @@ void Game::handleMissilePosition(Network::Packet &packet)
 {
     unsigned int id = packet.getData().getDataUInt();
     unsigned char type = packet.getData().getDataUChar();
+
     unsigned short x = packet.getData().getDataUShort();
-    x *= _resMult;
+    x *= this->_resMult;
+
     unsigned short y = packet.getData().getDataUShort();
-    y *= _resMult;
+    y *= this->_resMult;
 
     (void)type;
-
     entity_t res = getMissileEntityFromId(id);
+
     if (res == 0) {
         entity_t newEntity = this->_factory.createMissile(x, y, this->_manager.getTexture(Loader::Loader::Missile));
         this->_missiles.push_back(std::make_pair(id, newEntity));
@@ -202,19 +202,21 @@ void Game::handleMissilePosition(Network::Packet &packet)
 void Game::handlePlayerScore(Network::Packet &packet)
 {
     unsigned int score = packet.getData().getDataUInt();
+
     std::cout << "Score: " << score << std::endl;
 }
 
 void Game::handleEnnemiPosition(Network::Packet &packet)
 {
     unsigned int id = packet.getData().getDataUInt();
+
     unsigned short x = packet.getData().getDataUShort();
-    x *= _resMult;
+    x *= this->_resMult;
+
     unsigned short y = packet.getData().getDataUShort();
-    y *= _resMult;
+    y *= this->_resMult;
 
     entity_t res = getEnnemiEntityFromId(id);
-
     if (res == 0) {
         entity_t newEntity = this->_factory.createEnnemi(x, y, this->_manager.getTexture(Loader::Loader::Monster1)); // TO REPLACE
         this->_ennemies.push_back(std::make_pair(id, newEntity));
@@ -240,7 +242,7 @@ void Game::handleRoomJoin(Network::Packet &packet)
 
     std::shared_ptr<sf::Texture> texture = nullptr;
 
-    switch (_playerId) {
+    switch (this->_playerId) {
         case 1:
             texture = this->_manager.getTexture(Loader::Loader::Player_move1);
             break;
@@ -267,6 +269,7 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
 {
     this->_startTimeLeft = packet.getData().getDataUInt();
     this->_started = packet.getData().getDataUChar();
+
     if (this->_started == true) {
         for (auto &parallax : this->_parallax ) {
             this->ecs.modify_component<ECS::components::ParallaxComponent>(parallax, [](ECS::components::ParallaxComponent &comp) {
@@ -300,9 +303,9 @@ void Game::handlePlayerJoinGame(Network::Packet &packet)
     }
 
     if (texture != nullptr) {
-        entity_t newEntity = this->_factory.createPlayer(500.0f, 500.0f, texture);
+        entity_t newEntity = this->_factory.createPlayer(-1000.0f, -1000.0f, texture);
         this->_players.push_back(std::make_pair(id, newEntity));
-    }
+    }è
 }
 
 void Game::handlePlayerDisconnected(Network::Packet &packet)
@@ -327,10 +330,12 @@ void Game::handleMissileDeath(Network::Packet &packet)
 {
     unsigned int id = packet.getData().getDataUInt();
     unsigned char type = packet.getData().getDataUChar();
+
     unsigned short x = packet.getData().getDataUShort();
-    x *= _resMult;
+    x *= this->_resMult;
+
     unsigned short y = packet.getData().getDataUShort();
-    y *= _resMult;
+    y *= this->_resMult;
 
     entity_t res = getMissileEntityFromId(id);
 
