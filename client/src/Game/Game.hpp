@@ -56,5 +56,17 @@ namespace game {
 
             int eventMemory;
 
+            void handleTimeoutMatchmaking(Network::Packet &packet);
+            void handlePlayerScore(Network::Packet &packet);
+            void handleGameEnd(Network::Packet &packet);
+            void handlePlayerPosition(Network::Packet &packet);
+            void handleMissilePosition(Network::Packet &packet);
+            void handleEnnemiPosition(Network::Packet &packet);
+            void handleEnnemiDeath(Network::Packet &packet);
+            void handleMissileDeath(Network::Packet &packet);
+            void handlePlayerDeath(Network::Packet &packet);
+            void handlePlayerDisconnected(Network::Packet &packet);
+            void handleRoomJoin(Network::Packet &packet);
+            void handlePlayerJoinGame(Network::Packet &packet);
     };
 }
