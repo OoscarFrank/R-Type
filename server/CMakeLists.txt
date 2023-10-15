@@ -62,7 +62,7 @@ if(UNIX)
 elseif(WIN32)
   set(CPACK_NSIS_MODIFY_PATH "ON")
   set(CPACK_NSIS_CREATE_ICONS_EXTRA
-    "CreateShortCut '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\RType_server.lnk' '$INSTDIR\\\\r-type_server' '-p 4243'"
+    "CreateShortCut '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\RType_server.lnk' '$INSTDIR\\\\r-type_server'"
   )
 endif()
 

@@ -3,6 +3,6 @@ Encoding=UTF-8
 Version=1.0
 Type=Application
 Terminal=false
-Exec=bash -c 'cd /tmp && r-type_client 5'
+Exec=bash -c 'cd /tmp && r-type_client'
 Name=RType client
 Icon=/usr/share/r-type_client/logo.png
