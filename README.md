@@ -83,6 +83,10 @@ The host and port are optional, if you don't specify them, the client will use t
 
 ![](./screenshots/screenshot_actual_game.png)
 
+## Technical documentation
+
+You can find the technical documentation of the project [here](https://redboard.gitbook.io/r-type-1/).
+
 ## Contributing
 
 Contributions are always welcome! You can find the contribution guidelines in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
