@@ -45,7 +45,7 @@ namespace game {
          * @brief Get the Texture object
          *
          * @param type
-         * @return const sf::Texture&
+         * @return const std::shared_ptr<sf::Texture>&
          */
             const std::shared_ptr<sf::Texture> &getTexture(toLoad type) const;
 

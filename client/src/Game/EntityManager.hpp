@@ -12,7 +12,6 @@ namespace game {
             EntityManager();
             ~EntityManager();
 
-
         protected:
             entity_t getPlayerEntityFromId(unsigned int id);
             entity_t getMissileEntityFromId(unsigned int id);

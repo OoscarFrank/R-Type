@@ -305,7 +305,7 @@ void Game::handlePlayerJoinGame(Network::Packet &packet)
     if (texture != nullptr) {
         entity_t newEntity = this->_factory.createPlayer(-1000.0f, -1000.0f, texture);
         this->_players.push_back(std::make_pair(id, newEntity));
-    }è
+    }
 }
 
 void Game::handlePlayerDisconnected(Network::Packet &packet)
