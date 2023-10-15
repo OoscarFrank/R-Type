@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 #include <SFML/Graphics.hpp>
-#include "../../../Error/MyError.hpp"
+#include "../../Error/MyError.hpp"
 
 namespace game {
     class Loader {
@@ -22,7 +22,11 @@ namespace game {
                 ParallaxSecondbkg,
                 Player_move1, Player_move2, Player_move3, Player_move4,
                 Missile,
-                Monster1
+                Monster1,
+                CreateRoomButton,
+                JoinRoomButton,
+                QuitButton,
+                LooserScreen
             };
         /**
          * @brief Load a texture from a path
@@ -41,11 +45,11 @@ namespace game {
          * @brief Get the Texture object
          *
          * @param type
-         * @return const sf::Texture&
+         * @return const std::shared_ptr<sf::Texture>&
          */
-            const sf::Texture &getTexture(toLoad type) const;
+            const std::shared_ptr<sf::Texture> &getTexture(toLoad type) const;
 
         private:
-            std::unordered_map<Loader::toLoad, std::unique_ptr<sf::Texture>> _textures;
+            std::unordered_map<Loader::toLoad, std::shared_ptr<sf::Texture>> _textures;
     };
 }

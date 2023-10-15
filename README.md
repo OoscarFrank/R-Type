@@ -10,13 +10,19 @@ RType is a 2D game based on the original R-Type game. It is a side-scrolling sho
 
 This repository contains the client and server of the game. The client is the game itself where the user controls his player, and the server is used to manage the game sessions and the players.
 
-## Download
+## Install from release
 
 The game is currently available on Ubuntu, Fedora and Windows.
 
-You can download the latest release of the game [here](https://github.com/EpitechPromo2026/B-CPP-500-MLH-5-1-rtype-martin.d-herouville/releases). There is a Windows installer, a windows executable and a DEB/RPM image.
+You can download the latest release of the game [here](https://github.com/EpitechPromo2026/B-CPP-500-MLH-5-1-rtype-martin.d-herouville/releases).
 
-## Installation
+- On windows, pick the file named `r-type_client-v1.0.0-win64-installer.exe` and `r-type_server-v1.0.0-win64-installer.exe`. After downloading the files, you can just run the installer by double clicking on it.
+- On Ubuntu, pick the file named `r-type_client-v1.0.0-linux-installer.deb` and `r-type_server-v1.0.0-linux-installer.deb`. After downloading the files, you can just run the installer by double clicking on it or by using the following command: `sudo dpkg -i r-type_client-v1.0.0-linux-installer.deb && sudo dpkg -i r-type_server-v1.0.0-linux-installer.deb`.
+- On Fedora, pick the file named `r-type_client-v1.0.0-linux-installer.rpm` and `r-type_server-v1.0.0-linux-installer.rpm`. After downloading the files, you can just run the installer by double clicking on it or by using the following command: `sudo rpm -i r-type_client-v1.0.0-linux-installer.rpm && sudo rpm -i r-type_server-v1.0.0-linux-installer.rpm`.
+
+After the installation, you can launch the game by searching for `RType` in your applications (works in both Windows and Linux). On Linux, you can also launch the game from the terminal by using the following command: `r-type_client` and `r-type_server`.
+
+## Compilation from source code
 
 If you want to build the game from the source code, you can find the installation instructions for each OS in the [INSTALL.md](INSTALL.md) file.
 
@@ -76,6 +82,10 @@ The host and port are optional, if you don't specify them, the client will use t
 ## Screenshots
 
 ![](./screenshots/screenshot_actual_game.png)
+
+## Technical documentation
+
+You can find the technical documentation of the project [here](https://redboard.gitbook.io/r-type-1/).
 
 ## Contributing
 

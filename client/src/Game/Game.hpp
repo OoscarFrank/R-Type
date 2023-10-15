@@ -1,16 +1,15 @@
 #pragma once
 
 #include "../Core.hpp"
-#include "./ECS/Loader/Loader.hpp"
+#include "./Loader/Loader.hpp"
 #include "../Utils.hpp"
 #include "./ECS/Registry.hpp"
 #include "../Network/Network.hpp"
-#include <vector>
-#include "./ECS/Systems/Systems.hpp"
-#include "Factory.hpp"
+#include "EntitiesFactory.hpp"
+#include "EntityManager.hpp"
 
 namespace game {
-    class Game {
+    class Game: public EntityManager {
         public:
         /**
          * @brief Construct a new Game object
@@ -33,42 +32,23 @@ namespace game {
          *
          */
             void update();
-        /**
-         * @brief Get the Player Entity From Id object
-         *
-         * @param id
-         * @return entity_t
-         */
-            entity_t getPlayerEntityFromId(unsigned int id);
-        /**
-         * @brief Get the Missile Entity From Id object
-         *
-         * @param id
-         * @return entity_t
-         */
-            entity_t getMissileEntityFromId(unsigned int id);
-        /**
-         * @brief Get the Ennemi Entity From Id object
-         *
-         * @param id
-         * @return entity_t
-         */
-            entity_t getEnnemiEntityFromId(unsigned int id);
+
             void sendMoveToServer();
 
         private:
             sf::Vector2u _screenSize;
             sf::RenderWindow _window;
-            long _lastTime;
+
             Loader _manager;
             ECS::Registry ecs;
             Factory _factory;
             Network _net;
+
+            long _lastTime;
             float _resMult;
 
             unsigned int _roomId;
             unsigned int _playerId;
-            entity_t _playerEntity;
             bool _gameOver;
 
             unsigned int _startTimeLeft;
@@ -76,10 +56,17 @@ namespace game {
 
             int eventMemory;
 
-            std::vector<std::pair<size_t, entity_t>> _players;
-            std::vector<std::pair<size_t, entity_t>> _missiles;
-            std::vector<std::pair<size_t, entity_t>> _ennemies;
-            std::vector<ECS::systems::MovableSystem::EntityPos> _entityPositions;
-            std::vector<ECS::systems::ControllableSystem::EntityEvent> _entityEvents;
+            void handleTimeoutMatchmaking(Network::Packet &packet);
+            void handlePlayerScore(Network::Packet &packet);
+            void handleGameEnd(Network::Packet &packet);
+            void handlePlayerPosition(Network::Packet &packet);
+            void handleMissilePosition(Network::Packet &packet);
+            void handleEnnemiPosition(Network::Packet &packet);
+            void handleEnnemiDeath(Network::Packet &packet);
+            void handleMissileDeath(Network::Packet &packet);
+            void handlePlayerDeath(Network::Packet &packet);
+            void handlePlayerDisconnected(Network::Packet &packet);
+            void handleRoomJoin(Network::Packet &packet);
+            void handlePlayerJoinGame(Network::Packet &packet);
     };
 }

@@ -9,21 +9,21 @@ static std::tm *getCurrentTime() {
 }
 
 void client::log(const std::string &message, const std::string &type) {
-    std::tm *currentTime = getCurrentTime();
+    // std::tm *currentTime = getCurrentTime();
 
-    std::stringstream dateStream;
-    dateStream << std::put_time(currentTime, "%Y-%m-%d");
-    std::string dateStr = dateStream.str();
+    // std::stringstream dateStream;
+    // dateStream << std::put_time(currentTime, "%Y-%m-%d");
+    // std::string dateStr = dateStream.str();
 
-    std::filesystem::create_directory("./logs");
+    // std::filesystem::create_directory("./logs");
 
-    std::string fileName = "./logs/" + dateStr + ".log";
-    std::ofstream file(fileName, std::ios::app);
+    // std::string fileName = "./logs/" + dateStr + ".log";
+    // std::ofstream file(fileName, std::ios::app);
 
-    if (file.is_open()) {
-        file << std::put_time(currentTime, "%H:%M:%S") << " [" << type << "] " << message << std::endl;
-        file.close();
-    }
+    // if (file.is_open()) {
+    //     file << std::put_time(currentTime, "%H:%M:%S") << " [" << type << "] " << message << std::endl;
+    //     file.close();
+    // }
 }
 
 MyError::MyError(const std::string &className, const std::string &message, bool logToFile, const std::string &errorType): _msg(className + ": " + message) {

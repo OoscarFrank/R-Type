@@ -16,11 +16,13 @@ namespace ECS {
                 void update(Registry &ecs, float deltaTime) {
                     try {
                         auto &textureRectComponents = ecs.get_components<components::TextureRectComponent>();
+                        auto &animationComponents = ecs.get_components<components::AnimationComponent>();
 
-                        for (size_t i = 0; i < textureRectComponents.size(); ++i) {
+                        for (size_t i = 0; i < animationComponents.size() && i < textureRectComponents.size(); ++i) {
                             auto &textureRect = textureRectComponents[i];
+                            auto &animation = animationComponents[i];
 
-                            if (textureRect) {
+                            if (animation && textureRect) {
                                 textureRect->_timeSinceLastFrameChange += deltaTime;
 
                                 if (textureRect->_timeSinceLastFrameChange >= textureRect->_frameDelay) {
