@@ -47,9 +47,9 @@ namespace game {
          * @param type
          * @return const sf::Texture&
          */
-            const sf::Texture &getTexture(toLoad type) const;
+            const std::shared_ptr<sf::Texture> &getTexture(toLoad type) const;
 
         private:
-            std::unordered_map<Loader::toLoad, std::unique_ptr<sf::Texture>> _textures;
+            std::unordered_map<Loader::toLoad, std::shared_ptr<sf::Texture>> _textures;
     };
 }

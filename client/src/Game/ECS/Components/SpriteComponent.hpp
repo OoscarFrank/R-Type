@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <memory>
 
 namespace ECS{
     namespace components {
@@ -11,8 +12,8 @@ namespace ECS{
              *
              * @param texture
              */
-                SpriteComponent(const sf::Texture &texture) {
-                    this->_sprite.setTexture(texture);
+                SpriteComponent(const std::shared_ptr<sf::Texture> &texture) {
+                    this->_sprite.setTexture(*texture);
                 }
             /**
              * @brief Set the Texture object
