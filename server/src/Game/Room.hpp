@@ -51,24 +51,101 @@ class Room
         void checkCollisionMonsters();
 
     public:
+        /**
+         * @brief Construct a new Room object
+         *
+         * @param id The id of the room
+         * @param client The client that created the room
+         * @param privateRoom If the room is private or not (default: false)
+         */
         Room(u_int id, std::shared_ptr<Client> client, bool privateRoom = false);
         ~Room();
         Room(const Room &room) = delete;
         Room(Room &&room) = delete;
         Room &operator=(const Room &room) = delete;
         Room &operator=(Room &&room) = delete;
+        /**
+         * @brief Get the id of the room
+         *
+         * @return u_int
+         */
         u_int getId() const;
+        /**
+         * @brief Get the number of players in the room
+         *
+         * @return unsigned int
+         */
         unsigned int getNbPlayer() const;
+        /**
+         * @brief Get the progress of the game
+         *
+         * @return unsigned int
+         */
         unsigned int getProgress() const;
+        /**
+         * @brief Get max number of players allowed in the room
+         *
+         * @return unsigned int
+         */
         unsigned int getMaxPlayer() const;
+        /**
+         * @brief Add a new player to the room
+         *
+         * @param client The client that wants to join the room
+         */
         void addPlayer(std::shared_ptr<Client> client);
-        void movePlayer(std::shared_ptr<Client> client, char move, char nbr);
+        /**
+         * @brief Move a player in the room
+         *
+         * @param client The client that wants to move
+         * @param move The move to make (PLAYER_MOVE_UP | PLAYER_MOVE_DOWN | PLAYER_MOVE_LEFT | PLAYER_MOVE_RIGHT) you can combine them with the | binary operator
+         * @param nbr The number of move to make (default: 1)
+         */
+        void movePlayer(std::shared_ptr<Client> client, char move, char nbr = 1);
+        /**
+         * @brief Checks if a client is in the room
+         *
+         * @param client The client to check
+         * @return true If the client is in the room
+         * @return false If the client is not in the room
+         */
         bool isClientInRoom(std::shared_ptr<Client> client);
+        /**
+         * @brief Get the player associated with a client
+         *
+         * @param client The client to find
+         * @return Player&
+         */
         Player &getPlayer(std::shared_ptr<Client> client);
+        /**
+         * @brief Send a packet to all players in the room
+         *
+         * @param stream The packet to send
+         */
         void sendToAll(const Stream &stream);
+        /**
+         * @brief Send the packet stored in the class to all players in the room
+         * This method works with the `getBroadcastStream` and `setInstBroadcast` methods
+         *
+         */
         void sendBroadcast();
+        /**
+         * @brief Get the broadcast stream to send to all players
+         *
+         * @return Stream&
+         */
         Stream &getBroadcastStream();
+        /**
+         * @brief Set the broadcast instruction
+         *
+         * @param inst The instruction to send to all players
+         */
         void setInstBroadcast(unsigned char inst);
+        /**
+         * @brief Get the id of the next missile to create
+         *
+         * @return u_int&
+         */
         u_int &getMissilesIds();
 
 };
