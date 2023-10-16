@@ -29,6 +29,11 @@ Room::~Room()
         _thread.join();
 }
 
+Room::State Room::getState() const
+{
+    return _state;
+}
+
 u_int Room::getId() const
 {
     return _id;
@@ -160,7 +165,10 @@ void Room::refresh()
         }
         _playersMutex.unlock();
         update();
-        // std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        if (_players.size() == 0) {
+            _state = STOPPED;
+            break;
+        }
     }
 }
 

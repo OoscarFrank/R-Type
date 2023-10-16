@@ -11,14 +11,16 @@
 
 class Room
 {
-    private:
+    public:
         enum State {
             WAIT = 0,
             RUN = 1,
             END = 2,
+            STOPPED = 3
         };
 
-        unsigned char _state;
+    private:
+        State _state;
         std::thread _thread;
         std::mutex _playersMutex;
         std::vector<std::unique_ptr<Player>> _players;
@@ -64,6 +66,12 @@ class Room
         Room(Room &&room) = delete;
         Room &operator=(const Room &room) = delete;
         Room &operator=(Room &&room) = delete;
+        /**
+         * @brief Get the state of the room (WAIT | RUN | END | STOPPED)
+         *
+         * @return State
+         */
+        State getState() const;
         /**
          * @brief Get the id of the room
          *

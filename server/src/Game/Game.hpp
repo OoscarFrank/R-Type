@@ -14,6 +14,8 @@ class Game
         u_int _roomIds;
         std::mutex _roomsMutex;
 
+        void _clearRooms();
+
     public:
         /**
          * @brief Construct a new Game object
