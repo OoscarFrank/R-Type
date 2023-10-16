@@ -48,6 +48,6 @@ int Core::checkArgs(int ac, char **av)
 
 void Core::run()
 {
-    Game game;
+    Game game(this->_ip, this->_port);
     game.MainLoop();
 }

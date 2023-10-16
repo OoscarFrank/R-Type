@@ -5,10 +5,10 @@
 using namespace game;
 using entity_t = std::size_t;
 
-Game::Game() :
+Game::Game(std::string ip, int port) :
     _manager(Loader()),
     _factory(Factory(ecs)),
-    _net(Network()),
+    _net(Network(ip, port)),
     _roomId(0),
     _playerId(0),
     _startTimeLeft(0),
