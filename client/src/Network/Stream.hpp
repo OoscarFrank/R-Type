@@ -48,7 +48,7 @@ public:
     char getDataChar();
 
     Stream subStream(size_t pos) const;
-    Stream subStream(size_t start, size_t size) const;
+    Stream subStream(size_t pos, size_t len) const;
     std::string toString() const;
 
     class SubStreamError : public std::exception

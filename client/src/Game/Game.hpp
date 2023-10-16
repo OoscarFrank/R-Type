@@ -15,7 +15,7 @@ namespace game {
          * @brief Construct a new Game object
          *
          */
-            Game();
+            Game(std::string ip, int port);
         /**
          * @brief Destroy the Game object
          *
