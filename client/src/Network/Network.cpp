@@ -51,7 +51,6 @@ void Network::startReceive()
 {
     auto data = std::make_shared<std::array<char, 1024>>();
 
-    
     if (_closed) {
         return;
     }
@@ -64,10 +63,10 @@ void Network::startReceive()
                 while ((tmpInst = this->getNextInst()).first != 0) {
                     _queueIn.push(Network::Packet(tmpInst.second, tmpInst.first));
                 }
-                startReceive();
             } else if (ec) {
                 std::cerr << "Error in Network" << std::endl;
             }
+            startReceive();
         }
     );
 }

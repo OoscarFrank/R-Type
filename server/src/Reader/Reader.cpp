@@ -13,19 +13,18 @@ Reader::~Reader()
 void Reader::Clock()
 {
     asio::ip::udp::endpoint sender;
-    bool pass = false;
     std::pair<size_t, Stream> tmpInst;
-    enum
-    {
-        max_length = 1024
-    };
+    const size_t max_length = 1024;
     char data[max_length];
 
     while (true)
     {
-        pass = false;
+        bool pass = false;
         asio::error_code ec;
         size_t len = this->_socket.receive_from(asio::buffer(data, max_length), sender, 0, ec);
+
+        if (len == 0)
+            continue;
 
         for (auto i = this->_clients.begin(); i != this->_clients.end(); i++)
         {
