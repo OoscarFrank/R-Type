@@ -15,7 +15,7 @@ int Core::checkArgs(int ac, char **av)
         return 0;
     if (ac > 5)
         throw MyError("Core", "Too many arguments.");
-    if (std::string(av[1]).find("-help") != std::string::npos) {
+    if (std::string(av[1]).find("-help") != std::string::npos || ac % 2 == 0) {
         std::cout << "USAGE: ./client -p port -h machine\n\tport\tis the port number; 4242 by default\n\tmachine\tis the name of the machine; localhost by default" << std::endl;
         return -1;
     }
