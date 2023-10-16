@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ECS/Components/Components.hpp"
-#include "ECS/Registry.hpp"
+#include "../ECS/Components/Components.hpp"
+#include "../ECS/Registry.hpp"
 #include <memory>
 
 namespace game {

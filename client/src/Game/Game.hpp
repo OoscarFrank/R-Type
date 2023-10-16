@@ -3,7 +3,7 @@
 #include "../Core.hpp"
 #include "./Loader/Loader.hpp"
 #include "../Utils.hpp"
-#include "./ECS/Registry.hpp"
+#include "../ECS/Registry.hpp"
 #include "../Network/Network.hpp"
 #include "EntitiesFactory.hpp"
 #include "EntityManager.hpp"

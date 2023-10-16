@@ -1,6 +1,6 @@
 #include "./Game.hpp"
-#include "./ECS/Components/Components.hpp"
-#include "./ECS/Systems/Systems.hpp"
+#include "../ECS/Components/Components.hpp"
+#include "../ECS/Systems/Systems.hpp"
 
 using namespace game;
 using entity_t = std::size_t;
