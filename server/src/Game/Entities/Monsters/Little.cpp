@@ -28,7 +28,7 @@ void LittleMonster::refresh()
     }
     if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= ENEMY_MOVE_TIME) {
         move(-1, 0);
-        _room.sendToAll(Stream::toMonsterPos(_id, _box.x, _box.y));
+        _room.sendToAll(StreamFactory::monsterPos(_id, _box.x, _box.y));
         _lastMove = now;
     }
 }
