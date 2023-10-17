@@ -26,6 +26,12 @@ class LittleMonster: public ArmedEntity {
         virtual ~LittleMonster();
 
         /**
+         * @brief Set the monster's life
+         *
+         * @param life The new life to get
+         */
+        virtual void setLife(int life);
+        /**
          * @brief Refresh the entity
          * This method does the following:
          * - Refresh the missiles

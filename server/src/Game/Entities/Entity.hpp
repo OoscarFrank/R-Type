@@ -59,13 +59,13 @@ class IEntity {
          */
         virtual const BoundingBox<short> &box() const = 0;
         /**
-         * @brief Get the player's life
+         * @brief Get the entities life
          *
          * @param life The new life to set
          */
         virtual int life() const = 0;
         /**
-         * @brief Set the player's life
+         * @brief Set the entities life
          *
          * @param life The new life to get
          */
@@ -161,13 +161,13 @@ class AEntity: public IEntity {
          */
         virtual const BoundingBox<short> &box() const;
         /**
-         * @brief Get the player's life
+         * @brief Get the entities life
          *
          * @param life The new life to set
          */
         virtual int life() const;
         /**
-         * @brief Set the player's life
+         * @brief Set the entities life
          *
          * @param life The new life to get
          */

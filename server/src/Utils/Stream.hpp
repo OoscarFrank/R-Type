@@ -78,6 +78,7 @@ namespace StreamFactory {
     Stream gameOver(u_char type);
     Stream playerDied(u_int id);
     Stream playerLife(int life);
+    Stream monsterLife(u_int id, int life);
 }
 
 #endif

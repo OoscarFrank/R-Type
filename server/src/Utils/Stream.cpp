@@ -399,3 +399,12 @@ Stream StreamFactory::playerLife(int life)
     out.setDataInt(life);
     return out;
 }
+
+Stream StreamFactory::monsterLife(u_int id, int life)
+{
+    Stream out;
+    out.setDataUChar(20);
+    out.setDataUInt(id);
+    out.setDataInt(life);
+    return out;
+}
