@@ -2,7 +2,8 @@
 #include "../Utils/Scheduling.hpp"
 #include <bitset>
 
-Room::Room(u_int id, std::shared_ptr<Client> client, bool privateRoom)
+Room::Room(u_int id, std::shared_ptr<Client> client, bool privateRoom):
+    _levels(*this)
 {
     _id = id;
     _playersIds = 0;
@@ -188,11 +189,7 @@ void Room::update()
         checkCollisionPlayer();
         checkCollisionMonsters();
 
-        if (now - _lastMonsterSpawn >= ENEMY_SPAWN_TIME) {
-            _lastMonsterSpawn = now;
-            this->addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
-            now = NOW;
-        }
+        _levels.update();
         _playersMutex.unlock();
     }
     if (_state == WAIT) {
@@ -224,8 +221,8 @@ void Room::startGame()
     _lastMapRefresh = NOW;
     _lastPlayerUpdate = NOW;
     _lastMissileUpdate = NOW;
-    _lastMonsterSpawn = NOW;
     sendToAll(StreamFactory::waitGame(0, true));
+    _levels.start();
 
     for (auto i = _players.begin(); i != _players.end(); i++)
         (**i).sendPos();
