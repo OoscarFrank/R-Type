@@ -16,7 +16,6 @@ Game::Game(std::string ip, int port) :
 {
     sf::VideoMode mode = sf::VideoMode::getDesktopMode();
     this->_realScreenSize = {static_cast<float>(mode.width), static_cast<float>(mode.height)};
-
     this->_manager.loadTexture(client::getAssetPath("entity/BlackPixel.png"), Loader::toLoad::BlackPixel);
     this->_manager.loadTexture(client::getAssetPath("parallax/background.png"), Loader::toLoad::ParallaxFirstbkg);
     this->_manager.loadTexture(client::getAssetPath("parallax/background2.png"), Loader::toLoad::ParallaxSecondbkg);
@@ -60,7 +59,7 @@ Game::Game(std::string ip, int port) :
     this->_gameOver = false;
     this->_menuEntity = -1;
 
-    
+    this->_manager.createMusic(client::getAssetPath("songs/song.ogg"));
 
     int divider = 1;
     #ifdef SFML_SYSTEM_MACOS
@@ -85,6 +84,7 @@ Game::Game(std::string ip, int port) :
 
 Game::~Game()
 {
+    this->_manager.stopMusic();
 }
 
 void Game::update()
