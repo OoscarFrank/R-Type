@@ -9,8 +9,21 @@ Game::~Game()
 {
 }
 
+void Game::_clearRooms()
+{
+    std::unique_lock<std::mutex> lock(_roomsMutex);
+
+    for (auto i = this->_rooms.begin(); i != this->_rooms.end();) {
+        if ((**i).getState() == Room::STOPPED)
+            i = _rooms.erase(i);
+        else
+            i++;
+    }
+}
+
 void Game:: createRoom(Reader::Packet &packet, bool privateRoom)
 {
+    _clearRooms();
     std::unique_ptr<Room> newRoom = std::make_unique<Room>(_roomIds++, packet.getClient(), privateRoom);
     _roomsMutex.lock();
     _rooms.push_back(std::move(newRoom));
@@ -19,6 +32,7 @@ void Game:: createRoom(Reader::Packet &packet, bool privateRoom)
 
 void Game::searchRoom(Reader::Packet &packet)
 {
+    _clearRooms();
     _roomsMutex.lock();
     if (_rooms.size() == 0) {
         _roomsMutex.unlock();
@@ -39,6 +53,7 @@ void Game::searchRoom(Reader::Packet &packet)
 
 Room &Game::getRoom(u_int id)
 {
+    _clearRooms();
     std::unique_lock<std::mutex> lock(_roomsMutex);
 
     for (auto i = this->_rooms.begin(); i != this->_rooms.end(); i++) {
@@ -51,6 +66,7 @@ Room &Game::getRoom(u_int id)
 
 Room &Game::getRoom(std::shared_ptr<Client> client)
 {
+    _clearRooms();
     std::unique_lock<std::mutex> lock(_roomsMutex);
 
     for (auto i = this->_rooms.begin(); i != this->_rooms.end(); i++) {

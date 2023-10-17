@@ -6,10 +6,7 @@ Player::Player(Room &room, std::shared_ptr<Client> client, u_int id, short x, sh
     _score(0),
     _client(client)
 {
-    Stream out;
-    out.setDataUChar(13);
-    out.setDataUInt(_id);
-    _room.sendToAll(out);
+    _room.sendToAll(Stream::toPlayerJoinedGame(_id));
     sendPos();
 }
 
@@ -18,16 +15,13 @@ Player::Player(Room &room, std::shared_ptr<Client> client, u_int id, const std::
     _score(0),
     _client(client)
 {
-    Stream out;
-    out.setDataUChar(13);
-    out.setDataUInt(_id);
-    _room.sendToAll(out);
+    _room.sendToAll(Stream::toPlayerJoinedGame(_id));
     sendPos();
 }
 
 Player::~Player()
 {
-    
+
 }
 
 void Player::refresh()
@@ -51,12 +45,7 @@ void Player::move(short dx, short dy)
 
 void Player::sendPos()
 {
-    Stream out;
-    out.setDataUChar(3);
-    out.setDataUInt(_id);
-    out.setDataShort(_box.x);
-    out.setDataShort(_box.y);
-    _room.sendToAll(out);
+    _room.sendToAll(Stream::toPlayerPos(_id, _box.x, _box.y));
 }
 
 void Player::fireMissile()
@@ -88,10 +77,13 @@ int Player::score() const
 void Player::setScore(int score)
 {
     _score = score;
-    Stream out;
-    out.setDataUChar(6);
-    out.setDataInt(_score);
-    _room.sendToAll(out);
+    _room.sendToAll(Stream::toScore(_score));
+}
+
+void Player::setLife(int life)
+{
+    AEntity::setLife(life);
+    _client->send(Stream::toPlayerLife(_life));
 }
 
 std::shared_ptr<Client> Player::client() const

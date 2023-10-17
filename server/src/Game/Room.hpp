@@ -11,14 +11,16 @@
 
 class Room
 {
-    private:
+    public:
         enum State {
             WAIT = 0,
             RUN = 1,
             END = 2,
+            STOPPED = 3
         };
 
-        unsigned char _state;
+    private:
+        State _state;
         std::thread _thread;
         std::mutex _playersMutex;
         std::vector<std::unique_ptr<Player>> _players;
@@ -31,9 +33,6 @@ class Room
 
         u_int _missilesIds;
         u_int _monstersIds;
-
-        Stream _broadcastStream;
-        unsigned char _broadcastInst;
 
         size_t _lastMapRefresh;
         size_t _lastWaitMessage;
@@ -64,6 +63,12 @@ class Room
         Room(Room &&room) = delete;
         Room &operator=(const Room &room) = delete;
         Room &operator=(Room &&room) = delete;
+        /**
+         * @brief Get the state of the room (WAIT | RUN | END | STOPPED)
+         *
+         * @return State
+         */
+        State getState() const;
         /**
          * @brief Get the id of the room
          *
@@ -123,24 +128,6 @@ class Room
          * @param stream The packet to send
          */
         void sendToAll(const Stream &stream);
-        /**
-         * @brief Send the packet stored in the class to all players in the room
-         * This method works with the `getBroadcastStream` and `setInstBroadcast` methods
-         *
-         */
-        void sendBroadcast();
-        /**
-         * @brief Get the broadcast stream to send to all players
-         *
-         * @return Stream&
-         */
-        Stream &getBroadcastStream();
-        /**
-         * @brief Set the broadcast instruction
-         *
-         * @param inst The instruction to send to all players
-         */
-        void setInstBroadcast(unsigned char inst);
         /**
          * @brief Get the id of the next missile to create
          *

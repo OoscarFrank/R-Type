@@ -5,40 +5,7 @@
 #include "Utils/ThreadPool.hpp"
 #include "Utils/Args.hpp"
 #include "Utils/Instruction.hpp"
-
-void router(Reader::Packet packet, Game &game)
-{
-    try {
-        switch (packet.getInstruction()) {
-            case 2:
-                {
-                    char move = packet.getData().getDataChar();
-                    char nbr = packet.getData().getDataChar();
-                    game.getRoom(packet.getClient()).movePlayer(packet.getClient(), move, nbr);
-                }
-                break;
-            case 5:
-                {
-                    Room &tmpRoom = game.getRoom(packet.getClient());
-                    tmpRoom.getPlayer(packet.getClient()).fireMissile();
-                }
-                break;
-            case 8:
-                game.createRoom(packet, ((packet.getData().getDataChar() == 1) ? true : false));
-                break;
-            case 9:
-                game.searchRoom(packet);
-                break;
-            case 12:
-                packet.getClient()->ping();
-                break;
-            default:
-                break;
-        }
-    } catch (const std::exception &e) {
-        std::cerr << "[ROUTER ERROR] " << e.what() << std::endl;
-    }
-}
+#include "Router.hpp"
 
 void exec(int port)
 {
@@ -48,6 +15,7 @@ void exec(int port)
     std::vector<std::shared_ptr<Client>> clients;
     Reader reader(socket, queueIn, clients);
     Game game;
+    Router router(game);
 
     std::cout << "Server listening on port " << port << std::endl;
 
@@ -55,8 +23,8 @@ void exec(int port)
     ThreadPool reqPool(nbThread / 2, 10);
     while (true) {
         Reader::Packet value = queueIn.pop();
-        reqPool.submit([value, &game]() {
-            router(value, game);
+        reqPool.submit([value, &router]() {
+            router.route(value);
         });
     }
 }

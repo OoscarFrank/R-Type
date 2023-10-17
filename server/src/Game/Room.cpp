@@ -10,7 +10,6 @@ Room::Room(u_int id, std::shared_ptr<Client> client, bool privateRoom)
     _progress = 0;
     _lastMapRefresh = 0;
     _state = WAIT;
-    _broadcastInst = 0;
 
     _missilesIds = 0;
     _monstersIds = 0;
@@ -27,6 +26,11 @@ Room::~Room()
 {
     if (_thread.joinable())
         _thread.join();
+}
+
+Room::State Room::getState() const
+{
+    return _state;
 }
 
 u_int Room::getId() const
@@ -63,16 +67,10 @@ void Room::addPlayer(std::shared_ptr<Client> client)
 
     u_int newId = ++_playersIds;
 
-    client->setInst(10);
-    client->getStreamOut().setDataUInt(_id);
-    client->getStreamOut().setDataUInt(newId);
-    client->send();
+    client->send(Stream::toJoinRoom(_id, newId));
 
-    for (auto i = _players.begin(); i != _players.end(); i++) {
-        client->setInst(13);
-        client->getStreamOut().setDataUInt((**i).id());
-        client->send();
-    }
+    for (auto i = _players.begin(); i != _players.end(); i++)
+        client->send(Stream::toPlayerJoinedGame((**i).id()));
 
     _players.push_back(std::make_unique<Player>(*this, client, newId, 0, 0));
     _lastJoin = NOW;
@@ -134,16 +132,6 @@ void Room::sendToAll(const Stream &stream)
     }
 }
 
-void Room::sendBroadcast()
-{
-    Stream out;
-    out += _broadcastInst;
-    out += _broadcastStream;
-    sendToAll(out);
-    _broadcastStream.clear();
-    _broadcastInst = 0;
-}
-
 void Room::refresh()
 {
     while (true) {
@@ -151,16 +139,17 @@ void Room::refresh()
         for (auto i = _players.begin(); i != _players.end(); i++) {
             if (!(**i).client()->isAlive()) {
                 std::cout << "Player " << (**i).id() << " disconnected in room " << _id << std::endl;
-                this->setInstBroadcast(14);
-                this->_broadcastStream.setDataUInt((**i).id());
-                this->sendBroadcast();
+                sendToAll(Stream::toPlayerLeftGame((**i).id()));
                 _players.erase(i);
                 break;
             }
         }
         _playersMutex.unlock();
         update();
-        // std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        if (_players.size() == 0) {
+            _state = STOPPED;
+            break;
+        }
     }
 }
 
@@ -171,9 +160,7 @@ void Room::update()
         if (now - _lastMapRefresh >= MAP_REFRESH_TIME) {
             _lastMapRefresh = now;
             _progress += MAP_PROGRESS_STEP;
-            this->setInstBroadcast(0x01);
-            this->_broadcastStream.setDataUInt(_progress);
-            this->sendBroadcast();
+            sendToAll(Stream::toScreenProgress(_progress));
             now = NOW;
         }
         _playersMutex.lock();
@@ -193,9 +180,7 @@ void Room::update()
             }
             if ((**i).getExist() && (**i).isOutOfScreen()) {
                 (**i).killEntity();
-                this->setInstBroadcast(16);
-                this->_broadcastStream.setDataUInt((**i).id());
-                this->sendBroadcast();
+                sendToAll(Stream::toMonsterDied((**i).id()));
             } else
                 i++;
         }
@@ -217,10 +202,7 @@ void Room::update()
         } else  {
             if (now - _lastWaitMessage >= SEND_WAIT_MESSAGE_TIME) {
                 _lastWaitMessage = now;
-                this->setInstBroadcast(11);
-                this->_broadcastStream.setDataInt(TIMEOUT_START_GAME - (now - _lastJoin));
-                this->_broadcastStream.setDataUChar(0);
-                this->sendBroadcast();
+                sendToAll(Stream::toWaitGame(TIMEOUT_START_GAME - (now - _lastJoin), false));
                 now = NOW;
             }
         }
@@ -230,9 +212,7 @@ void Room::update()
     if (_state == END) {
         if (now - _lastGameOver >= GAME_OVER_REFRESH) {
             _lastGameOver = now;
-            this->setInstBroadcast(17);
-            this->_broadcastStream.setDataChar(0);
-            this->sendBroadcast();
+            sendToAll(Stream::toGameOver(0));
             now = NOW;
         }
     }
@@ -245,26 +225,10 @@ void Room::startGame()
     _lastPlayerUpdate = NOW;
     _lastMissileUpdate = NOW;
     _lastMonsterSpawn = NOW;
-    this->setInstBroadcast(11);
-    this->_broadcastStream.setDataInt(0);
-    this->_broadcastStream.setDataUChar(1);
-    this->sendBroadcast();
+    sendToAll(Stream::toWaitGame(0, true));
 
-    for (auto i = _players.begin(); i != _players.end(); i++) {
-
+    for (auto i = _players.begin(); i != _players.end(); i++)
         (**i).sendPos();
-    }
-}
-
-Stream &Room::getBroadcastStream()
-{
-    return _broadcastStream;
-}
-
-
-void Room::setInstBroadcast(unsigned char inst)
-{
-    _broadcastInst = inst;
 }
 
 void Room::addMonster(IEntity::Type type, int x, int y)
@@ -287,11 +251,12 @@ void Room::checkCollisionPlayer()
     for (auto i = _players.begin(); i != _players.end(); i++) {
         for (auto j = _monsters.begin(); j != _monsters.end(); j++) {
             if ((**j).collide(**i)) {
-                std::cout << "Player " << (**i).id() << " died in room " << _id << std::endl;
-                (**i).killEntity();
-                this->setInstBroadcast(18);
-                this->_broadcastStream.setDataUInt((**i).id());
-                this->sendBroadcast();
+                (**i).setLife((**i).life() - 10);
+                if ((**i).life() <= 0) {
+                    std::cout << "Player " << (**i).id() << " died in room " << _id << std::endl;
+                    (**i).killEntity();
+                    sendToAll(Stream::toPlayerDied((**i).id()));
+                }
                 return;
             }
         }
@@ -308,9 +273,7 @@ void Room::checkCollisionMonsters()
                 continue;
             if ((**i).collide(**j)) {
                 (**j).killEntity();
-                this->setInstBroadcast(16);
-                this->_broadcastStream.setDataUInt((**j).id());
-                this->sendBroadcast();
+                sendToAll(Stream::toMonsterDied((**j).id()));
                 // _monsters.erase(j);
                 return;
             }

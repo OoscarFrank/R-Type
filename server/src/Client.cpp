@@ -6,7 +6,6 @@
 Client::Client(asio::ip::udp::socket &socket, asio::ip::udp::endpoint endpoint): _socket(socket)
 {
     this->_endpoint = endpoint;
-    this->_instOut = 0;
     this->_lastActivity = NOW;
 }
 
@@ -45,27 +44,12 @@ std::pair<size_t, Stream> Client::getNextInst()
     return std::make_pair(0, Stream());
 }
 
-void Client::setInst(unsigned char inst)
-{
-    _instOut = inst;
-}
-
 void Client::send(const Stream &stream)
 {
     if (_endpoint.protocol() == asio::ip::udp::v4())
         _socket.send_to(asio::buffer(stream.toString()), _endpoint);
     else
         std::cerr << "Endpoint is not IPv4" << std::endl;
-}
-
-void Client::send()
-{
-    Stream out;
-    out += _instOut;
-    out += _streamOut;
-    send(out);
-    _streamOut.clear();
-    _instOut = 0;
 }
 
 bool Client::isAlive()
@@ -78,9 +62,4 @@ bool Client::isAlive()
 void Client::ping()
 {
     _lastPing = std::chrono::system_clock::now();
-}
-
-Stream &Client::getStreamOut()
-{
-    return this->_streamOut;
 }

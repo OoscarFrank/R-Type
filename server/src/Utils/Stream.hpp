@@ -60,6 +60,20 @@ public:
         const char *what() const noexcept override { return _message.c_str(); }
     };
 
+    static Stream toScreenProgress(u_int progress);
+    static Stream toPlayerPos(u_int id, short x, short y);
+    static Stream toMissilePos(u_int id, u_char type, short x, short y);
+    static Stream toScore(int score);
+    static Stream toMonsterPos(u_int id, short x, short y);
+    static Stream toJoinRoom(u_int roomId, u_int playerId);
+    static Stream toWaitGame(int time, bool start);
+    static Stream toPlayerJoinedGame(u_int playerId);
+    static Stream toPlayerLeftGame(u_int playerId);
+    static Stream toMissileDestroyed(u_int id, u_char type, short x, short y);
+    static Stream toMonsterDied(u_int id);
+    static Stream toGameOver(u_char type);
+    static Stream toPlayerDied(u_int id);
+    static Stream toPlayerLife(int life);
 };
 
 std::ostream &operator<<(std::ostream &os,const Stream &steam);

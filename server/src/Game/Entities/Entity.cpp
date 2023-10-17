@@ -9,6 +9,7 @@ AEntity::AEntity(Room &room, u_int id, short x, short y, short w, short h):
 {
     _exist = true;
     _deletable = false;
+    _life = 100;
 }
 
 AEntity::AEntity(Room &room, u_int id, const std::pair<short, short> &pos, const std::pair<short, short> &size):
@@ -54,6 +55,16 @@ void AEntity::move(short dx, short dy)
         _box.x += dx;
         _box.y += dy;
     }
+}
+
+int AEntity::life() const
+{
+    return _life;
+}
+
+void AEntity::setLife(int life)
+{
+    _life = life;
 }
 
 void AEntity::killEntity()
