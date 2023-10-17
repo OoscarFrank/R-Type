@@ -67,10 +67,10 @@ void Room::addPlayer(std::shared_ptr<Client> client)
 
     u_int newId = ++_playersIds;
 
-    client->send(Stream::toJoinRoom(_id, newId));
+    client->send(StreamFactory::joinRoom(_id, newId));
 
     for (auto i = _players.begin(); i != _players.end(); i++)
-        client->send(Stream::toPlayerJoinedGame((**i).id()));
+        client->send(StreamFactory::playerJoinedGame((**i).id()));
 
     _players.push_back(std::make_unique<Player>(*this, client, newId, 0, 0));
     _lastJoin = NOW;
@@ -139,7 +139,7 @@ void Room::refresh()
         for (auto i = _players.begin(); i != _players.end(); i++) {
             if (!(**i).client()->isAlive()) {
                 std::cout << "Player " << (**i).id() << " disconnected in room " << _id << std::endl;
-                sendToAll(Stream::toPlayerLeftGame((**i).id()));
+                sendToAll(StreamFactory::playerLeftGame((**i).id()));
                 _players.erase(i);
                 break;
             }
@@ -160,7 +160,7 @@ void Room::update()
         if (now - _lastMapRefresh >= MAP_REFRESH_TIME) {
             _lastMapRefresh = now;
             _progress += MAP_PROGRESS_STEP;
-            sendToAll(Stream::toScreenProgress(_progress));
+            sendToAll(StreamFactory::screenProgress(_progress));
             now = NOW;
         }
         _playersMutex.lock();
@@ -180,7 +180,7 @@ void Room::update()
             }
             if ((**i).getExist() && (**i).isOutOfScreen()) {
                 (**i).killEntity();
-                sendToAll(Stream::toMonsterDied((**i).id()));
+                sendToAll(StreamFactory::monsterDied((**i).id()));
             } else
                 i++;
         }
@@ -202,7 +202,7 @@ void Room::update()
         } else  {
             if (now - _lastWaitMessage >= SEND_WAIT_MESSAGE_TIME) {
                 _lastWaitMessage = now;
-                sendToAll(Stream::toWaitGame(TIMEOUT_START_GAME - (now - _lastJoin), false));
+                sendToAll(StreamFactory::waitGame(TIMEOUT_START_GAME - (now - _lastJoin), false));
                 now = NOW;
             }
         }
@@ -212,7 +212,7 @@ void Room::update()
     if (_state == END) {
         if (now - _lastGameOver >= GAME_OVER_REFRESH) {
             _lastGameOver = now;
-            sendToAll(Stream::toGameOver(0));
+            sendToAll(StreamFactory::gameOver(0));
             now = NOW;
         }
     }
@@ -225,7 +225,7 @@ void Room::startGame()
     _lastPlayerUpdate = NOW;
     _lastMissileUpdate = NOW;
     _lastMonsterSpawn = NOW;
-    sendToAll(Stream::toWaitGame(0, true));
+    sendToAll(StreamFactory::waitGame(0, true));
 
     for (auto i = _players.begin(); i != _players.end(); i++)
         (**i).sendPos();
@@ -255,7 +255,7 @@ void Room::checkCollisionPlayer()
                 if ((**i).life() <= 0) {
                     std::cout << "Player " << (**i).id() << " died in room " << _id << std::endl;
                     (**i).killEntity();
-                    sendToAll(Stream::toPlayerDied((**i).id()));
+                    sendToAll(StreamFactory::playerDied((**i).id()));
                 }
                 return;
             }
@@ -273,7 +273,7 @@ void Room::checkCollisionMonsters()
                 continue;
             if ((**i).collide(**j)) {
                 (**j).killEntity();
-                sendToAll(Stream::toMonsterDied((**j).id()));
+                sendToAll(StreamFactory::monsterDied((**j).id()));
                 // _monsters.erase(j);
                 return;
             }
