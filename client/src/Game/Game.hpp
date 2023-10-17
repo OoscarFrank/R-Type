@@ -8,6 +8,10 @@
 #include "EntitiesFactory.hpp"
 #include "EntityManager.hpp"
 
+#define SERVER_WIDTH        3840
+#define SERVER_HEIGHT       2160
+#define SERVER_RATIO      16.0f / 9.0f
+
 namespace game {
     class Game: public EntityManager {
         public:
@@ -36,8 +40,18 @@ namespace game {
             void sendMoveToServer();
 
         private:
-            sf::Vector2u _screenSize;
             sf::RenderWindow _window;
+            sf::Vector2f _screenSize;
+            sf::Vector2f _realScreenSize;
+
+
+            sf::Vector2u topLeftOffeset;
+
+            entity_t _blackBandTopLeft;
+            entity_t _blackBandBottomRight;
+
+            // sf::IntRect topLeftBand;
+            // sf::IntRect bottomRightBand;
 
             Loader _manager;
             ECS::Registry ecs;

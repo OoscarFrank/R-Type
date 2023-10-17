@@ -17,7 +17,7 @@ namespace ECS {
                         auto &spriteComponents = ecs.get_components<components::SpriteComponent>();
                         auto &scaleComponents = ecs.get_components<components::ScaleComponent>();
 
-                        for (size_t i = 0; i < spriteComponents.size() && scaleComponents.size(); ++i) {
+                        for (size_t i = 0; i < spriteComponents.size() && i < scaleComponents.size(); ++i) {
                             auto &scale = scaleComponents[i];
                             auto &sprite = spriteComponents[i];
 

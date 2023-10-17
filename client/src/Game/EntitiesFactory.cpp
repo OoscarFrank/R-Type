@@ -49,6 +49,8 @@ entity_t Factory::createPlayer(float x, float y, const std::shared_ptr<sf::Textu
     _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{0, 0, (int)texture->getSize().x, (int)texture->getSize().y, 5, 150.0f});
     _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
     _registry.emplace_component<ECS::components::AnimationComponent>(newEntity, ECS::components::AnimationComponent{});
+    // _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{0.5, 0.5});
+
     return newEntity;
 }
 
@@ -79,5 +81,15 @@ entity_t Factory::createEnnemi(float x, float y, const std::shared_ptr<sf::Textu
     _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{0, 0, (int)texture->getSize().x, (int)texture->getSize().y, 6, 200.0f});
     _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
     _registry.emplace_component<ECS::components::AnimationComponent>(newEntity, ECS::components::AnimationComponent{});
+    return newEntity;
+}
+
+entity_t Factory::createBlackband(sf::IntRect rect, const std::shared_ptr<sf::Texture> &texture)
+{
+    entity_t newEntity = _registry.spawn_entity();
+    _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{rect.left, rect.top});
+    // _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{0, 0, 1, 1, 1, 2.0f});
+    _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
+    _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{rect.width, rect.height});
     return newEntity;
 }

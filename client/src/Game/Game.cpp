@@ -15,7 +15,43 @@ Game::Game(std::string ip, int port) :
     _started(0)
 {
     sf::VideoMode mode = sf::VideoMode::getDesktopMode();
-    this->_screenSize = {mode.width, mode.height};
+    this->_realScreenSize = {mode.width, mode.height};
+
+    this->_manager.loadTexture(client::getAssetPath("entity/BlackPixel.png"), Loader::toLoad::BlackPixel);
+    this->_manager.loadTexture(client::getAssetPath("parallax/background.png"), Loader::toLoad::ParallaxFirstbkg);
+    this->_manager.loadTexture(client::getAssetPath("parallax/background2.png"), Loader::toLoad::ParallaxSecondbkg);
+    this->_manager.loadTexture(client::getAssetPath("entity/buttons/CreateRoomButton.png"), Loader::toLoad::CreateRoomButton);
+    this->_manager.loadTexture(client::getAssetPath("entity/buttons/JoinRoomButton.png"), Loader::toLoad::JoinRoomButton);
+    this->_manager.loadTexture(client::getAssetPath("entity/buttons/QuitButton.png"), Loader::toLoad::QuitButton);
+    this->_manager.loadTexture(client::getAssetPath("screens/LooserScreen.png"), Loader::toLoad::LooserScreen);
+    this->_manager.loadTexture(client::getAssetPath("entity/missile/missile.png"), Loader::toLoad::Missile);
+    this->_manager.loadTexture(client::getAssetPath("entity/monsters/monster1.png"), Loader::toLoad::Monster1);
+    this->_manager.loadTexture(client::getAssetPath("entity/player/player_move1.png"), Loader::toLoad::Player_move1);
+    this->_manager.loadTexture(client::getAssetPath("entity/player/player_move2.png"), Loader::toLoad::Player_move2);
+    this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
+    this->_manager.loadTexture(client::getAssetPath("entity/player/player_move4.png"), Loader::toLoad::Player_move4);
+
+    if (_realScreenSize.x / _realScreenSize.y <= 16.0f / 9.0f) {
+        this->_screenSize = {this->_realScreenSize.x, this->_realScreenSize.x * ((1.0f / 16.0f) / (1.0f / 9.0f)) };
+        int difHeight = this->_realScreenSize.y - this->_screenSize.y;
+        difHeight /= 2;
+        this->topLeftOffeset = {0, difHeight};
+
+        _blackBandTopLeft = this->_factory.createBlackband(sf::IntRect(0, 0, this->_realScreenSize.x, difHeight), this->_manager.getTexture(Loader::Loader::BlackPixel));
+        _blackBandBottomRight = this->_factory.createBlackband(sf::IntRect(0, this->_realScreenSize.y - difHeight, this->_realScreenSize.x, difHeight), this->_manager.getTexture(Loader::Loader::BlackPixel));
+        // this->topLeftBand = {0, 0, this->_realScreenSize.x, difHeight};
+        // this->bottomRightBand = {0, this->_realScreenSize.y - difHeight, this->_realScreenSize.x, difHeight};
+    } else {
+        this->_screenSize = {this->_realScreenSize.y * ((1.0f / 9.0f) / (1.0f / 16.0f)), this->_realScreenSize.y};
+        int difWidth = this->_realScreenSize.x - this->_screenSize.x;
+        difWidth /= 2;
+        this->topLeftOffeset = {difWidth, 0};
+        _blackBandTopLeft = this->_factory.createBlackband(sf::IntRect(0, 0, difWidth, this->_realScreenSize.y), this->_manager.getTexture(Loader::Loader::BlackPixel));
+        _blackBandBottomRight = this->_factory.createBlackband(sf::IntRect(this->_realScreenSize.x - difWidth, 0, difWidth, this->_realScreenSize.y), this->_manager.getTexture(Loader::Loader::BlackPixel));
+        // this->topLeftBand = {0, 0, difWidth, this->_realScreenSize.y};
+        // this->bottomRightBand = {this->_realScreenSize.x - difWidth, 0, difWidth, this->_realScreenSize.y};
+    }
+
 
     if (mode.isValid()) {
         this->_window.create(mode, "R-TYPE", sf::Style::Fullscreen);
@@ -29,13 +65,7 @@ Game::Game(std::string ip, int port) :
     this->_gameOver = false;
     this->_menuEntity = -1;
 
-    this->_manager.loadTexture(client::getAssetPath("parallax/background.png"), Loader::toLoad::ParallaxFirstbkg);
-    this->_manager.loadTexture(client::getAssetPath("parallax/background2.png"), Loader::toLoad::ParallaxSecondbkg);
-
-    this->_manager.loadTexture(client::getAssetPath("entity/buttons/CreateRoomButton.png"), Loader::toLoad::CreateRoomButton);
-    this->_manager.loadTexture(client::getAssetPath("entity/buttons/JoinRoomButton.png"), Loader::toLoad::JoinRoomButton);
-    this->_manager.loadTexture(client::getAssetPath("entity/buttons/QuitButton.png"), Loader::toLoad::QuitButton);
-    this->_manager.loadTexture(client::getAssetPath("screens/LooserScreen.png"), Loader::toLoad::LooserScreen);
+    
 
     int divider = 1;
     #ifdef SFML_SYSTEM_MACOS
@@ -43,15 +73,19 @@ Game::Game(std::string ip, int port) :
     #endif
     this->_resMult = (float)(this->_screenSize.x / divider)/ SCREEN_WIDTH;
 
-    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), -0.035f));
-    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), -0.05f));
-
+    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.035f * _resMult)));
+    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.05f * _resMult)));
+    this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_parallax[0], ECS::components::ScaleComponent{_resMult, _resMult});
+    this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_parallax[1], ECS::components::ScaleComponent{_resMult, _resMult});
     this->_menuEntity = this->ecs.spawn_entity();
     this->ecs.emplace_component<ECS::components::ControllableComponent>(this->_menuEntity, ECS::components::ControllableComponent{sf::Keyboard::Key::Up, sf::Keyboard::Key::Down, sf::Keyboard::Key::Left, sf::Keyboard::Key::Right, sf::Keyboard::Key::Enter});
 
-    this->_buttons.push_back(this->_factory.createButton(100.0f, 100.0f, this->_manager.getTexture(Loader::Loader::CreateRoomButton)));
-    this->_buttons.push_back(this->_factory.createButton(100.0f, 200.0f, this->_manager.getTexture(Loader::Loader::JoinRoomButton)));
-    this->_buttons.push_back(this->_factory.createButton(100.0f, 300.0f, this->_manager.getTexture(Loader::Loader::QuitButton)));
+    this->_buttons.push_back(this->_factory.createButton(100.0f + this->topLeftOffeset.x, 100.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::CreateRoomButton)));
+    this->_buttons.push_back(this->_factory.createButton(100.0f + this->topLeftOffeset.x, 200.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::JoinRoomButton)));
+    this->_buttons.push_back(this->_factory.createButton(100.0f + this->topLeftOffeset.x, 300.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton)));
+    this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_buttons[0], ECS::components::ScaleComponent{_resMult, _resMult});
+    this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_buttons[1], ECS::components::ScaleComponent{_resMult, _resMult});
+    this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_buttons[2], ECS::components::ScaleComponent{_resMult, _resMult});
 }
 
 Game::~Game()
@@ -145,10 +179,10 @@ int Game::MainLoop()
         this->update();
         // ALL SYSTEMS CALL HERE
         ECS::systems::ControllableSystem().update(this->ecs, this->_entityEvents, this->_window, this->eventMemory);
-        ECS::systems::PositionSystem().update(this->ecs);
+        ECS::systems::PositionSystem().update(this->ecs, this->topLeftOffeset);
         ECS::systems::AnimationSystem().update(this->ecs, deltaTime);
-        ECS::systems::ParallaxSystem().update(this->ecs, deltaTime);
-        ECS::systems::MovableSystem().update(this->ecs, this->_entityPositions);
+        ECS::systems::ParallaxSystem().update(this->ecs, deltaTime, this->topLeftOffeset);
+        ECS::systems::MovableSystem().update(this->ecs, this->_entityPositions, this->topLeftOffeset);
         ECS::systems::ScaleSystem().update(this->ecs);
         this->_window.clear();
         // DRAW SYSTEM CALL HERE
@@ -192,7 +226,8 @@ void Game::handleMissilePosition(Network::Packet &packet)
     entity_t res = getMissileEntityFromId(id);
 
     if (res == 0) {
-        entity_t newEntity = this->_factory.createMissile(x, y, this->_manager.getTexture(Loader::Loader::Missile));
+        entity_t newEntity = this->_factory.createMissile(x , y, this->_manager.getTexture(Loader::Loader::Missile));
+        this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
         this->_missiles.push_back(std::make_pair(id, newEntity));
     } else {
         this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(res, x, y));
@@ -219,6 +254,7 @@ void Game::handleEnnemiPosition(Network::Packet &packet)
     entity_t res = getEnnemiEntityFromId(id);
     if (res == 0) {
         entity_t newEntity = this->_factory.createEnnemi(x, y, this->_manager.getTexture(Loader::Loader::Monster1)); // TO REPLACE
+        this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
         this->_ennemies.push_back(std::make_pair(id, newEntity));
     } else {
         this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(res, x, y));
@@ -233,12 +269,7 @@ void Game::handleRoomJoin(Network::Packet &packet)
     this->_roomId = packet.getData().getDataUInt();
     this->_playerId = packet.getData().getDataUInt();
 
-    this->_manager.loadTexture(client::getAssetPath("entity/missile/missile.png"), Loader::toLoad::Missile);
-    this->_manager.loadTexture(client::getAssetPath("entity/monsters/monster1.png"), Loader::toLoad::Monster1);
-    this->_manager.loadTexture(client::getAssetPath("entity/player/player_move1.png"), Loader::toLoad::Player_move1);
-    this->_manager.loadTexture(client::getAssetPath("entity/player/player_move2.png"), Loader::toLoad::Player_move2);
-    this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
-    this->_manager.loadTexture(client::getAssetPath("entity/player/player_move4.png"), Loader::toLoad::Player_move4);
+    
 
     std::shared_ptr<sf::Texture> texture = nullptr;
 
@@ -263,6 +294,9 @@ void Game::handleRoomJoin(Network::Packet &packet)
     entity_t newEntity = this->_factory.createPlayer(-1000.0f, -1000.0f, texture);
     this->_players.push_back(std::make_pair(this->_playerId, newEntity));
     this->_playerEntity = newEntity;
+    this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
+
+    // ECS::systems::ScaleSystem().update(this->ecs);
 }
 
 void Game::handleTimeoutMatchmaking(Network::Packet &packet)
@@ -305,6 +339,8 @@ void Game::handlePlayerJoinGame(Network::Packet &packet)
     if (texture != nullptr) {
         entity_t newEntity = this->_factory.createPlayer(-1000.0f, -1000.0f, texture);
         this->_players.push_back(std::make_pair(id, newEntity));
+        this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
+
     }
 }
 
@@ -380,8 +416,10 @@ void Game::handlePlayerDeath(Network::Packet &packet)
 {
     unsigned int id = packet.getData().getDataUInt();
     entity_t res = getPlayerEntityFromId(id);
-    if (res == this->_playerEntity)
+    if (res == this->_playerEntity) {
         this->_looser.push_back(this->_factory.createLooserScreen(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::LooserScreen)));
+        this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_looser[0], ECS::components::ScaleComponent{this->_resMult, this->_resMult});
+    }
     if (res != 0) {
         this->ecs.kill_entity(res);
 

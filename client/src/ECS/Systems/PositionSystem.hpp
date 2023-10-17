@@ -12,7 +12,7 @@ namespace ECS {
              * 
              * @param ecs 
              */
-                void update(Registry &ecs) {
+                void update(Registry &ecs, sf::Vector2u offset = {0, 0}) {
                     try {
                         auto &positionComponents = ecs.get_components<components::PositionComponent>();
                         auto &velocityComponents = ecs.get_components<components::VelocityComponent>();
@@ -24,8 +24,8 @@ namespace ECS {
                             if (position && velocity) {
                                 float newX = position->getX() + velocity->getDX();
                                 float newY = position->getY() + velocity->getDY();
-                                position->setX(newX);
-                                position->setY(newY);
+                                position->setX(newX + offset.x);
+                                position->setY(newY + offset.y);
                                 velocity->setDX(0);
                                 velocity->setDY(0);
                             }

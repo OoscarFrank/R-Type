@@ -13,7 +13,7 @@ namespace ECS {
          * @param ecs 
          * @param deltaTime 
          */
-            void update(Registry &ecs, float deltaTime) {
+            void update(Registry &ecs, float deltaTime, sf::Vector2u offset = {0, 0}) {
                 try {
                     auto &parallaxComponents = ecs.get_components<components::ParallaxComponent>();
                     auto &positionComponents = ecs.get_components<components::PositionComponent>();
@@ -32,7 +32,8 @@ namespace ECS {
                                 newX += backgroundWidth;
                             }
 
-                            position->setX(newX);
+                            position->setX(newX + offset.x);
+                            position->setY(offset.y);
                             // position->setY(newY);
                         }
                     }

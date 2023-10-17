@@ -47,7 +47,7 @@ namespace ECS {
              * @param ecs
              * @param entityPositions
              */
-            void update(Registry &ecs, std::vector<EntityPos> &entityPositions) {
+            void update(Registry &ecs, std::vector<EntityPos> &entityPositions, sf::Vector2u offset = {0, 0}) {
 
                 for (auto i = entityPositions.begin(); i != entityPositions.end(); ++i) {
                     try {
@@ -55,8 +55,8 @@ namespace ECS {
                             ECS::components::PositionComponent &component = ecs.getComponent<ECS::components::PositionComponent>(i->getEntity());
                             if (!ecs.hasComponent<ECS::components::MovableComponent>(i->getEntity()))
                                 continue;
-                            component.setX(i->getX());
-                            component.setY(i->getY());
+                            component.setX(i->getX() + offset.x);
+                            component.setY(i->getY() + offset.y);
                         }
                     } catch (std::exception &e) {
                     }

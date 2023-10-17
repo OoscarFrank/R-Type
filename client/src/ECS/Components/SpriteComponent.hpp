@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <memory>
+#include <iostream>
 
 namespace ECS{
     namespace components {
@@ -28,7 +29,11 @@ namespace ECS{
              */
                 void setPosition(const sf::Vector2f &position) { this->_sprite.setPosition(position); }
 
-                void setScale(const float &scaleX, const float &scaleY) { this->_sprite.setScale(scaleX, scaleY); }
+                void setScale(const float &scaleX, const float &scaleY) {
+                    if (this->_sprite.getScale().x != scaleX || this->_sprite.getScale().y != scaleY) {
+                        this->_sprite.setScale(scaleX, scaleY); 
+                    }
+                }
 
             /**
              * @brief Set the Texture Rect object

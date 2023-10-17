@@ -20,8 +20,8 @@ struct Commands {
 #define PLAYER_MOVE_LEFT    4
 #define PLAYER_MOVE_RIGHT   8
 
-#define SCREEN_HEIGHT       2160
 #define SCREEN_WIDTH        3840
+#define SCREEN_HEIGHT       2160
 
 #define TIME_PLAYER_ALIVE   10 // seconds
 

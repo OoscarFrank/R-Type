@@ -56,6 +56,8 @@ namespace game {
          * @return entity_t
          */
             entity_t createEnnemi(float x, float y, const std::shared_ptr<sf::Texture> &texture);
+            entity_t createBlackband(sf::IntRect rect, const std::shared_ptr<sf::Texture> &texture);
+            
         private:
             ECS::Registry &_registry;
     };
