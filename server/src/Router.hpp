@@ -2,17 +2,17 @@
 
 #include <iostream>
 #include <map>
-#include "Game/Game.hpp"
+#include "Game/RoomManager.hpp"
 
 class Router {
     public:
-        Router(Game &game);
+        Router(RoomManager &rm);
         ~Router() = default;
 
         void route(Reader::Packet packet);
 
     private:
-        Game &_game;
+        RoomManager &_rm;
         std::map<int, void (Router::*)(Reader::Packet &packet)> _functions;
 
         void _movePlayer(Reader::Packet &packet);

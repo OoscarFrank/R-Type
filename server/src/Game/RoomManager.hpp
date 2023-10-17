@@ -1,5 +1,5 @@
-#ifndef GAME_HPP
-#define GAME_HPP
+#ifndef ROOM_MANAGER_HPP
+#define ROOM_MANAGER_HPP
 
 #include <iostream>
 #include "Room.hpp"
@@ -7,7 +7,7 @@
 #include "../Reader/Reader.hpp"
 #include <mutex>
 
-class Game
+class RoomManager
 {
     private:
         std::vector<std::unique_ptr<Room>> _rooms;
@@ -18,11 +18,11 @@ class Game
 
     public:
         /**
-         * @brief Construct a new Game object
+         * @brief Construct a new RoomManager object
          *
          */
-        Game();
-        ~Game();
+        RoomManager();
+        ~RoomManager();
         /**
          * @brief Create a new room with a client (player)
          *
