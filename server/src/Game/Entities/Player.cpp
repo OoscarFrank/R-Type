@@ -80,6 +80,16 @@ void Player::setScore(int score)
     _room.sendToAll(Stream::toScore(_score));
 }
 
+void Player::setLife(int life)
+{
+    _life = life;
+    AEntity::setLife(_life);
+    Stream out;
+    out.setDataUChar(19);
+    out.setDataInt(_life);
+    _client->send(out);
+}
+
 std::shared_ptr<Client> Player::client() const
 {
     return _client;

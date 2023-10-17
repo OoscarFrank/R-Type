@@ -251,9 +251,12 @@ void Room::checkCollisionPlayer()
     for (auto i = _players.begin(); i != _players.end(); i++) {
         for (auto j = _monsters.begin(); j != _monsters.end(); j++) {
             if ((**j).collide(**i)) {
-                std::cout << "Player " << (**i).id() << " died in room " << _id << std::endl;
-                (**i).killEntity();
-                sendToAll(Stream::toPlayerDied((**i).id()));
+                (**i).removeHP(10);
+                if ((**i).life() <= 0) {
+                    std::cout << "Player " << (**i).id() << " died in room " << _id << std::endl;
+                    (**i).killEntity();
+                    sendToAll(Stream::toPlayerDied((**i).id()));
+                }
                 return;
             }
         }

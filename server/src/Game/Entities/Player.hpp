@@ -60,6 +60,12 @@ class Player: public ArmedEntity {
          *
          */
         virtual void fireMissile();
+        /**
+         * @brief Set the player's life
+         *
+         * @param life The new life to get
+         */
+        virtual void setLife(int life);
 
         /**
          * @brief Get the last move time
@@ -84,7 +90,7 @@ class Player: public ArmedEntity {
         /**
          * @brief Set the player's score
          *
-         * @param score The new score to set
+         * @param score The new score to get
          */
         void setScore(int score);
         /**
@@ -96,6 +102,7 @@ class Player: public ArmedEntity {
 
     private:
         int _score;
+        int _life;
         std::shared_ptr<Client> _client;
 };
 
