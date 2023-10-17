@@ -37,3 +37,9 @@ bool LittleMonster::collide(const IEntity &other)
 {
     return AEntity::collide(other) || missilesCollide(other);
 }
+
+void LittleMonster::setLife(int life)
+{
+    AEntity::setLife(life);
+    _room.sendToAll(StreamFactory::monsterLife(_id, _life));
+}

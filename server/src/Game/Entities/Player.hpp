@@ -102,7 +102,6 @@ class Player: public ArmedEntity {
 
     private:
         int _score;
-        int _life;
         std::shared_ptr<Client> _client;
 };
 

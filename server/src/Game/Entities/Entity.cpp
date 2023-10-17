@@ -20,6 +20,7 @@ AEntity::AEntity(Room &room, u_int id, const std::pair<short, short> &pos, const
 {
     _exist = true;
     _deletable = false;
+    _life = 100;
 }
 
 std::pair<short, short> AEntity::position() const

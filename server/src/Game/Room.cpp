@@ -269,10 +269,13 @@ void Room::checkCollisionMonsters()
             if (!(**j).getExist())
                 continue;
             if ((**i).collide(**j)) {
-                (**j).killEntity();
-                sendToAll(StreamFactory::monsterDied((**j).id()));
+                (**j).setLife((**j).life() - 50);
+                if ((**j).life() <= 0) {
+                    (**j).killEntity();
+                    sendToAll(StreamFactory::monsterDied((**j).id()));
+                    return;
+                }
                 // _monsters.erase(j);
-                return;
             }
         }
     }
