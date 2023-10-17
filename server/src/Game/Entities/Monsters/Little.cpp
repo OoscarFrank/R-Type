@@ -11,7 +11,7 @@ LittleMonster::LittleMonster(Room &room, u_int id, const std::pair<short, short>
 
 LittleMonster::~LittleMonster()
 {
-    
+
 }
 
 void LittleMonster::refresh()
@@ -28,12 +28,7 @@ void LittleMonster::refresh()
     }
     if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= ENEMY_MOVE_TIME) {
         move(-1, 0);
-        Stream out;
-        out.setDataChar(7);
-        out.setDataUInt(_id);
-        out.setDataShort(_box.x);
-        out.setDataShort(_box.y);
-        _room.sendToAll(out);
+        _room.sendToAll(Stream::toMonsterPos(_id, _box.x, _box.y));
         _lastMove = now;
     }
 }

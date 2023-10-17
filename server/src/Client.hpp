@@ -14,8 +14,6 @@ private:
     asio::ip::udp::socket &_socket;
     asio::ip::udp::endpoint _endpoint;
     Stream _streamIn;
-    Stream _streamOut;
-    unsigned char _instOut;
 
     size_t _lastActivity;
     std::chrono::system_clock::time_point _lastPing = std::chrono::system_clock::now();
@@ -30,10 +28,7 @@ public:
     const asio::ip::udp::endpoint &getEndpoint() const;
     Stream &getStreamIn();
     std::pair<size_t, Stream> getNextInst();
-    Stream &getStreamOut();
-    void setInst(unsigned char inst);
     void send(const Stream &message);
-    void send();
     bool isAlive();
     void ping();
 };

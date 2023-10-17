@@ -263,6 +263,122 @@ std::string Stream::toString() const
     return out;
 }
 
+Stream Stream::toScreenProgress(u_int progress)
+{
+    Stream out;
+    out.setDataUChar(1);
+    out.setDataUInt(progress);
+    return out;
+}
+
+Stream Stream::toPlayerPos(u_int id, short x, short y)
+{
+    Stream out;
+    out.setDataUChar(3);
+    out.setDataUInt(id);
+    out.setDataShort(x);
+    out.setDataShort(y);
+    return out;
+}
+
+Stream Stream::toMissilePos(u_int id, u_char type, short x, short y)
+{
+    Stream out;
+    out.setDataUChar(4);
+    out.setDataUInt(id);
+    out.setDataUChar(type);
+    out.setDataShort(x);
+    out.setDataShort(y);
+    return out;
+}
+
+Stream Stream::toScore(int score)
+{
+    Stream out;
+    out.setDataUChar(6);
+    out.setDataInt(score);
+    return out;
+}
+
+Stream Stream::toMonsterPos(u_int id, short x, short y)
+{
+    Stream out;
+    out.setDataUChar(7);
+    out.setDataUInt(id);
+    out.setDataShort(x);
+    out.setDataShort(y);
+    return out;
+}
+
+Stream Stream::toJoinRoom(u_int roomId, u_int playerId)
+{
+    Stream out;
+    out.setDataUChar(10);
+    out.setDataUInt(roomId);
+    out.setDataUInt(playerId);
+    return out;
+}
+
+Stream Stream::toWaitGame(int time, bool start)
+{
+    Stream out;
+    out.setDataUChar(11);
+    out.setDataInt(time);
+    out.setDataUChar(start);
+    return out;
+}
+
+Stream Stream::toPlayerJoinedGame(u_int playerId)
+{
+    Stream out;
+    out.setDataUChar(13);
+    out.setDataUInt(playerId);
+    return out;
+}
+
+Stream Stream::toPlayerLeftGame(u_int playerId)
+{
+    Stream out;
+    out.setDataUChar(14);
+    out.setDataUInt(playerId);
+    return out;
+}
+
+Stream Stream::toMissileDestroyed(u_int id, u_char type, short x, short y)
+{
+    Stream out;
+    out.setDataUChar(15);
+    out.setDataUInt(id);
+    out.setDataUChar(type);
+    out.setDataShort(x);
+    out.setDataShort(y);
+    return out;
+}
+
+Stream Stream::toMonsterDied(u_int id)
+{
+    Stream out;
+    out.setDataUChar(16);
+    out.setDataUInt(id);
+    return out;
+}
+
+Stream Stream::toGameOver(u_char type)
+{
+    Stream out;
+    out.setDataUChar(17);
+    out.setDataUChar(type);
+    return out;
+}
+
+Stream Stream::toPlayerDied(u_int id)
+{
+    Stream out;
+    out.setDataUChar(18);
+    out.setDataUInt(id);
+    return out;
+}
+
 std::ostream &operator<<(std::ostream &os,const Stream &stream) {
     os << "[";
 
