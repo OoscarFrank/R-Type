@@ -1,7 +1,7 @@
 #include "Router.hpp"
 
-Router::Router(Game &game):
-    _game(game)
+Router::Router(RoomManager &rm):
+    _rm(rm)
 {
     _functions[2] = &Router::_movePlayer;
     _functions[5] = &Router::_fireMissile;
@@ -23,23 +23,23 @@ void Router::_movePlayer(Reader::Packet &packet)
 {
     char move = packet.getData().getDataChar();
     char nbr = packet.getData().getDataChar();
-    _game.getRoom(packet.getClient()).movePlayer(packet.getClient(), move, nbr);
+    _rm.getRoom(packet.getClient()).movePlayer(packet.getClient(), move, nbr);
 }
 
 void Router::_fireMissile(Reader::Packet &packet)
 {
-    Room &tmpRoom = _game.getRoom(packet.getClient());
+    Room &tmpRoom = _rm.getRoom(packet.getClient());
     tmpRoom.getPlayer(packet.getClient()).fireMissile();
 }
 
 void Router::_createRoom(Reader::Packet &packet)
 {
-    _game.createRoom(packet, ((packet.getData().getDataChar() == 1) ? true : false));
+    _rm.createRoom(packet, ((packet.getData().getDataChar() == 1) ? true : false));
 }
 
 void Router::_searchRoom(Reader::Packet &packet)
 {
-    _game.searchRoom(packet);
+    _rm.searchRoom(packet);
 }
 
 void Router::_ping(Reader::Packet &packet)
