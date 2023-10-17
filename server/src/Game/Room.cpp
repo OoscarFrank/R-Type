@@ -295,11 +295,16 @@ void Room::checkCollisionPlayer()
     for (auto i = _players.begin(); i != _players.end(); i++) {
         for (auto j = _monsters.begin(); j != _monsters.end(); j++) {
             if ((**j).collide(**i)) {
-                std::cout << "Player " << (**i).id() << " died in room " << _id << std::endl;
-                (**i).killEntity();
-                this->setInstBroadcast(18);
-                this->_broadcastStream.setDataUInt((**i).id());
-                this->sendBroadcast();
+                std::cout << "before " <<(**i).life() << std::endl;
+                (**i).removeHP(10);
+                std::cout << "after " << (**i).life() << std::endl;
+                if ((**i).life() <= 0) {
+                    std::cout << "Player " << (**i).id() << " died in room " << _id << std::endl;
+                    (**i).killEntity();
+                    this->setInstBroadcast(18);
+                    this->_broadcastStream.setDataUInt((**i).id());
+                    this->sendBroadcast();
+                }
                 return;
             }
         }

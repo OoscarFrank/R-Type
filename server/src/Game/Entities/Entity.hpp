@@ -59,6 +59,23 @@ class IEntity {
          */
         virtual const BoundingBox<short> &box() const = 0;
         /**
+         * @brief Get the player's life
+         *
+         * @param life The new life to set
+         */
+        virtual int life() const = 0;
+        /**
+         * @brief Set the player's life
+         *
+         * @param life The new life to get
+         */
+        virtual void setLife(int life) = 0;
+        /**
+         * @brief remove health point from the entity
+         *
+         */
+        virtual int removeHP(int damage) = 0;
+        /**
          * @brief Kill the entity
          *
          */
@@ -149,6 +166,23 @@ class AEntity: public IEntity {
          */
         virtual const BoundingBox<short> &box() const;
         /**
+         * @brief Get the player's life
+         *
+         * @param life The new life to set
+         */
+        virtual int life() const;
+        /**
+         * @brief Set the player's life
+         *
+         * @param life The new life to get
+         */
+        virtual void setLife(int life);
+        /**
+         * @brief remove health point from the entity
+         *
+         */
+        virtual int removeHP(int damage);
+        /**
          * @brief Kill the entity
          *
          */
@@ -177,6 +211,7 @@ class AEntity: public IEntity {
          */
         virtual void move(short dx, short dy);
 
+        int _life;
         Room &_room;
         u_int _id;
         BoundingBox<short> _box;

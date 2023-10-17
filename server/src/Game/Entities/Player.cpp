@@ -91,7 +91,17 @@ void Player::setScore(int score)
     Stream out;
     out.setDataUChar(6);
     out.setDataInt(_score);
-    _room.sendToAll(out);
+    _client->send(out);
+}
+
+void Player::setLife(int life)
+{
+    _life = life;
+    AEntity::setLife(_life);
+    Stream out;
+    out.setDataUChar(19);
+    out.setDataInt(_life);
+    _client->send(out);
 }
 
 std::shared_ptr<Client> Player::client() const
