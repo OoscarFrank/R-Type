@@ -251,7 +251,7 @@ void Room::checkCollisionPlayer()
     for (auto i = _players.begin(); i != _players.end(); i++) {
         for (auto j = _monsters.begin(); j != _monsters.end(); j++) {
             if ((**j).collide(**i)) {
-                (**i).removeHP(10);
+                (**i).setLife((**i).life() - 10);
                 if ((**i).life() <= 0) {
                     std::cout << "Player " << (**i).id() << " died in room " << _id << std::endl;
                     (**i).killEntity();

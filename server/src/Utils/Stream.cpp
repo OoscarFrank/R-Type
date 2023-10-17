@@ -379,6 +379,14 @@ Stream Stream::toPlayerDied(u_int id)
     return out;
 }
 
+Stream Stream::toPlayerLife(int life)
+{
+    Stream out;
+    out.setDataUChar(19);
+    out.setDataInt(life);
+    return out;
+}
+
 std::ostream &operator<<(std::ostream &os,const Stream &stream) {
     os << "[";
 

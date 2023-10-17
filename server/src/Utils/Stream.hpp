@@ -73,6 +73,7 @@ public:
     static Stream toMonsterDied(u_int id);
     static Stream toGameOver(u_char type);
     static Stream toPlayerDied(u_int id);
+    static Stream toPlayerLife(int life);
 };
 
 std::ostream &operator<<(std::ostream &os,const Stream &steam);

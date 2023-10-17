@@ -82,12 +82,8 @@ void Player::setScore(int score)
 
 void Player::setLife(int life)
 {
-    _life = life;
-    AEntity::setLife(_life);
-    Stream out;
-    out.setDataUChar(19);
-    out.setDataInt(_life);
-    _client->send(out);
+    AEntity::setLife(life);
+    _client->send(Stream::toPlayerLife(_life));
 }
 
 std::shared_ptr<Client> Player::client() const

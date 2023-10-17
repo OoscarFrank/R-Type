@@ -71,11 +71,6 @@ class IEntity {
          */
         virtual void setLife(int life) = 0;
         /**
-         * @brief remove health point from the entity
-         *
-         */
-        virtual int removeHP(int damage) = 0;
-        /**
          * @brief Kill the entity
          *
          */
@@ -177,11 +172,6 @@ class AEntity: public IEntity {
          * @param life The new life to get
          */
         virtual void setLife(int life);
-        /**
-         * @brief remove health point from the entity
-         *
-         */
-        virtual int removeHP(int damage);
         /**
          * @brief Kill the entity
          *

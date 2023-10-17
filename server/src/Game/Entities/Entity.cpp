@@ -65,16 +65,6 @@ int AEntity::life() const
 void AEntity::setLife(int life)
 {
     _life = life;
-//     Stream out;
-//     out.setDataUChar(19);
-//     out.setDataInt(_life);
-    // _client->send(out);
-}
-
-int AEntity::removeHP(int damage)
-{
-    _life -= damage;
-    return _life;
 }
 
 void AEntity::killEntity()
