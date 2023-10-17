@@ -15,7 +15,7 @@ Game::Game(std::string ip, int port) :
     _started(0)
 {
     sf::VideoMode mode = sf::VideoMode::getDesktopMode();
-    this->_realScreenSize = {mode.width, mode.height};
+    this->_realScreenSize = {static_cast<float>(mode.width), static_cast<float>(mode.height)};
 
     this->_manager.loadTexture(client::getAssetPath("entity/BlackPixel.png"), Loader::toLoad::BlackPixel);
     this->_manager.loadTexture(client::getAssetPath("parallax/background.png"), Loader::toLoad::ParallaxFirstbkg);
@@ -33,23 +33,18 @@ Game::Game(std::string ip, int port) :
 
     if (_realScreenSize.x / _realScreenSize.y <= 16.0f / 9.0f) {
         this->_screenSize = {this->_realScreenSize.x, this->_realScreenSize.x * ((1.0f / 16.0f) / (1.0f / 9.0f)) };
-        int difHeight = this->_realScreenSize.y - this->_screenSize.y;
+        unsigned int difHeight = this->_realScreenSize.y - this->_screenSize.y;
         difHeight /= 2;
         this->topLeftOffeset = {0, difHeight};
-
         _blackBandTopLeft = this->_factory.createBlackband(sf::IntRect(0, 0, this->_realScreenSize.x, difHeight), this->_manager.getTexture(Loader::Loader::BlackPixel));
         _blackBandBottomRight = this->_factory.createBlackband(sf::IntRect(0, this->_realScreenSize.y - difHeight, this->_realScreenSize.x, difHeight), this->_manager.getTexture(Loader::Loader::BlackPixel));
-        // this->topLeftBand = {0, 0, this->_realScreenSize.x, difHeight};
-        // this->bottomRightBand = {0, this->_realScreenSize.y - difHeight, this->_realScreenSize.x, difHeight};
     } else {
         this->_screenSize = {this->_realScreenSize.y * ((1.0f / 9.0f) / (1.0f / 16.0f)), this->_realScreenSize.y};
-        int difWidth = this->_realScreenSize.x - this->_screenSize.x;
+        unsigned int difWidth = this->_realScreenSize.x - this->_screenSize.x;
         difWidth /= 2;
         this->topLeftOffeset = {difWidth, 0};
         _blackBandTopLeft = this->_factory.createBlackband(sf::IntRect(0, 0, difWidth, this->_realScreenSize.y), this->_manager.getTexture(Loader::Loader::BlackPixel));
         _blackBandBottomRight = this->_factory.createBlackband(sf::IntRect(this->_realScreenSize.x - difWidth, 0, difWidth, this->_realScreenSize.y), this->_manager.getTexture(Loader::Loader::BlackPixel));
-        // this->topLeftBand = {0, 0, difWidth, this->_realScreenSize.y};
-        // this->bottomRightBand = {this->_realScreenSize.x - difWidth, 0, difWidth, this->_realScreenSize.y};
     }
 
 
@@ -71,7 +66,7 @@ Game::Game(std::string ip, int port) :
     #ifdef SFML_SYSTEM_MACOS
         divider = 2;
     #endif
-    this->_resMult = (float)(this->_screenSize.x / divider)/ SCREEN_WIDTH;
+    this->_resMult = static_cast<float>(this->_screenSize.x / divider)/ SCREEN_WIDTH;
 
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.035f * _resMult)));
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.05f * _resMult)));
@@ -226,7 +221,7 @@ void Game::handleMissilePosition(Network::Packet &packet)
     entity_t res = getMissileEntityFromId(id);
 
     if (res == 0) {
-        entity_t newEntity = this->_factory.createMissile(x , y, this->_manager.getTexture(Loader::Loader::Missile));
+        entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Missile));
         this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
         this->_missiles.push_back(std::make_pair(id, newEntity));
     } else {
@@ -253,7 +248,7 @@ void Game::handleEnnemiPosition(Network::Packet &packet)
 
     entity_t res = getEnnemiEntityFromId(id);
     if (res == 0) {
-        entity_t newEntity = this->_factory.createEnnemi(x, y, this->_manager.getTexture(Loader::Loader::Monster1)); // TO REPLACE
+        entity_t newEntity = this->_factory.createEnnemi(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster1)); // TO REPLACE
         this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
         this->_ennemies.push_back(std::make_pair(id, newEntity));
     } else {
