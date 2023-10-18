@@ -126,10 +126,11 @@ namespace ECS
          *
          * @return entity_t
          */
-        entity_t spawn_entity()
+        entity_t spawn_entity(std::size_t zIndex = 0)
         {
             entity_t entity = _next_entity_id++;
-            _entity_to_index[entity] = true;
+            _entity_to_index[entity] = std::make_pair(true, zIndex);
+
             _entities.push_back(entity);
             return entity;
         }
@@ -187,6 +188,15 @@ namespace ECS
                 this->remove_component<components::ButtonComponent>(e);
 
             _entity_to_index.erase(it);
+            if (_entity_sprite_order.count(e) > 0) {
+                auto range = _entity_sprite_order.equal_range(e);
+                for (auto it = range.first; it != range.second; ++it) {
+                    if (it->second == e) {
+                        _entity_sprite_order.erase(it);
+                        break;
+                    }
+                }
+            }
         }
         /**
          * @brief Add a construct component in the registry
@@ -218,7 +228,15 @@ namespace ECS
         {
             if (_entity_to_index.find(to) == _entity_to_index.end())
                 throw std::runtime_error("Entity not found.");
+
             auto &comp_array = get_components<Component>();
+            if (std::is_same<Component, components::SpriteComponent>::value) {
+                auto entityIndexIt = _entity_to_index.find(to);
+                if (entityIndexIt != _entity_to_index.end()) {
+                    size_t entityIndex = entityIndexIt->second.second;
+                    _entity_sprite_order.insert(std::make_pair(entityIndex, to));
+                }
+            }
             return comp_array.emplace_at(to, std::forward<Params>(params)...);
         }
         /**
@@ -260,9 +278,14 @@ namespace ECS
             comp_array.erase(from);
         }
 
+        std::multimap<size_t, entity_t> const &get_entity_sprite_order() const {
+            return _entity_sprite_order;
+        }
+
     private:
+        std::multimap<size_t, entity_t> _entity_sprite_order;
         std::unordered_map<std::type_index, std::any> _components_arrays;
-        std::map<entity_t, bool> _entity_to_index;
+        std::map<entity_t, std::pair<bool, size_t>> _entity_to_index;
         entity_t _next_entity_id = 0;
         std::vector<entity_t> _entities;
     };
