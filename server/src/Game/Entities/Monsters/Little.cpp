@@ -22,13 +22,13 @@ void LittleMonster::refresh()
     if (!_exist) {
         return;
     }
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= ENEMY_FIRE_TIME) {
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= ENEMY_LITTLE_FIRE_TIME) {
         fireMissile(Missile::Type::LITTLE_MONSTER, -ENEMY_MISSILE_PROGRESS_STEP, 0);
         _lastFire = now;
     }
     if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= ENEMY_MOVE_TIME) {
         move(-1, 0);
-        _room.sendToAll(StreamFactory::monsterPos(_id, _box.x, _box.y));
+        _room.sendToAll(StreamFactory::monsterPos(_id, LittleMonster::LITTLE_MONSTER, _box.x, _box.y));
         _lastMove = now;
     }
 }

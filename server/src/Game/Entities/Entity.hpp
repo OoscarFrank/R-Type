@@ -94,6 +94,7 @@ class IEntity {
             MISSILE,
             PLAYER,
             LITTLE_MONSTER,
+            MEDIUM_MONSTER,
         };
 };
 

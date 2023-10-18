@@ -313,11 +313,12 @@ Stream StreamFactory::score(int score)
     return out;
 }
 
-Stream StreamFactory::monsterPos(u_int id, short x, short y)
+Stream StreamFactory::monsterPos(u_int id, u_char type, short x, short y)
 {
     Stream out;
     out.setDataUChar(7);
     out.setDataUInt(id);
+    out.setDataUChar(type);
     out.setDataShort(x);
     out.setDataShort(y);
     return out;
