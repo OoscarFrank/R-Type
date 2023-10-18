@@ -46,6 +46,5 @@ void LittleMonster::setLife(int life)
 
 void LittleMonster::removeHP()
 {
-    setLife(_life - 100);
+    setLife(_life - 50);
 }
-

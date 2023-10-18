@@ -31,6 +31,7 @@ class FollowerMonster: public ArmedEntity {
          * @param life The new life to get
          */
         virtual void setLife(int life);
+        virtual void removeHP();
         /**
          * @brief Refresh the entity
          * This method does the following:
