@@ -23,7 +23,7 @@ void LittleMonster::refresh()
         return;
     }
     if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= ENEMY_FIRE_TIME) {
-        fireMissile(Missile::Type::LITTLE_MONSTER);
+        fireMissile(Missile::Type::LITTLE_MONSTER, -ENEMY_MISSILE_PROGRESS_STEP, 0);
         _lastFire = now;
     }
     if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= ENEMY_MOVE_TIME) {

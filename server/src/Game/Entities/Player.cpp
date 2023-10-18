@@ -52,9 +52,8 @@ void Player::fireMissile()
 {
     auto now = std::chrono::system_clock::now();
 
-
     if (_exist && std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= PLAYER_FIRE_TIME) {
-        ArmedEntity::fireMissile(Missile::Type::PLAYER);
+        ArmedEntity::fireMissile(Missile::Type::PLAYER, PLAYER_MISSILE_PROGRESS_STEP, 0);
         _lastFire = now;
     }
 }
