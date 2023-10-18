@@ -33,13 +33,13 @@ Game::Game(std::string ip, int port) :
 
 
     if (mode.isValid()) {
-        this->_window.create(mode, "R-TYPE");
+        this->_window.create(mode, "R-TYPE", sf::Style::Fullscreen);
     } else {
         this->_window.create(sf::VideoMode(mode.width, mode.height), "R-TYPE");
     }
 
-    // std::cout <<  << " " <<  << std::endl;
     this->_realScreenSize = {static_cast<float>(this->_window.getSize().x), static_cast<float>(this->_window.getSize().y)};
+    this->_realScreenSizeU = {this->_window.getSize().x, this->_window.getSize().y};
 
     if (_realScreenSize.x / _realScreenSize.y <= 16.0f / 9.0f) {
         this->_screenSize = {this->_realScreenSize.x, this->_realScreenSize.x * ((1.0f / 16.0f) / (1.0f / 9.0f)) };
@@ -66,11 +66,7 @@ Game::Game(std::string ip, int port) :
 
     this->_manager.createMusic(client::getAssetPath("songs/song.ogg"));
 
-    int divider = 1;
-    #ifdef SFML_SYSTEM_MACOS
-        divider = 2;
-    #endif
-    this->_resMult = static_cast<float>(this->_screenSize.x / divider)/ SCREEN_WIDTH;
+    this->_resMult = static_cast<float>(this->_screenSize.x)/ SCREEN_WIDTH;
 
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.035f * _resMult)));
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.05f * _resMult)));
@@ -90,6 +86,30 @@ Game::Game(std::string ip, int port) :
 Game::~Game()
 {
     this->_manager.stopMusic();
+}
+
+void Game::refreshScreenSize()
+{
+    if (this->_realScreenSizeU.x != this->_window.getSize().x || this->_realScreenSizeU.y != this->_window.getSize().y) {
+        this->_realScreenSize = {static_cast<float>(this->_window.getSize().x), static_cast<float>(this->_window.getSize().y)};
+        this->_realScreenSizeU = {this->_window.getSize().x, this->_window.getSize().y};
+
+        if (_realScreenSize.x / _realScreenSize.y <= 16.0f / 9.0f) {
+            this->_screenSize = {this->_realScreenSize.x, this->_realScreenSize.x * ((1.0f / 16.0f) / (1.0f / 9.0f)) };
+            unsigned int difHeight = this->_realScreenSize.y - this->_screenSize.y;
+            difHeight /= 2;
+            this->topLeftOffeset = {0, difHeight};
+            _blackBandTopLeft = this->_factory.createBlackband(sf::IntRect(0, 0, this->_realScreenSize.x, difHeight), this->_manager.getTexture(Loader::Loader::BlackPixel));
+            _blackBandBottomRight = this->_factory.createBlackband(sf::IntRect(0, this->_realScreenSize.y - difHeight, this->_realScreenSize.x, difHeight), this->_manager.getTexture(Loader::Loader::BlackPixel));
+        } else {
+            this->_screenSize = {this->_realScreenSize.y * ((1.0f / 9.0f) / (1.0f / 16.0f)), this->_realScreenSize.y};
+            unsigned int difWidth = this->_realScreenSize.x - this->_screenSize.x;
+            difWidth /= 2;
+            this->topLeftOffeset = {difWidth, 0};
+            _blackBandTopLeft = this->_factory.createBlackband(sf::IntRect(0, 0, difWidth, this->_realScreenSize.y), this->_manager.getTexture(Loader::Loader::BlackPixel));
+            _blackBandBottomRight = this->_factory.createBlackband(sf::IntRect(this->_realScreenSize.x - difWidth, 0, difWidth, this->_realScreenSize.y), this->_manager.getTexture(Loader::Loader::BlackPixel));
+        }
+    }
 }
 
 void Game::update()
@@ -170,9 +190,12 @@ void Game::sendMoveToServer()
     this->_entityEvents.clear();
 }
 
+
+
 int Game::MainLoop()
 {
     while (this->_window.isOpen()) {
+        this->refreshScreenSize();
         long currentTime = NOW;
         float deltaTime = (currentTime - this->_lastTime) / 1.0f;
         this->_lastTime = currentTime;
