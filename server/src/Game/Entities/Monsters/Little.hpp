@@ -35,7 +35,7 @@ class LittleMonster: public ArmedEntity {
          * @brief Refresh the entity
          * This method does the following:
          * - Refresh the missiles
-         * - Fire missile every ENEMY_FIRE_TIME
+         * - Fire missile every ENEMY_LITTLE_FIRE_TIME
          * - Move itself every ENEMY_MOVE_TIME and send the new position to all clients
          *
          */

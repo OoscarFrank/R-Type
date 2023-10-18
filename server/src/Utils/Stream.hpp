@@ -68,7 +68,7 @@ namespace StreamFactory {
     Stream playerPos(u_int id, short x, short y);
     Stream missilePos(u_int id, u_char type, short x, short y);
     Stream score(int score);
-    Stream monsterPos(u_int id, short x, short y);
+    Stream monsterPos(u_int id, u_char type, short x, short y);
     Stream joinRoom(u_int roomId, u_int playerId);
     Stream waitGame(int time, bool start);
     Stream playerJoinedGame(u_int playerId);

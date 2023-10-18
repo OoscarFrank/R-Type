@@ -63,7 +63,7 @@ struct Commands {
     {3, {UINT, SHORT, SHORT}, 8}, \
     {4, {UINT, UCHAR, SHORT, SHORT}, 9}, \
     {6, {INT}, 4}, \
-    {7, {UINT, SHORT, SHORT}, 8}, \
+    {7, {UINT, UCHAR, SHORT, SHORT}, 9}, \
     {10, {UINT, UINT}, 8}, \
     {11, {INT, UCHAR}, 5}, \
     {13, {UINT}, 4}, \

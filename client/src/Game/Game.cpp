@@ -240,6 +240,8 @@ void Game::handleEnnemiPosition(Network::Packet &packet)
 {
     unsigned int id = packet.getData().getDataUInt();
 
+    unsigned char type = packet.getData().getDataUChar();
+
     unsigned short x = packet.getData().getDataUShort();
     x *= this->_resMult;
 
