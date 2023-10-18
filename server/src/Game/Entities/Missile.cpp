@@ -30,3 +30,6 @@ void Missile::refresh()
         _lastMove = now;
     }
 }
+
+void Missile::removeHP()
+{}

@@ -99,6 +99,7 @@ class Player: public ArmedEntity {
          * @return std::shared_ptr<Client>
          */
         std::shared_ptr<Client> client() const;
+        virtual void removeHP();
 
     private:
         int _score;

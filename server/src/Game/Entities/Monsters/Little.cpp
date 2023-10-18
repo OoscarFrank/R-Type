@@ -43,3 +43,9 @@ void LittleMonster::setLife(int life)
     AEntity::setLife(life);
     _room.sendToAll(StreamFactory::monsterLife(_id, _life));
 }
+
+void LittleMonster::removeHP()
+{
+    setLife(_life - 100);
+}
+

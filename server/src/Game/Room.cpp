@@ -237,6 +237,9 @@ void Room::addMonster(IEntity::Type type, int x, int y)
         case IEntity::Type::LITTLE_MONSTER:
             _monsters.push_back(std::make_unique<LittleMonster>(*this, ++_monstersIds, x, y));
             break;
+        case IEntity::Type::ZIGZAGER_MONSTER:
+            _monsters.push_back(std::make_unique<ZigzagerMonster>(*this, ++_monstersIds, x, y));
+            break;
         default:
             return;
     }
@@ -248,7 +251,7 @@ void Room::checkCollisionPlayer()
     for (auto i = _players.begin(); i != _players.end(); i++) {
         for (auto j = _monsters.begin(); j != _monsters.end(); j++) {
             if ((**j).collide(**i)) {
-                (**i).setLife((**i).life() - 10);
+                (**i).removeHP();
                 if ((**i).life() <= 0) {
                     std::cout << "Player " << (**i).id() << " died in room " << _id << std::endl;
                     (**i).killEntity();
@@ -269,7 +272,7 @@ void Room::checkCollisionMonsters()
             if (!(**j).getExist())
                 continue;
             if ((**i).collide(**j)) {
-                (**j).setLife((**j).life() - 50);
+                (**j).removeHP();
                 if ((**j).life() <= 0) {
                     (**j).killEntity();
                     sendToAll(StreamFactory::monsterDied((**j).id()));

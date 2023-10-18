@@ -70,6 +70,7 @@ class IEntity {
          * @param life The new life to get
          */
         virtual void setLife(int life) = 0;
+        virtual void removeHP() = 0;
         /**
          * @brief Kill the entity
          *
@@ -94,7 +95,7 @@ class IEntity {
             MISSILE,
             PLAYER,
             LITTLE_MONSTER,
-            MEDIUM_MONSTER,
+            ZIGZAGER_MONSTER,
         };
 };
 
@@ -173,6 +174,7 @@ class AEntity: public IEntity {
          * @param life The new life to get
          */
         virtual void setLife(int life);
+        virtual void removeHP() = 0;
         /**
          * @brief Kill the entity
          *

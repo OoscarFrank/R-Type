@@ -76,7 +76,7 @@ void Levels::_updateLvl2()
     chronoTime now = chronoNow;
 
     if (chronoDiff(chronoMs, now, _spawnLittleMonster) >= 1500) {
-        _room.addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
+        _room.addMonster(IEntity::Type::ZIGZAGER_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
         _spawnLittleMonster = now;
     }
     if (chronoDiff(chronoSec, now, _lvlStart) >= 10)

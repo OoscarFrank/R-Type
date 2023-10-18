@@ -36,6 +36,7 @@ class Missile: public AEntity {
          *
          */
         virtual void refresh();
+        virtual void removeHP();
 
     private:
         Missile::Type _type;

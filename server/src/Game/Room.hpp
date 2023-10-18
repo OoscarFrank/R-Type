@@ -7,6 +7,7 @@
 #include "Entities/Entity.hpp"
 #include "Entities/Player.hpp"
 #include "Entities/Monsters/Little.hpp"
+#include "Entities/Monsters/Zigzager.hpp"
 #include "../Client.hpp"
 #include "Levels.hpp"
 

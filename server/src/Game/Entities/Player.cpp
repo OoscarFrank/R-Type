@@ -89,3 +89,8 @@ std::shared_ptr<Client> Player::client() const
 {
     return _client;
 }
+
+void Player::removeHP()
+{
+    setLife(_life - 10);
+}
