@@ -15,7 +15,6 @@ Game::Game(std::string ip, int port) :
     _started(0)
 {
     sf::VideoMode mode = sf::VideoMode::getDesktopMode();
-    this->_realScreenSize = {static_cast<float>(mode.width), static_cast<float>(mode.height)};
     this->_manager.loadTexture(client::getAssetPath("entity/BlackPixel.png"), Loader::toLoad::BlackPixel);
     this->_manager.loadTexture(client::getAssetPath("parallax/background.png"), Loader::toLoad::ParallaxFirstbkg);
     this->_manager.loadTexture(client::getAssetPath("parallax/background2.png"), Loader::toLoad::ParallaxSecondbkg);
@@ -29,6 +28,18 @@ Game::Game(std::string ip, int port) :
     this->_manager.loadTexture(client::getAssetPath("entity/player/player_move2.png"), Loader::toLoad::Player_move2);
     this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
     this->_manager.loadTexture(client::getAssetPath("entity/player/player_move4.png"), Loader::toLoad::Player_move4);
+
+    
+
+
+    if (mode.isValid()) {
+        this->_window.create(mode, "R-TYPE");
+    } else {
+        this->_window.create(sf::VideoMode(mode.width, mode.height), "R-TYPE");
+    }
+
+    // std::cout <<  << " " <<  << std::endl;
+    this->_realScreenSize = {static_cast<float>(this->_window.getSize().x), static_cast<float>(this->_window.getSize().y)};
 
     if (_realScreenSize.x / _realScreenSize.y <= 16.0f / 9.0f) {
         this->_screenSize = {this->_realScreenSize.x, this->_realScreenSize.x * ((1.0f / 16.0f) / (1.0f / 9.0f)) };
@@ -46,12 +57,6 @@ Game::Game(std::string ip, int port) :
         _blackBandBottomRight = this->_factory.createBlackband(sf::IntRect(this->_realScreenSize.x - difWidth, 0, difWidth, this->_realScreenSize.y), this->_manager.getTexture(Loader::Loader::BlackPixel));
     }
 
-
-    if (mode.isValid()) {
-        this->_window.create(mode, "R-TYPE", sf::Style::Fullscreen);
-    } else {
-        this->_window.create(sf::VideoMode(mode.width, mode.height), "R-TYPE");
-    }
 
     this->_window.setFramerateLimit(120);
     this->_lastTime = NOW;

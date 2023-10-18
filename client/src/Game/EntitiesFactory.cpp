@@ -88,7 +88,6 @@ entity_t Factory::createBlackband(sf::IntRect rect, const std::shared_ptr<sf::Te
 {
     entity_t newEntity = _registry.spawn_entity();
     _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{static_cast<float>(rect.left), static_cast<float>(rect.top)});
-    // _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{0, 0, 1, 1, 1, 2.0f});
     _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
     _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{static_cast<float>(rect.width), static_cast<float>(rect.height)});
     return newEntity;
