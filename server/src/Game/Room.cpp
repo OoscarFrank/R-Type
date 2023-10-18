@@ -1,6 +1,7 @@
 #include "Room.hpp"
 #include "../Utils/Scheduling.hpp"
 #include <bitset>
+#include <cmath>
 
 Room::Room(u_int id, std::shared_ptr<Client> client, bool privateRoom):
     _levels(*this)
@@ -240,6 +241,9 @@ void Room::addMonster(IEntity::Type type, int x, int y)
         case IEntity::Type::ZIGZAGER_MONSTER:
             _monsters.push_back(std::make_unique<ZigzagerMonster>(*this, ++_monstersIds, x, y));
             break;
+        case IEntity::Type::FOLLOWER_MONSTER:
+            _monsters.push_back(std::make_unique<FollowerMonster>(*this, ++_monstersIds, x, y));
+            break;
         default:
             return;
     }
@@ -282,4 +286,24 @@ void Room::checkCollisionMonsters()
             }
         }
     }
+}
+
+std::pair<short, short> Room::getNearestPlayerPos(const IEntity &entity)
+{
+    std::pair<short, short> nearest = {0, 0};
+    double distance = std::numeric_limits<double>::max();
+
+    for (auto i = _players.begin(); i != _players.end(); i++) {
+        if (!(**i).getExist())
+            continue;
+
+        double deltaX = (**i).position().first - entity.position().first;
+        double deltaY = (**i).position().second - entity.position().second;
+        double tmp = std::sqrt(deltaX * deltaX + deltaY * deltaY);
+        if (tmp < distance) {
+            distance = tmp;
+            nearest = (**i).position();
+        }
+    }
+    return nearest;
 }

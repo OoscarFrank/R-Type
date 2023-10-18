@@ -8,6 +8,7 @@
 #include "Entities/Player.hpp"
 #include "Entities/Monsters/Little.hpp"
 #include "Entities/Monsters/Zigzager.hpp"
+#include "Entities/Monsters/Follower.hpp"
 #include "../Client.hpp"
 #include "Levels.hpp"
 
@@ -136,6 +137,7 @@ class Room
          */
         u_int &getMissilesIds();
         void addMonster(IEntity::Type type, int x, int y);
+        std::pair<short, short> getNearestPlayerPos(const IEntity &entity);
 };
 
 #endif

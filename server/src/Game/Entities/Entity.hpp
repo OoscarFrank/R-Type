@@ -96,6 +96,7 @@ class IEntity {
             PLAYER,
             LITTLE_MONSTER,
             ZIGZAGER_MONSTER,
+            FOLLOWER_MONSTER,
         };
 };
 
