@@ -37,7 +37,7 @@ namespace game {
          * @param scrollSpeed
          * @return entity_t
          */
-            entity_t createParallax(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scrollSpeed);
+            entity_t createParallax(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scrollSpeed, float ratio = 1.0f);
         /**
          * @brief Create a Missile object
          *

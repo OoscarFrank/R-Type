@@ -29,9 +29,6 @@ Game::Game(std::string ip, int port) :
     this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
     this->_manager.loadTexture(client::getAssetPath("entity/player/player_move4.png"), Loader::toLoad::Player_move4);
 
-    
-
-
     if (mode.isValid()) {
         this->_window.create(mode, "R-TYPE", sf::Style::Fullscreen);
     } else {
@@ -57,19 +54,17 @@ Game::Game(std::string ip, int port) :
         _blackBandBottomRight = this->_factory.createBlackband(sf::IntRect(this->_realScreenSize.x - difWidth, 0, difWidth, this->_realScreenSize.y), this->_manager.getTexture(Loader::Loader::BlackPixel));
     }
 
-
     this->_window.setFramerateLimit(120);
     this->_lastTime = NOW;
     this->eventMemory = 0;
     this->_gameOver = false;
     this->_menuEntity = -1;
-
     this->_manager.createMusic(client::getAssetPath("songs/song.ogg"));
 
     this->_resMult = static_cast<float>(this->_screenSize.x)/ SCREEN_WIDTH;
 
-    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.035f * _resMult)));
-    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.05f * _resMult)));
+    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.070f * _resMult), _resMult));
+    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.1f * _resMult), _resMult));
     this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_parallax[0], ECS::components::ScaleComponent{_resMult, _resMult});
     this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_parallax[1], ECS::components::ScaleComponent{_resMult, _resMult});
     this->_menuEntity = this->ecs.spawn_entity();
