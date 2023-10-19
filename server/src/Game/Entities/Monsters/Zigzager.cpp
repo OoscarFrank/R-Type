@@ -3,6 +3,7 @@
 
 ZigzagerMonster::ZigzagerMonster(Room &room, u_int id, short x, short y):
     Monster(room, id, x, y, LITTLE_MONSTER_WIDTH, LITTLE_MONSTER_HEIGHT),
+    _lastPos(std::chrono::system_clock::now()),
     _switch(1)
 {
     _life = 150;
@@ -10,6 +11,7 @@ ZigzagerMonster::ZigzagerMonster(Room &room, u_int id, short x, short y):
 
 ZigzagerMonster::ZigzagerMonster(Room &room, u_int id, const std::pair<short, short> &pos):
     Monster(room, id, pos, {LITTLE_MONSTER_WIDTH, LITTLE_MONSTER_HEIGHT}),
+    _lastPos(std::chrono::system_clock::now()),
     _switch(1)
 {
     _life = 150;

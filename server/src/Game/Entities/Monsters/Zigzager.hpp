@@ -37,6 +37,7 @@ class ZigzagerMonster: public Monster {
         virtual int getDamage();
 
         private:
+            std::chrono::system_clock::time_point _lastPos;
             short _switch;
 };
 
