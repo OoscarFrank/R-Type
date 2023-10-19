@@ -26,24 +26,24 @@ void FollowerMonster::refresh()
     if (!_exist) {
         return;
     }
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= ENEMY_LITTLE_FIRE_TIME) {
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= FOLLOWER_MONSTER_FIRE_TIME) {
         std::pair<double, double> tmpVect = vector;
         if (len != 0) {
             tmpVect.first /= len;
-            tmpVect.first *= ENEMY_MISSILE_PROGRESS_STEP;
+            tmpVect.first *= FOLLOWER_MONSTER_MISSILE_PROGRESS_STEP;
             tmpVect.second /= len;
-            tmpVect.second *= ENEMY_MISSILE_PROGRESS_STEP;
+            tmpVect.second *= FOLLOWER_MONSTER_MISSILE_PROGRESS_STEP;
         }
         fireMissile(Missile::Type::LITTLE_MONSTER, static_cast<short>(tmpVect.first), static_cast<short>(tmpVect.second));
         _lastFire = now;
     }
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= ENEMY_MOVE_TIME) {
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= MONSTER_MOVE_TIME) {
         std::pair<double, double> tmpVect = vector;
         if (len != 0) {
             tmpVect.first /= len;
-            tmpVect.first *= 2;
+            tmpVect.first *= FOLLOWER_MONSTER_PROGRESS_STEP;
             tmpVect.second /= len;
-            tmpVect.second *= 2;
+            tmpVect.second *= FOLLOWER_MONSTER_PROGRESS_STEP;
         }
         move(tmpVect.first, tmpVect.second);
         _room.sendToAll(StreamFactory::monsterPos(_id, IEntity::Type::FOLLOWER_MONSTER, _box.x, _box.y));

@@ -24,7 +24,7 @@ void Missile::refresh()
 {
     auto now = std::chrono::system_clock::now();
 
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= MISSILES_REFRESH_TIME) {
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= MISSILES_MOVE_TIME) {
         move(_vx, _vy);
         _room.sendToAll(StreamFactory::missilePos(_id, _type, _box.x, _box.y));
         _lastMove = now;
