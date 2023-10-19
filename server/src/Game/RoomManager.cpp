@@ -1,36 +1,38 @@
-#include "Game.hpp"
+#include "RoomManager.hpp"
 
-Game::Game()
+RoomManager::RoomManager()
 {
     _roomIds = 1;
 }
 
-Game::~Game()
+RoomManager::~RoomManager()
 {
 }
 
-void Game::_clearRooms()
+void RoomManager::_clearRooms()
 {
     std::unique_lock<std::mutex> lock(_roomsMutex);
 
     for (auto i = this->_rooms.begin(); i != this->_rooms.end();) {
-        if ((**i).getState() == Room::STOPPED)
+        if ((**i).getState() == Room::STOPPED) {
+            std::cout << "Room " << (**i).getId() << " closed" << std::endl;
             i = _rooms.erase(i);
-        else
+        } else
             i++;
     }
 }
 
-void Game:: createRoom(Reader::Packet &packet, bool privateRoom)
+void RoomManager:: createRoom(Reader::Packet &packet, bool privateRoom)
 {
     _clearRooms();
     std::unique_ptr<Room> newRoom = std::make_unique<Room>(_roomIds++, packet.getClient(), privateRoom);
+    std::cout << "New room: " << newRoom->getId() << std::endl;
     _roomsMutex.lock();
     _rooms.push_back(std::move(newRoom));
     _roomsMutex.unlock();
 }
 
-void Game::searchRoom(Reader::Packet &packet)
+void RoomManager::searchRoom(Reader::Packet &packet)
 {
     _clearRooms();
     _roomsMutex.lock();
@@ -51,7 +53,7 @@ void Game::searchRoom(Reader::Packet &packet)
     this->createRoom(packet);
 }
 
-Room &Game::getRoom(u_int id)
+Room &RoomManager::getRoom(u_int id)
 {
     _clearRooms();
     std::unique_lock<std::mutex> lock(_roomsMutex);
@@ -64,7 +66,7 @@ Room &Game::getRoom(u_int id)
     throw std::runtime_error("Room not found");
 }
 
-Room &Game::getRoom(std::shared_ptr<Client> client)
+Room &RoomManager::getRoom(std::shared_ptr<Client> client)
 {
     _clearRooms();
     std::unique_lock<std::mutex> lock(_roomsMutex);

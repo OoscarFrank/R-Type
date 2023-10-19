@@ -23,7 +23,8 @@
 #define PLAYER_MOVE_TIME                5 // ms
 #define PLAYER_FIRE_TIME                150 // ms
 #define ENEMY_MOVE_TIME                 2 // ms
-#define ENEMY_FIRE_TIME                 1000 // ms
+#define ENEMY_LITTLE_FIRE_TIME          1000 // ms
+#define ENEMY_ZIGZAGER_FIRE_TIME        1000 // ms
 #define ENEMY_SPAWN_TIME                1000 // ms
 #define MISSILES_REFRESH_TIME           10 // ms
 #define SEND_WAIT_MESSAGE_TIME          200 // ms

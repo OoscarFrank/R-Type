@@ -1,7 +1,7 @@
 #include <iostream>
 #include <asio.hpp>
 #include "Reader/Reader.hpp"
-#include "Game/Game.hpp"
+#include "Game/RoomManager.hpp"
 #include "Utils/ThreadPool.hpp"
 #include "Utils/Args.hpp"
 #include "Utils/Instruction.hpp"
@@ -14,8 +14,8 @@ void exec(int port)
     Queue<Reader::Packet> queueIn;
     std::vector<std::shared_ptr<Client>> clients;
     Reader reader(socket, queueIn, clients);
-    Game game;
-    Router router(game);
+    RoomManager rm;
+    Router router(rm);
 
     std::cout << "Server listening on port " << port << std::endl;
 

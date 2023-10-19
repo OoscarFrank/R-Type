@@ -7,7 +7,10 @@
 #include "Entities/Entity.hpp"
 #include "Entities/Player.hpp"
 #include "Entities/Monsters/Little.hpp"
+#include "Entities/Monsters/Zigzager.hpp"
+#include "Entities/Monsters/Follower.hpp"
 #include "../Client.hpp"
+#include "Levels.hpp"
 
 class Room
 {
@@ -24,12 +27,13 @@ class Room
         std::thread _thread;
         std::mutex _playersMutex;
         std::vector<std::unique_ptr<Player>> _players;
-        std::vector<std::unique_ptr<IEntity>> _monsters;
+        std::vector<std::unique_ptr<Monster>> _monsters;
         u_int _id;
         unsigned int _maxPlayer;
         unsigned int _progress;
         u_int _playersIds;
         bool _private;
+        Levels _levels;
 
         u_int _missilesIds;
         u_int _monstersIds;
@@ -39,13 +43,11 @@ class Room
         size_t _lastJoin;
         size_t _lastMissileUpdate;
         size_t _lastPlayerUpdate;
-        size_t _lastMonsterSpawn;
         size_t _lastGameOver;
 
         void refresh();
         void update();
         void startGame();
-        void addMonster(IEntity::Type type, int x, int y);
         void checkCollisionPlayer();
         void checkCollisionMonsters();
 
@@ -69,6 +71,7 @@ class Room
          * @return State
          */
         State getState() const;
+        size_t getCurrentLevel() const;
         /**
          * @brief Get the id of the room
          *
@@ -134,7 +137,8 @@ class Room
          * @return u_int&
          */
         u_int &getMissilesIds();
-
+        void addMonster(IEntity::Type type, int x, int y);
+        std::pair<short, short> getNearestPlayerPos(const IEntity &entity);
 };
 
 #endif
