@@ -2,9 +2,9 @@
 #define LITTLEMONSTER_HPP
 
 #include "../Entity.hpp"
-#include "../ArmedEntity.hpp"
+#include "Monster.hpp"
 
-class LittleMonster: public ArmedEntity {
+class LittleMonster: public Monster {
     public:
         /**
          * @brief Construct a new Little Monster object
@@ -23,15 +23,8 @@ class LittleMonster: public ArmedEntity {
          * @param pos The position of the monster (x, y)
          */
         LittleMonster(Room &room, u_int id, const std::pair<short, short> &pos);
-        virtual ~LittleMonster();
+        virtual ~LittleMonster() = default;
 
-        /**
-         * @brief Set the monster's life
-         *
-         * @param life The new life to get
-         */
-        virtual void setLife(int life);
-        virtual void removeHP();
         /**
          * @brief Refresh the entity
          * This method does the following:
@@ -41,14 +34,7 @@ class LittleMonster: public ArmedEntity {
          *
          */
         virtual void refresh();
-        /**
-         * @brief Check if the entity collide with another entity
-         *
-         * @param other The other entity to check collision with
-         * @return true If the entity collide with the other entity
-         * @return false If the entity doesn't collide with the other entity
-         */
-        virtual bool collide(const IEntity &other) override;
+        virtual int getDamage();
 };
 
 #endif

@@ -33,6 +33,7 @@ class ArmedEntity: public AEntity {
          *
          */
         virtual void refresh() = 0;
+        virtual int getDamage() = 0;
 
     protected:
         /**

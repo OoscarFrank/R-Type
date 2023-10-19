@@ -53,6 +53,11 @@ void Levels::update()
     }
 }
 
+size_t Levels::lvl() const
+{
+    return _currentLvl;
+}
+
 void Levels::_increaseLvl()
 {
     std::cout << "Lvl " << ++_currentLvl << std::endl;

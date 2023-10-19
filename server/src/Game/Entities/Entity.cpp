@@ -40,7 +40,7 @@ bool AEntity::isOutOfScreen() const
 
 bool AEntity::collide(const IEntity &other)
 {
-    if (_exist && other.getExist())
+    if (_exist && other.exists())
         return _box.collide(other.box());
     return false;
 }
@@ -68,21 +68,17 @@ void AEntity::setLife(int life)
     _life = life;
 }
 
-void AEntity::killEntity()
+void AEntity::kill()
 {
-    // Stream out;
-    // out.setDataUChar(16);
-    // out.setDataUInt(_id);
-    // _room.sendToAll(out);
     _exist = false;
 }
 
-bool AEntity::getExist() const
+bool AEntity::exists() const
 {
     return _exist;
 }
 
-bool AEntity::getDeletable() const
+bool AEntity::isDeletable() const
 {
     return _deletable;
 }

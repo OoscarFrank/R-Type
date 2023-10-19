@@ -2,18 +2,17 @@
 #include "../../Room.hpp"
 
 ZigzagerMonster::ZigzagerMonster(Room &room, u_int id, short x, short y):
-    ArmedEntity(room, id, x, y, LITTLE_MONSTER_WIDTH, LITTLE_MONSTER_HEIGHT),
+    Monster(room, id, x, y, LITTLE_MONSTER_WIDTH, LITTLE_MONSTER_HEIGHT),
     _switch(1)
-{}
+{
+    _life = 150;
+}
 
 ZigzagerMonster::ZigzagerMonster(Room &room, u_int id, const std::pair<short, short> &pos):
-    ArmedEntity(room, id, pos, {LITTLE_MONSTER_WIDTH, LITTLE_MONSTER_HEIGHT}),
+    Monster(room, id, pos, {LITTLE_MONSTER_WIDTH, LITTLE_MONSTER_HEIGHT}),
     _switch(1)
-{}
-
-ZigzagerMonster::~ZigzagerMonster()
 {
-
+    _life = 150;
 }
 
 void ZigzagerMonster::refresh()
@@ -39,18 +38,7 @@ void ZigzagerMonster::refresh()
     }
 }
 
-bool ZigzagerMonster::collide(const IEntity &other)
+int ZigzagerMonster::getDamage()
 {
-    return AEntity::collide(other) || missilesCollide(other);
-}
-
-void ZigzagerMonster::setLife(int life)
-{
-    AEntity::setLife(life);
-    _room.sendToAll(StreamFactory::monsterLife(_id, _life));
-}
-
-void ZigzagerMonster::removeHP()
-{
-    setLife(_life - 100);
+    return 10;
 }

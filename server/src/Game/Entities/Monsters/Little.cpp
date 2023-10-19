@@ -2,16 +2,15 @@
 #include "../../Room.hpp"
 
 LittleMonster::LittleMonster(Room &room, u_int id, short x, short y):
-    ArmedEntity(room, id, x, y, LITTLE_MONSTER_WIDTH, LITTLE_MONSTER_HEIGHT)
-{}
+    Monster(room, id, x, y, LITTLE_MONSTER_WIDTH, LITTLE_MONSTER_HEIGHT)
+{
+    _life = 100;
+}
 
 LittleMonster::LittleMonster(Room &room, u_int id, const std::pair<short, short> &pos):
-    ArmedEntity(room, id, pos, {LITTLE_MONSTER_WIDTH, LITTLE_MONSTER_HEIGHT})
-{}
-
-LittleMonster::~LittleMonster()
+    Monster(room, id, pos, {LITTLE_MONSTER_WIDTH, LITTLE_MONSTER_HEIGHT})
 {
-
+    _life = 100;
 }
 
 void LittleMonster::refresh()
@@ -33,18 +32,7 @@ void LittleMonster::refresh()
     }
 }
 
-bool LittleMonster::collide(const IEntity &other)
+int LittleMonster::getDamage()
 {
-    return AEntity::collide(other) || missilesCollide(other);
-}
-
-void LittleMonster::setLife(int life)
-{
-    AEntity::setLife(life);
-    _room.sendToAll(StreamFactory::monsterLife(_id, _life));
-}
-
-void LittleMonster::removeHP()
-{
-    setLife(_life - 50);
+    return 10;
 }
