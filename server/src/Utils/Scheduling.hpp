@@ -13,22 +13,37 @@
 #define MISSILE_HEIGHT      1
 #define MISSILE_WIDTH       1
 
-#define MAP_PROGRESS_STEP               7
-#define PLAYER_PROGRESS_STEP            10
-#define PLAYER_MISSILE_PROGRESS_STEP    15
-#define ENEMY_PROGRESS_STEP             1
-#define ENEMY_MISSILE_PROGRESS_STEP     7
+// Progress steps
+#define MAP_PROGRESS_STEP                       7
 
+#define PLAYER_PROGRESS_STEP                    15
+#define PLAYER_MISSILE_PROGRESS_STEP            50
+
+#define LITTLE_MONSTER_PROGRESS_STEP            10
+#define LITTLE_MONSTER_MISSILE_PROGRESS_STEP    30
+
+#define ZIGZAGER_MONSTER_PROGRESS_STEP          10
+#define ZIGZAGER_MONSTER_MISSILE_PROGRESS_STEP  30
+
+#define FOLLOWER_MONSTER_PROGRESS_STEP          10
+#define FOLLOWER_MONSTER_MISSILE_PROGRESS_STEP  30
+
+// Times
 #define MAP_REFRESH_TIME                10 // ms
-#define PLAYER_MOVE_TIME                5 // ms
+
+#define PLAYER_MOVE_TIME                10 // ms
 #define PLAYER_FIRE_TIME                150 // ms
-#define ENEMY_MOVE_TIME                 2 // ms
-#define ENEMY_FIRE_TIME                 1000 // ms
-#define ENEMY_SPAWN_TIME                1000 // ms
-#define MISSILES_REFRESH_TIME           10 // ms
+
+#define MONSTER_MOVE_TIME               12 // ms
+#define LITTLE_MONSTER_FIRE_TIME        1000 // ms
+#define ZIGZAGER_MONSTER_FIRE_TIME      1000 // ms
+#define FOLLOWER_MONSTER_FIRE_TIME      1000 // ms
+
+#define MISSILES_MOVE_TIME              10 // ms
+
 #define SEND_WAIT_MESSAGE_TIME          200 // ms
 #define PLAYER_ALIVE_MAX_TIME           10 // seconds
-#define TIMEOUT_START_GAME              3000 // ms
+#define TIMEOUT_START_GAME              1000 // ms
 #define GAME_OVER_REFRESH               500 // ms
 
 #endif

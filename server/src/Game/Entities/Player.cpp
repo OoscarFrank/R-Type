@@ -52,11 +52,15 @@ void Player::fireMissile()
 {
     auto now = std::chrono::system_clock::now();
 
-
     if (_exist && std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= PLAYER_FIRE_TIME) {
-        ArmedEntity::fireMissile(Missile::Type::PLAYER);
+        ArmedEntity::fireMissile(Missile::Type::PLAYER, PLAYER_MISSILE_PROGRESS_STEP, 0);
         _lastFire = now;
     }
+}
+
+int Player::getDamage()
+{
+    return 50 * _room.getCurrentLevel();
 }
 
 const std::chrono::system_clock::time_point &Player::lastMoveTime() const
@@ -84,6 +88,15 @@ void Player::setLife(int life)
 {
     AEntity::setLife(life);
     _client->send(StreamFactory::playerLife(_life));
+    if (_life <= 0)
+        kill();
+}
+
+void Player::kill()
+{
+    AEntity::kill();
+    _room.sendToAll(StreamFactory::playerDied(_id));
+    std::cout << "Player " << _id << " died in room " << _room.getId() << std::endl;
 }
 
 std::shared_ptr<Client> Player::client() const

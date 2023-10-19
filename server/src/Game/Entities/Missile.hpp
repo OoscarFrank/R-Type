@@ -19,7 +19,7 @@ class Missile: public AEntity {
          * @param x The x position of the missile
          * @param y The y position of the missile
          */
-        Missile(Room &room, Missile::Type type, u_int id, short x, short y);
+        Missile(Room &room, Missile::Type type, u_int id, short x, short y, short vx, short vy);
         /**
          * @brief Construct a new Missile object
          *
@@ -28,7 +28,7 @@ class Missile: public AEntity {
          * @param id The id of the missile
          * @param pos The position of the missile (x, y)
          */
-        Missile(Room &room, Missile::Type type, u_int id, const std::pair<short, short> &pos);
+        Missile(Room &room, Missile::Type type, u_int id, const std::pair<short, short> &pos, const std::pair<short, short> &velocity);
         virtual ~Missile();
 
         /**
@@ -39,6 +39,8 @@ class Missile: public AEntity {
 
     private:
         Missile::Type _type;
+        short _vx;
+        short _vy;
 };
 
 #endif

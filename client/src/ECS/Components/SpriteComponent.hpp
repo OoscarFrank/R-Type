@@ -41,7 +41,15 @@ namespace ECS{
              * @param rect
              */
                 void setTextureRect(const sf::IntRect &rect) { this->_sprite.setTextureRect(rect); };
+
             /**
+             * @brief Get the Texture Rect object
+             *
+             * @return const sf::IntRect&
+             */
+                const sf::IntRect &getTextureRect() const { return _sprite.getTextureRect(); }
+            /**
+             *
              * @brief Get the Sprite object
              *
              * @return sf::Sprite&

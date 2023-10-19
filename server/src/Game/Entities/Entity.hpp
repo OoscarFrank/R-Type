@@ -59,13 +59,13 @@ class IEntity {
          */
         virtual const BoundingBox<short> &box() const = 0;
         /**
-         * @brief Get the player's life
+         * @brief Get the entities life
          *
          * @param life The new life to set
          */
         virtual int life() const = 0;
         /**
-         * @brief Set the player's life
+         * @brief Set the entities life
          *
          * @param life The new life to get
          */
@@ -74,26 +74,28 @@ class IEntity {
          * @brief Kill the entity
          *
          */
-        virtual void killEntity() = 0;
+        virtual void kill() = 0;
         /**
          * @brief Check if the entity exist (alive)
          *
          * @return true
          * @return false
          */
-        virtual bool getExist() const = 0;
+        virtual bool exists() const = 0;
         /**
          * @brief Check if the entity is deletable (dead)
          *
          * @return true
          * @return false
          */
-        virtual bool getDeletable() const = 0;
+        virtual bool isDeletable() const = 0;
 
         enum Type {
             MISSILE,
             PLAYER,
             LITTLE_MONSTER,
+            ZIGZAGER_MONSTER,
+            FOLLOWER_MONSTER,
         };
 };
 
@@ -161,13 +163,13 @@ class AEntity: public IEntity {
          */
         virtual const BoundingBox<short> &box() const;
         /**
-         * @brief Get the player's life
+         * @brief Get the entities life
          *
          * @param life The new life to set
          */
         virtual int life() const;
         /**
-         * @brief Set the player's life
+         * @brief Set the entities life
          *
          * @param life The new life to get
          */
@@ -176,21 +178,21 @@ class AEntity: public IEntity {
          * @brief Kill the entity
          *
          */
-        virtual void killEntity();
+        virtual void kill();
         /**
          * @brief Check if the entity exist (alive)
          *
          * @return true
          * @return false
          */
-        virtual bool getExist() const;
+        virtual bool exists() const;
         /**
          * @brief Check if the entity is deletable (dead)
          *
          * @return true
          * @return false
          */
-        virtual bool getDeletable() const;
+        virtual bool isDeletable() const;
 
     protected:
         /**
