@@ -12,7 +12,8 @@ Game::Game(std::string ip, int port) :
     _roomId(0),
     _playerId(0),
     _startTimeLeft(0),
-    _started(0)
+    _started(0),
+    _lastPing(std::chrono::system_clock::now())
 {
     sf::VideoMode mode = sf::VideoMode::getDesktopMode();
     this->_manager.loadTexture(client::getAssetPath("entity/BlackPixel.png"), Loader::toLoad::BlackPixel);
@@ -153,8 +154,11 @@ void Game::update()
                 break;
         }
     }
-    this->_net.setInst(12);
-    this->_net.send();
+    if (std::chrono::system_clock::now() - this->_lastPing > std::chrono::seconds(2)) {
+        this->_lastPing = std::chrono::system_clock::now();
+        this->_net.setInst(12);
+        this->_net.send();
+    }
 }
 
 void Game::sendMoveToServer()
@@ -288,8 +292,6 @@ void Game::handleRoomJoin(Network::Packet &packet)
     }
     this->_roomId = packet.getData().getDataUInt();
     this->_playerId = packet.getData().getDataUInt();
-
-    
 
     std::shared_ptr<sf::Texture> texture = nullptr;
 

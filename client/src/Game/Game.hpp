@@ -70,6 +70,8 @@ namespace game {
             unsigned char _started;
 
             int eventMemory;
+            std::chrono::system_clock::time_point _lastPing;
+
             void refreshScreenSize();
 
             void handleTimeoutMatchmaking(Network::Packet &packet);
