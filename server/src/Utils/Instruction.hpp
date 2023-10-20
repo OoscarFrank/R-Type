@@ -14,6 +14,7 @@ struct Commands {
     unsigned char _inst;
     std::vector<int> _datas;
     unsigned int _size;
+    bool _important;
 };
 
 #define PLAYER_MOVE_UP      1
@@ -31,12 +32,13 @@ struct Commands {
  *
  */
 #define IN_COMMANDS { \
-    {2, {UCHAR, UCHAR}, 2}, \
-    {5, {}, 0}, \
-    {8, {UCHAR}, 1}, \
-    {9, {}, 0}, \
-    {12, {}, 0} \
-};
+    {2, {UCHAR, UCHAR}, 2, false}, \
+    {5, {}, 0, false}, \
+    {8, {UCHAR}, 1, true}, \
+    {9, {}, 0, true}, \
+    {12, {}, 0, true}, \
+    {255, {USHORT}, 2, true} \
+}
 
 /**
  * @brief Commands
@@ -57,21 +59,22 @@ struct Commands {
  * 20 serv - vie de l'ennemie (id)
  */
 #define OUT_COMMANDS { \
-    {1, {UINT}, 4}, \
-    {3, {UINT, SHORT, SHORT}, 8}, \
-    {4, {UINT, UCHAR, SHORT, SHORT}, 9}, \
-    {6, {INT}, 4}, \
-    {7, {UINT, UCHAR, SHORT, SHORT}, 9}, \
-    {10, {UINT, UINT}, 8}, \
-    {11, {INT, UCHAR}, 5}, \
-    {13, {UINT}, 4}, \
-    {14, {UINT}, 4}, \
-    {15, {UINT, UCHAR, SHORT, SHORT}, 9}, \
-    {16, {UINT}, 4}, \
-    {17, {UCHAR}, 1}, \
-    {18, {UINT}, 4} \
-    {19, {INT}, 4} \
-    {20, {UINT, INT}, 8} \
-};
+    {1, {UINT}, 4, false}, \
+    {3, {UINT, SHORT, SHORT}, 8, false}, \
+    {4, {UINT, UCHAR, SHORT, SHORT}, 9, false}, \
+    {6, {INT}, 4, false}, \
+    {7, {UINT, UCHAR, SHORT, SHORT}, 9, false}, \
+    {10, {UINT, UINT}, 8, true}, \
+    {11, {INT, UCHAR}, 5, true}, \
+    {13, {UINT}, 4, true}, \
+    {14, {UINT}, 4, true}, \
+    {15, {UINT, UCHAR, SHORT, SHORT}, 9, true}, \
+    {16, {UINT}, 4, true}, \
+    {17, {UCHAR}, 1, true}, \
+    {18, {UINT}, 4, true}, \
+    {19, {INT}, 4, true}, \
+    {20, {UINT, INT}, 8, true}, \
+    {255, {USHORT}, 2, true} \
+}
 
 #endif
