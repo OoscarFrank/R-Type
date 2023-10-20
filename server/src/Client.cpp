@@ -1,12 +1,11 @@
 #include "Client.hpp"
-#include "Utils/Instruction.hpp"
-#include "Utils/Scheduling.hpp"
-#include <bitset>
 
-Client::Client(asio::ip::udp::socket &socket, asio::ip::udp::endpoint endpoint): _socket(socket)
+Client::Client(asio::ip::udp::socket &socket, asio::ip::udp::endpoint endpoint): _socket(socket), _outCommands(OUT_COMMANDS), _inCommands(IN_COMMANDS)
 {
     this->_endpoint = endpoint;
     this->_lastActivity = NOW;
+    this->_cmdNbr = 0;
+    this->_lastCmdNbrRecieved = 0;
 }
 
 Client::~Client()
@@ -27,16 +26,32 @@ std::pair<size_t, Stream> Client::getNextInst()
 {
     if (this->_streamIn.size() == 0)
         return std::make_pair(0, Stream());
-    std::vector<Commands> inst = IN_COMMANDS;
     std::pair<size_t, Stream> out;
 
-    for (auto i = inst.begin(); i != inst.end(); ++i) {
+    for (auto i = _inCommands.begin(); i != _inCommands.end(); ++i) {
         if (this->_streamIn[0] == i->_inst) {
-            if (this->_streamIn.size() < i->_size + 1)
+            u_int size = i->_important ? i->_size + 2 : i->_size;
+            if (this->_streamIn.size() < size + 1)
                 return std::make_pair(0, Stream());
             out.first = i->_inst;
-            out.second = this->_streamIn.subStream(1, i->_size);
-            this->_streamIn = this->_streamIn.subStream(i->_size + 1);
+            out.second = this->_streamIn.subStream(i->_important ? 3 : 1, i->_size);
+            if (i->_important) {
+                u_short test = _streamIn.subStream(1).getDataUShort();
+                int count = 0;
+                for (_lastCmdNbrRecieved++; test != _lastCmdNbrRecieved; _lastCmdNbrRecieved++) {
+                    std::cout << "Cmd not recieved: " << _lastCmdNbrRecieved << std::endl;
+                    Stream out;
+                    out.setDataUChar(255);
+                    out.setDataUShort(_lastCmdNbrRecieved);
+                    send(out);
+                    ++count;
+                    if (count > 50) {
+                        std::cout << "Too many commands not recieved " << test << " " << _lastCmdNbrRecieved << std::endl;
+                        break;
+                    }
+                }
+            }
+            this->_streamIn = this->_streamIn.subStream(size + 1);
             return out;
         }
     }
@@ -46,10 +61,45 @@ std::pair<size_t, Stream> Client::getNextInst()
 
 void Client::send(const Stream &stream)
 {
+    Stream tmp = stream;
+
+    for (auto i = _outCommands.begin(); i != _outCommands.end(); ++i) {
+        if (stream[0] == i->_inst) {
+            if (stream.size() != i->_size + 1) {
+                std::cout << "Bad size" << std::endl;
+                return;
+            }
+            if (i->_important) {
+                u_short nbr = ++_cmdNbr;
+                _sentPackets[nbr] = stream;
+                tmp.clear();
+                tmp.setDataUChar(stream[0]);
+                tmp.setDataUShort(nbr);
+                tmp += stream.subStream(1);
+            }
+            break;
+        }
+    }
+
     if (_endpoint.protocol() == asio::ip::udp::v4())
-        _socket.send_to(asio::buffer(stream.toString()), _endpoint);
+        _socket.send_to(asio::buffer(tmp.toString()), _endpoint);
     else
         std::cerr << "Endpoint is not IPv4" << std::endl;
+}
+
+void Client::resend(u_short cmdNbr)
+{
+    std::unique_lock<std::mutex> lock(_resendMutex);
+    std::cout << "Resending " << cmdNbr << std::endl;
+
+    try {
+        Stream out = _sentPackets.at(cmdNbr);
+        send(out);
+    } catch (const std::out_of_range &e) {
+        std::cerr << "Packet " << cmdNbr << " not found" << std::endl;
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+    }
 }
 
 bool Client::isAlive()

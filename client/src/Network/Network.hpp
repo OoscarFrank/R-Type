@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <map>
 #include <asio.hpp>
 #include "Queue.hpp"
 #include "Instruction.hpp"
@@ -28,6 +29,7 @@ public:
     void setInst(unsigned char inst);
     void send(const Stream &stream);
     void send();
+    void resend(u_short cmdNbr);
     void read();
     Stream &getStreamOut();
     Queue<Network::Packet> &getQueueIn();
@@ -58,4 +60,10 @@ private:
 
     Stream _streamIn;
     Queue<Network::Packet> _queueIn;
+
+    const std::vector<Commands> _inCommands;
+    const std::vector<Commands> _outCommands;
+    u_short _cmdNbr;
+    u_short _lastCmdNbrRecieved;
+    std::map<u_short, Stream> _sentPackets;
 };
