@@ -27,5 +27,6 @@ namespace game {
             std::vector<entity_t> _looser;
             entity_t _menuEntity;
             entity_t _playerEntity;
+            entity_t _playerLife;
     };
 }

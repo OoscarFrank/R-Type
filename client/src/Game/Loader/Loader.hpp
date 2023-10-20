@@ -28,7 +28,8 @@ namespace game {
                 JoinRoomButton,
                 QuitButton,
                 LooserScreen,
-                BlackPixel
+                BlackPixel,
+                PlayerLife
             };
         /**
          * @brief Load a texture from a path

@@ -29,6 +29,8 @@ Game::Game(std::string ip, int port) :
     this->_manager.loadTexture(client::getAssetPath("entity/player/player_move2.png"), Loader::toLoad::Player_move2);
     this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
     this->_manager.loadTexture(client::getAssetPath("entity/player/player_move4.png"), Loader::toLoad::Player_move4);
+    this->_manager.loadTexture(client::getAssetPath("entity/player/PlayerLife.png"), Loader::toLoad::PlayerLife);
+    this->_playerLife = 0;
 
     if (mode.isValid()) {
         this->_window.create(mode, "R-TYPE", sf::Style::Fullscreen);
@@ -149,6 +151,9 @@ void Game::update()
                 break;
             case 18:
                 this->handlePlayerDeath(packet);
+                break;
+            case 19:
+                this->handlePlayerLife(packet);
                 break;
             default:
                 break;
@@ -332,6 +337,8 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
                 comp.setScrollSpeed(comp.getScrollSpeed() * 4.0f);
             });
         }
+        this->_playerLife = this->_factory.createPlayerLife(10.0f, this->_window.getSize().y - (100.0f * this->_resMult), this->_manager.getTexture(Loader::Loader::PlayerLife));
+        this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_playerLife, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
     }
 }
 
@@ -453,4 +460,14 @@ void Game::handlePlayerDeath(Network::Packet &packet)
             return pair.first == id;
         }), this->_players.end());
     }
+}
+
+void Game::handlePlayerLife(Network::Packet &packet)
+{
+    int life = packet.getData().getDataUInt();
+    if (this->_playerLife == 0)
+        return;
+    this->ecs.modify_component<ECS::components::TextureRectComponent>(this->_playerLife, [life](ECS::components::TextureRectComponent &comp) {
+        comp.setFrameOnTexture(life / 10);
+    });
 }

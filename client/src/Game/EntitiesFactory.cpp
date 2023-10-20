@@ -91,3 +91,12 @@ entity_t Factory::createBlackband(sf::IntRect rect, const std::shared_ptr<sf::Te
     _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{static_cast<float>(rect.width), static_cast<float>(rect.height)});
     return newEntity;
 }
+
+entity_t Factory::createPlayerLife(float x, float y, const std::shared_ptr<sf::Texture> &texture)
+{
+    entity_t newEntity = _registry.spawn_entity(90);
+    _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
+    _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{(int)(texture->getSize().x - (texture->getSize().x / 11)), 0, (int)texture->getSize().x, (int)texture->getSize().y, 11, 200.0f});
+    _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
+    return newEntity;
+}
