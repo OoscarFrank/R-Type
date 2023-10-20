@@ -3,13 +3,13 @@
 #include <cmath>
 
 FollowerMonster::FollowerMonster(Room &room, u_int id, short x, short y):
-    Monster(room, id, x, y, LITTLE_MONSTER_WIDTH, LITTLE_MONSTER_HEIGHT)
+    Monster(room, id, x, y, FOLLOWER_MONSTER_WIDTH, FOLLOWER_MONSTER_HEIGHT)
 {
     _life = 100;
 }
 
 FollowerMonster::FollowerMonster(Room &room, u_int id, const std::pair<short, short> &pos):
-    Monster(room, id, pos, {LITTLE_MONSTER_WIDTH, LITTLE_MONSTER_HEIGHT})
+    Monster(room, id, pos, {FOLLOWER_MONSTER_WIDTH, FOLLOWER_MONSTER_HEIGHT})
 {
     _life = 100;
 }

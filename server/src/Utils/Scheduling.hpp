@@ -10,6 +10,12 @@
 #define LITTLE_MONSTER_HEIGHT      58 * 2
 #define LITTLE_MONSTER_WIDTH       114 * 2
 
+#define ZIGZAGER_MONSTER_HEIGHT    58 * 2
+#define ZIGZAGER_MONSTER_WIDTH     114 * 2
+
+#define FOLLOWER_MONSTER_HEIGHT    58 * 2
+#define FOLLOWER_MONSTER_WIDTH     114 * 2
+
 #define MISSILE_HEIGHT      1
 #define MISSILE_WIDTH       1
 

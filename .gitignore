@@ -39,3 +39,5 @@ logs/
 client_test.c*
 clienttest
 todo.txt
+slow.sh
+Instructions.md
