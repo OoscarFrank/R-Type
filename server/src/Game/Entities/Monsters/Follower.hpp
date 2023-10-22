@@ -48,6 +48,7 @@ class FollowerMonster: public ArmedEntity {
          * @return false If the entity doesn't collide with the other entity
          */
         virtual bool collide(const IEntity &other) override;
+        virtual void removeHP();
 };
 
 #endif
