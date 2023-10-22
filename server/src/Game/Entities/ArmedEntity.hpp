@@ -33,6 +33,7 @@ class ArmedEntity: public AEntity {
          *
          */
         virtual void refresh() = 0;
+        virtual int getDamage() = 0;
 
     protected:
         /**
@@ -55,7 +56,6 @@ class ArmedEntity: public AEntity {
          */
         virtual void fireMissile(Missile::Type type, short vx, short vy);
         std::chrono::system_clock::time_point _lastFire;
-        std::chrono::system_clock::time_point _lastPos;
 
     private:
         std::vector<std::unique_ptr<Missile>> _missiles;

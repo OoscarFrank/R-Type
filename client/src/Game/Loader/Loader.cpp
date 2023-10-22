@@ -33,3 +33,15 @@ const std::shared_ptr<sf::Texture> &Loader::getTexture(toLoad type) const
         throw client::MyError("Loader", "Texture not found");
     return this->_textures.at(type);
 }
+
+void Loader::createMusic(const std::string path)
+{
+    this->_music.openFromFile(path);
+    this->_music.setLoop(true);
+    this->_music.play();
+}
+
+void Loader::stopMusic()
+{
+    this->_music.stop();
+}

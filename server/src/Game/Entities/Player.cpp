@@ -58,6 +58,11 @@ void Player::fireMissile()
     }
 }
 
+int Player::getDamage()
+{
+    return 50 * _room.getCurrentLevel();
+}
+
 const std::chrono::system_clock::time_point &Player::lastMoveTime() const
 {
     return _lastMove;
@@ -83,14 +88,18 @@ void Player::setLife(int life)
 {
     AEntity::setLife(life);
     _client->send(StreamFactory::playerLife(_life));
+    if (_life <= 0)
+        kill();
+}
+
+void Player::kill()
+{
+    AEntity::kill();
+    _room.sendToAll(StreamFactory::playerDied(_id));
+    std::cout << "Player " << _id << " died in room " << _room.getId() << std::endl;
 }
 
 std::shared_ptr<Client> Player::client() const
 {
     return _client;
-}
-
-void Player::removeHP()
-{
-    setLife(_life - 10);
 }

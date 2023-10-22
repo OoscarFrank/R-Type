@@ -27,7 +27,7 @@ class Room
         std::thread _thread;
         std::mutex _playersMutex;
         std::vector<std::unique_ptr<Player>> _players;
-        std::vector<std::unique_ptr<IEntity>> _monsters;
+        std::vector<std::unique_ptr<Monster>> _monsters;
         u_int _id;
         unsigned int _maxPlayer;
         unsigned int _progress;
@@ -71,6 +71,7 @@ class Room
          * @return State
          */
         State getState() const;
+        size_t getCurrentLevel() const;
         /**
          * @brief Get the id of the room
          *

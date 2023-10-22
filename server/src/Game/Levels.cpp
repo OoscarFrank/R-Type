@@ -53,6 +53,11 @@ void Levels::update()
     }
 }
 
+size_t Levels::lvl() const
+{
+    return _currentLvl;
+}
+
 void Levels::_increaseLvl()
 {
     std::cout << "Lvl " << ++_currentLvl << std::endl;
@@ -88,7 +93,7 @@ void Levels::_updateLvl3()
     chronoTime now = chronoNow;
 
     if (chronoDiff(chronoMs, now, _spawnLittleMonster) >= 1000) {
-        _room.addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
+        _room.addMonster(IEntity::Type::FOLLOWER_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
         _spawnLittleMonster = now;
     }
     if (chronoDiff(chronoSec, now, _lvlStart) >= 10)

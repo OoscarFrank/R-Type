@@ -41,10 +41,10 @@ struct Commands {
 /**
  * @brief Commands
  * 1 serv - progression de l'ecran
- * 3 serv - position x et y du player (id, type, x, y)
+ * 3 serv - position x et y du player (id, x, y)
  * 4 serv - position x et y d'un missile (id,type, x, y)
  * 6 serv - score du joueur
- * 7 serv - position x et y d'un ennemi (id, x, y)
+ * 7 serv - position x et y d'un ennemi (id, type, x, y)
  * 10 serv - join d'une room (room id, player id)
  * 11 serv - temps restant avant le debut de la partie (temps, booleen pour savoir si la partie a commence)
  * 13 serv - player joined game (player id)
@@ -58,8 +58,8 @@ struct Commands {
  */
 #define OUT_COMMANDS { \
     {1, {UINT}, 4}, \
-    {3, {UINT, UCHAR, SHORT, SHORT}, 8}, \
-    {4, {UINT, SHORT, SHORT}, 9}, \
+    {3, {UINT, SHORT, SHORT}, 8}, \
+    {4, {UINT, UCHAR, SHORT, SHORT}, 9}, \
     {6, {INT}, 4}, \
     {7, {UINT, UCHAR, SHORT, SHORT}, 9}, \
     {10, {UINT, UINT}, 8}, \

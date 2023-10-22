@@ -70,26 +70,25 @@ class IEntity {
          * @param life The new life to get
          */
         virtual void setLife(int life) = 0;
-        virtual void removeHP() = 0;
         /**
          * @brief Kill the entity
          *
          */
-        virtual void killEntity() = 0;
+        virtual void kill() = 0;
         /**
          * @brief Check if the entity exist (alive)
          *
          * @return true
          * @return false
          */
-        virtual bool getExist() const = 0;
+        virtual bool exists() const = 0;
         /**
          * @brief Check if the entity is deletable (dead)
          *
          * @return true
          * @return false
          */
-        virtual bool getDeletable() const = 0;
+        virtual bool isDeletable() const = 0;
 
         enum Type {
             MISSILE,
@@ -175,26 +174,25 @@ class AEntity: public IEntity {
          * @param life The new life to get
          */
         virtual void setLife(int life);
-        virtual void removeHP() = 0;
         /**
          * @brief Kill the entity
          *
          */
-        virtual void killEntity();
+        virtual void kill();
         /**
          * @brief Check if the entity exist (alive)
          *
          * @return true
          * @return false
          */
-        virtual bool getExist() const;
+        virtual bool exists() const;
         /**
          * @brief Check if the entity is deletable (dead)
          *
          * @return true
          * @return false
          */
-        virtual bool getDeletable() const;
+        virtual bool isDeletable() const;
 
     protected:
         /**

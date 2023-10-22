@@ -43,6 +43,7 @@ namespace game {
             sf::RenderWindow _window;
             sf::Vector2f _screenSize;
             sf::Vector2f _realScreenSize;
+            sf::Vector2u _realScreenSizeU;
 
 
             sf::Vector2u topLeftOffeset;
@@ -69,6 +70,7 @@ namespace game {
             unsigned char _started;
 
             int eventMemory;
+            void refreshScreenSize();
 
             void handleTimeoutMatchmaking(Network::Packet &packet);
             void handlePlayerScore(Network::Packet &packet);

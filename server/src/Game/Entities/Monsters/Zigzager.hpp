@@ -2,9 +2,9 @@
 #define ZIGZAGERMONSTER_HPP
 
 #include "../Entity.hpp"
-#include "../ArmedEntity.hpp"
+#include "Monster.hpp"
 
-class ZigzagerMonster: public ArmedEntity {
+class ZigzagerMonster: public Monster {
     public:
         /**
          * @brief Construct a new Little Monster object
@@ -23,14 +23,8 @@ class ZigzagerMonster: public ArmedEntity {
          * @param pos The position of the monster (x, y)
          */
         ZigzagerMonster(Room &room, u_int id, const std::pair<short, short> &pos);
-        virtual ~ZigzagerMonster();
+        virtual ~ZigzagerMonster() = default;
 
-        /**
-         * @brief Set the monster's life
-         *
-         * @param life The new life to get
-         */
-        virtual void setLife(int life);
         /**
          * @brief Refresh the entity
          * This method does the following:
@@ -40,17 +34,10 @@ class ZigzagerMonster: public ArmedEntity {
          *
          */
         virtual void refresh();
-        /**
-         * @brief Check if the entity collide with another entity
-         *
-         * @param other The other entity to check collision with
-         * @return true If the entity collide with the other entity
-         * @return false If the entity doesn't collide with the other entity
-         */
-        virtual bool collide(const IEntity &other) override;
-        virtual void removeHP();
+        virtual int getDamage();
 
         private:
+            std::chrono::system_clock::time_point _lastPos;
             short _switch;
 };
 

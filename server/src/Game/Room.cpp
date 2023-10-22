@@ -35,6 +35,11 @@ Room::State Room::getState() const
     return _state;
 }
 
+size_t Room::getCurrentLevel() const
+{
+    return _levels.lvl();
+}
+
 u_int Room::getId() const
 {
     return _id;
@@ -176,14 +181,13 @@ void Room::update()
         }
         for (auto i = _monsters.begin(); i != _monsters.end();) {
             (**i).refresh();
-            if ((**i).getDeletable()) {
+            if ((**i).isDeletable()) {
                 _monsters.erase(i);
                 continue;
             }
-            if ((**i).getExist() && (**i).isOutOfScreen()) {
-                (**i).killEntity();
-                sendToAll(StreamFactory::monsterDied((**i).id()));
-            } else
+            if ((**i).exists() && (**i).isOutOfScreen())
+                (**i).kill();
+            else
                 i++;
         }
 
@@ -252,15 +256,14 @@ void Room::addMonster(IEntity::Type type, int x, int y)
 
 void Room::checkCollisionPlayer()
 {
-    for (auto i = _players.begin(); i != _players.end(); i++) {
-        for (auto j = _monsters.begin(); j != _monsters.end(); j++) {
-            if ((**j).collide(**i)) {
-                (**i).removeHP();
-                if ((**i).life() <= 0) {
-                    std::cout << "Player " << (**i).id() << " died in room " << _id << std::endl;
-                    (**i).killEntity();
-                    sendToAll(StreamFactory::playerDied((**i).id()));
-                }
+    for (auto p = _players.begin(); p != _players.end(); p++) {
+        if (!(**p).exists())
+            continue;
+        for (auto m = _monsters.begin(); m != _monsters.end(); m++) {
+            if (!(**m).exists())
+                continue;
+            if ((**m).collide(**p)) {
+                (**p).setLife((**p).life() - (**m).getDamage());
                 return;
             }
         }
@@ -269,20 +272,15 @@ void Room::checkCollisionPlayer()
 
 void Room::checkCollisionMonsters()
 {
-    for (auto i = _players.begin(); i != _players.end(); i++) {
-        if (!(**i).getExist())
+    for (auto p = _players.begin(); p != _players.end(); p++) {
+        if (!(**p).exists())
             continue;
-        for (auto j = _monsters.begin(); j != _monsters.end(); j++) {
-            if (!(**j).getExist())
+        for (auto m = _monsters.begin(); m != _monsters.end(); m++) {
+            if (!(**m).exists())
                 continue;
-            if ((**i).collide(**j)) {
-                (**j).removeHP();
-                if ((**j).life() <= 0) {
-                    (**j).killEntity();
-                    sendToAll(StreamFactory::monsterDied((**j).id()));
-                    return;
-                }
-                // _monsters.erase(j);
+            if ((**p).collide(**m)) {
+                (**m).setLife((**m).life() - (**p).getDamage());
+                return;
             }
         }
     }
@@ -293,16 +291,15 @@ std::pair<short, short> Room::getNearestPlayerPos(const IEntity &entity)
     std::pair<short, short> nearest = {0, 0};
     double distance = std::numeric_limits<double>::max();
 
-    for (auto i = _players.begin(); i != _players.end(); i++) {
-        if (!(**i).getExist())
+    for (auto p = _players.begin(); p != _players.end(); p++) {
+        if (!(**p).exists())
             continue;
-
-        double deltaX = (**i).position().first - entity.position().first;
-        double deltaY = (**i).position().second - entity.position().second;
+        double deltaX = (**p).position().first - entity.position().first;
+        double deltaY = (**p).position().second - entity.position().second;
         double tmp = std::sqrt(deltaX * deltaX + deltaY * deltaY);
         if (tmp < distance) {
             distance = tmp;
-            nearest = (**i).position();
+            nearest = (**p).position();
         }
     }
     return nearest;

@@ -3,14 +3,12 @@
 
 ArmedEntity::ArmedEntity(Room &room, u_int id, short x, short y, short w, short h):
     AEntity(room, id, x, y, w, h),
-    _lastFire(std::chrono::system_clock::now()),
-    _lastPos(std::chrono::system_clock::now())
+    _lastFire(std::chrono::system_clock::now())
 {}
 
 ArmedEntity::ArmedEntity(Room &room, u_int id, const std::pair<short, short> &pos, const std::pair<short, short> &size):
     AEntity(room, id, pos, size),
-    _lastFire(std::chrono::system_clock::now()),
-    _lastPos(std::chrono::system_clock::now())
+    _lastFire(std::chrono::system_clock::now())
 {}
 
 void ArmedEntity::refreshMissiles()

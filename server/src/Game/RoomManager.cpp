@@ -14,9 +14,10 @@ void RoomManager::_clearRooms()
     std::unique_lock<std::mutex> lock(_roomsMutex);
 
     for (auto i = this->_rooms.begin(); i != this->_rooms.end();) {
-        if ((**i).getState() == Room::STOPPED)
+        if ((**i).getState() == Room::STOPPED) {
+            std::cout << "Room " << (**i).getId() << " closed" << std::endl;
             i = _rooms.erase(i);
-        else
+        } else
             i++;
     }
 }
@@ -25,6 +26,7 @@ void RoomManager:: createRoom(Reader::Packet &packet, bool privateRoom)
 {
     _clearRooms();
     std::unique_ptr<Room> newRoom = std::make_unique<Room>(_roomIds++, packet.getClient(), privateRoom);
+    std::cout << "New room: " << newRoom->getId() << std::endl;
     _roomsMutex.lock();
     _rooms.push_back(std::move(newRoom));
     _roomsMutex.unlock();

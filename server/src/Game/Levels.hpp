@@ -22,6 +22,7 @@ public:
 
     void start();
     void update();
+    size_t lvl() const;
 
 private:
     void _increaseLvl();
