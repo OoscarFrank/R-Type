@@ -35,7 +35,6 @@ class FollowerMonster: public Monster {
          */
         virtual void refresh();
         virtual int getDamage();
-        virtual void removeHP();
 };
 
 #endif

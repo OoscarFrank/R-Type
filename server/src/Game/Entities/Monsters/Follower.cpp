@@ -55,8 +55,3 @@ int FollowerMonster::getDamage()
 {
     return 10;
 }
-
-void FollowerMonster::removeHP()
-{
-    setLife(_life - 100);
-}
