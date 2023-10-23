@@ -28,5 +28,6 @@ namespace game {
             entity_t _menuEntity;
             entity_t _playerEntity;
             entity_t _playerLife;
+            entity_t _scoreCoche;
     };
 }

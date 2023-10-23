@@ -29,7 +29,8 @@ namespace game {
                 QuitButton,
                 LooserScreen,
                 BlackPixel,
-                PlayerLife
+                PlayerLife,
+                ScoreCoche
             };
         /**
          * @brief Load a texture from a path

@@ -30,6 +30,7 @@ Game::Game(std::string ip, int port) :
     this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
     this->_manager.loadTexture(client::getAssetPath("entity/player/player_move4.png"), Loader::toLoad::Player_move4);
     this->_manager.loadTexture(client::getAssetPath("entity/player/PlayerLife.png"), Loader::toLoad::PlayerLife);
+    this->_manager.loadTexture(client::getAssetPath("entity/buttons/ScoreCoche.png"), Loader::toLoad::ScoreCoche);
     this->_playerLife = 0;
 
     if (mode.isValid()) {
@@ -280,6 +281,8 @@ void Game::handleEnnemiPosition(Network::Packet &packet)
     unsigned short y = packet.getData().getDataUShort();
     y *= this->_resMult;
 
+    std::cout << "id -> " << id << " | " << "type -> " << type << std::endl;
+
     entity_t res = getEnnemiEntityFromId(id);
     if (res == 0) {
         entity_t newEntity = this->_factory.createEnnemi(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster1)); // TO REPLACE
@@ -323,6 +326,8 @@ void Game::handleRoomJoin(Network::Packet &packet)
     this->_playerEntity = newEntity;
     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
 
+    this->_scoreCoche = this->_factory.createScoreCoche((((this->_window.getSize().x / 2) - ((660.0 * this->_resMult) / 2))), 0.0f, this->_manager.getTexture(Loader::Loader::ScoreCoche), this->_resMult);
+
     // ECS::systems::ScaleSystem().update(this->ecs);
 }
 
@@ -337,8 +342,7 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
                 comp.setScrollSpeed(comp.getScrollSpeed() * 4.0f);
             });
         }
-        this->_playerLife = this->_factory.createPlayerLife(10.0f, this->_window.getSize().y - (100.0f * this->_resMult), this->_manager.getTexture(Loader::Loader::PlayerLife));
-        this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_playerLife, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
+        this->_playerLife = this->_factory.createPlayerLife(10.0f, this->_window.getSize().y - (100.0f * this->_resMult), this->_manager.getTexture(Loader::Loader::PlayerLife), this->_resMult);
     }
 }
 
