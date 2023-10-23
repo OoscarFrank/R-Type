@@ -290,17 +290,24 @@ void Game::handleEnnemiPosition(Network::Packet &packet)
 
     entity_t res = getEnnemiEntityFromId(id);
     if (res == 0) {
-        if ((int)type == 2) {
-            entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster2), this->_resMult); // TO REPLACE
-            this->_ennemies.push_back(std::make_pair(id, newEntity));
-        }
-        if ((int)type == 3) {
-            entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster3), this->_resMult); // TO REPLACE
-            this->_ennemies.push_back(std::make_pair(id, newEntity));
-        }
-        if ((int)type == 4) {
-            entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster4), this->_resMult); // TO REPLACE
-            this->_ennemies.push_back(std::make_pair(id, newEntity));
+        switch ((int)type) {
+            case 2: {
+                entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster2), this->_resMult);
+                this->_ennemies.push_back(std::make_pair(id, newEntity));
+            }
+                break;
+            case 3: {
+                entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster3), this->_resMult);
+                this->_ennemies.push_back(std::make_pair(id, newEntity));
+            }
+                break;
+            case 4: {
+                entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster4), this->_resMult);
+                this->_ennemies.push_back(std::make_pair(id, newEntity));
+            }
+                break;
+            default:
+                break;
         }
     } else {
         this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(res, x, y));
