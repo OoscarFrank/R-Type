@@ -48,7 +48,7 @@ struct Commands {
  * 6 serv - score du joueur
  * 7 serv - position x et y d'un ennemi (id, type, x, y)
  * 10 serv - join d'une room (room id, player id)
- * 11 serv - temps restant avant le debut de la partie (temps, booleen pour savoir si la partie a commence)
+ * 11 serv - temps restant avant le debut de la partie (temps, booleen pour savoir si la partie a commence, id de la musique)
  * 13 serv - player joined game (player id)
  * 14 serv - player left game (player id)
  * 15 serv - missile destroyed (id, type, x, y)
@@ -65,7 +65,7 @@ struct Commands {
     {6, {INT}, 4, false}, \
     {7, {UINT, UCHAR, SHORT, SHORT}, 9, false}, \
     {10, {UINT, UINT}, 8, true}, \
-    {11, {INT, UCHAR}, 5, true}, \
+    {11, {INT, UCHAR, UCHAR}, 6, true}, \
     {13, {UINT}, 4, true}, \
     {14, {UINT}, 4, true}, \
     {15, {UINT, UCHAR, SHORT, SHORT}, 9, true}, \

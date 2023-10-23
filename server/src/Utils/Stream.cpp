@@ -333,12 +333,13 @@ Stream StreamFactory::joinRoom(u_int roomId, u_int playerId)
     return out;
 }
 
-Stream StreamFactory::waitGame(int time, bool start)
+Stream StreamFactory::waitGame(int time, bool start, unsigned char song)
 {
     Stream out;
     out.setDataUChar(11);
     out.setDataInt(time);
     out.setDataUChar(start);
+    out.setDataUChar(song);
     return out;
 }
 

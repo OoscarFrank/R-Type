@@ -226,7 +226,9 @@ void Room::startGame()
     _lastMapRefresh = NOW;
     _lastPlayerUpdate = NOW;
     _lastMissileUpdate = NOW;
-    sendToAll(StreamFactory::waitGame(0, true));
+    
+
+    sendToAll(StreamFactory::waitGame(0, true, _levels.getLevel().getSong()));
     _levels.start();
 
     for (auto i = _players.begin(); i != _players.end(); i++)

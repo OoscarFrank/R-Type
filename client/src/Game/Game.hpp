@@ -12,6 +12,10 @@
 #define SERVER_HEIGHT       2160
 #define SERVER_RATIO      16.0f / 9.0f
 
+enum Songs {
+    SOUND_OF_SPACE = 1
+};
+
 namespace game {
     class Game: public EntityManager {
         public:
@@ -45,6 +49,7 @@ namespace game {
             sf::Vector2f _realScreenSize;
             sf::Vector2u _realScreenSizeU;
 
+            unsigned char currentSong;
 
             sf::Vector2u topLeftOffeset;
 

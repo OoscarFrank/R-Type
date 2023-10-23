@@ -6,6 +6,8 @@ set(ASIO_DIR ../Asio/asio/include)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 
+
+
 if(UNIX)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Release)
 endif()
@@ -38,6 +40,8 @@ add_executable(
   ${dir_reader}
   ${dir_utils}
 )
+
+file(COPY ${CMAKE_SOURCE_DIR}/stages/ DESTINATION ${CMAKE_BINARY_DIR}/Release/stages/)
 
 if(WIN32)
   target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0A00 WIN32_LEAN_AND_MEAN)

@@ -61,7 +61,7 @@ public:
     };
 };
 
-std::ostream &operator<<(std::ostream &os,const Stream &steam);
+std::ostream &operator<<(std::ostream &os,const Stream &stream);
 
 namespace StreamFactory {
     Stream screenProgress(u_int progress);
@@ -70,7 +70,7 @@ namespace StreamFactory {
     Stream score(int score);
     Stream monsterPos(u_int id, u_char type, short x, short y);
     Stream joinRoom(u_int roomId, u_int playerId);
-    Stream waitGame(int time, bool start);
+    Stream waitGame(int time, bool start, unsigned char song = 0);
     Stream playerJoinedGame(u_int playerId);
     Stream playerLeftGame(u_int playerId);
     Stream missileDestroyed(u_int id, u_char type, short x, short y);

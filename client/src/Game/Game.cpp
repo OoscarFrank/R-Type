@@ -352,8 +352,10 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
 {
     this->_startTimeLeft = packet.getData().getDataUInt();
     this->_started = packet.getData().getDataUChar();
-
+    this->currentSong = packet.getData().getDataUChar();
+    
     if (this->_started == true) {
+        std::cout << (int)this->currentSong << std::endl;
         for (auto &parallax : this->_parallax ) {
             this->ecs.modify_component<ECS::components::ParallaxComponent>(parallax, [](ECS::components::ParallaxComponent &comp) {
                 comp.setScrollSpeed(comp.getScrollSpeed() * 4.0f);
