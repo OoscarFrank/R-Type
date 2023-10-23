@@ -55,11 +55,8 @@ namespace game {
          * @return const std::shared_ptr<sf::Texture>&
          */
             const std::shared_ptr<sf::Texture> &getTexture(toLoad type) const;
-            void createMusic(const std::string path);
-            void stopMusic();
 
         private:
             std::unordered_map<Loader::toLoad, std::shared_ptr<sf::Texture>> _textures;
-            sf::Music _music;
     };
 }

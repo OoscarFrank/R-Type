@@ -66,7 +66,12 @@ Game::Game(std::string ip, int port) :
     this->eventMemory = 0;
     this->_gameOver = false;
     this->_menuEntity = -1;
-    this->_manager.createMusic(client::getAssetPath("songs/song.ogg"));
+
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::MAIN_MUSIC, this->_factory.createMusic(client::getAssetPath("songs/song.ogg"), 100, true));
+
+    this->handleMusic(this->ecs, EntityManager::MUSIC_TYPE::MAIN_MUSIC, [](ECS::components::MusicComponent &music) {
+        music.playMusic();
+    });
 
     this->_resMult = static_cast<float>(this->_screenSize.x)/ SCREEN_WIDTH;
 
@@ -87,7 +92,6 @@ Game::Game(std::string ip, int port) :
 
 Game::~Game()
 {
-    this->_manager.stopMusic();
 }
 
 void Game::refreshScreenSize()
@@ -159,11 +163,14 @@ void Game::update()
             case 19:
                 this->handlePlayerLife(packet);
                 break;
+            case 255:
+                _net.resend(packet.getData().getDataUShort());
+                break;
             default:
                 break;
         }
     }
-    if (std::chrono::system_clock::now() - this->_lastPing > std::chrono::seconds(2)) {
+    if (std::chrono::system_clock::now() - this->_lastPing > std::chrono::seconds(1)) {
         this->_lastPing = std::chrono::system_clock::now();
         this->_net.setInst(12);
         this->_net.send();
