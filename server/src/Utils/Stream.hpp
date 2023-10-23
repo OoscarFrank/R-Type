@@ -79,6 +79,7 @@ namespace StreamFactory {
     Stream playerDied(u_int id);
     Stream playerLife(int life);
     Stream monsterLife(u_int id, int life);
+    Stream askResend(u_short nbr);
 }
 
 #endif

@@ -163,11 +163,14 @@ void Game::update()
             case 19:
                 this->handlePlayerLife(packet);
                 break;
+            case 255:
+                _net.resend(packet.getData().getDataUShort());
+                break;
             default:
                 break;
         }
     }
-    if (std::chrono::system_clock::now() - this->_lastPing > std::chrono::seconds(2)) {
+    if (std::chrono::system_clock::now() - this->_lastPing > std::chrono::seconds(1)) {
         this->_lastPing = std::chrono::system_clock::now();
         this->_net.setInst(12);
         this->_net.send();

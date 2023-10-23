@@ -56,6 +56,10 @@ Stream Stream::operator = (const Stream &stream)
     return *this;
 }
 
+unsigned char Stream::operator[](size_t index) const
+{
+    return this->_buffer[index];
+}
 
 unsigned char Stream::operator[](size_t index)
 {

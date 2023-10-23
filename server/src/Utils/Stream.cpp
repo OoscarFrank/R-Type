@@ -409,3 +409,11 @@ Stream StreamFactory::monsterLife(u_int id, int life)
     out.setDataInt(life);
     return out;
 }
+
+Stream StreamFactory::askResend(u_short nbr)
+{
+    Stream out;
+    out.setDataUChar(255);
+    out.setDataUShort(nbr);
+    return out;
+}

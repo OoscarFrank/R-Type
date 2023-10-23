@@ -20,4 +20,6 @@ class Router {
         void _createRoom(Reader::Packet &packet);
         void _searchRoom(Reader::Packet &packet);
         void _ping(Reader::Packet &packet);
+
+        void _cmdNotRecieved(Reader::Packet &packet);
 };

@@ -22,7 +22,7 @@
 // Progress steps
 #define MAP_PROGRESS_STEP                       7
 
-#define PLAYER_PROGRESS_STEP                    15
+#define PLAYER_PROGRESS_STEP                    20
 #define PLAYER_MISSILE_PROGRESS_STEP            50
 
 #define LITTLE_MONSTER_PROGRESS_STEP            10

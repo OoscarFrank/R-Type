@@ -8,11 +8,13 @@ Router::Router(RoomManager &rm):
     _functions[8] = &Router::_createRoom;
     _functions[9] = &Router::_searchRoom;
     _functions[12] = &Router::_ping;
+    _functions[255] = &Router::_cmdNotRecieved;
 }
 
 void Router::route(Reader::Packet packet)
 {
     try {
+        packet.getClient()->ping();
         (this->*_functions.at(packet.getInstruction()))(packet);
     } catch (const std::exception &e) {
         std::cerr << "[ROUTER ERROR] " << e.what() << std::endl;
@@ -43,6 +45,9 @@ void Router::_searchRoom(Reader::Packet &packet)
 }
 
 void Router::_ping(Reader::Packet &packet)
+{}
+
+void Router::_cmdNotRecieved(Reader::Packet &packet)
 {
-    packet.getClient()->ping();
+    packet.getClient()->resend(packet.getData().getDataUShort());
 }
