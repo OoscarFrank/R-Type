@@ -15,6 +15,8 @@ Factory::Factory(ECS::Registry &registry): _registry(registry)
     this->_registry.register_component<ECS::components::ScaleComponent>();
     this->_registry.register_component<ECS::components::ButtonComponent>();
     this->_registry.register_component<ECS::components::AnimationComponent>();
+    this->_registry.register_component<ECS::components::ScoreComponent>();
+    this->_registry.register_component<ECS::components::MusicComponent>();
 }
 
 Factory::~Factory()
@@ -83,11 +85,51 @@ entity_t Factory::createEnnemi(float x, float y, const std::shared_ptr<sf::Textu
     return newEntity;
 }
 
+entity_t Factory::createEnnemi4frames(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale)
+{
+    entity_t newEntity = _registry.spawn_entity(60);
+    _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
+    _registry.emplace_component<ECS::components::MovableComponent>(newEntity, ECS::components::MovableComponent{});
+    _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{0, 0, (int)texture->getSize().x, (int)texture->getSize().y, 4, 100.0f});
+    _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
+    _registry.emplace_component<ECS::components::AnimationComponent>(newEntity, ECS::components::AnimationComponent{});
+    _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{static_cast<float>(scale), static_cast<float>(scale)});
+    return newEntity;
+}
+
 entity_t Factory::createBlackband(sf::IntRect rect, const std::shared_ptr<sf::Texture> &texture)
 {
     entity_t newEntity = _registry.spawn_entity();
     _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{static_cast<float>(rect.left), static_cast<float>(rect.top)});
     _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
     _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{static_cast<float>(rect.width), static_cast<float>(rect.height)});
+    return newEntity;
+}
+
+entity_t Factory::createPlayerLife(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale)
+{
+    entity_t newEntity = _registry.spawn_entity(90);
+    _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
+    _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{(int)(texture->getSize().x - (texture->getSize().x / 11)), 0, (int)texture->getSize().x, (int)texture->getSize().y, 11, 200.0f});
+    _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
+    _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{static_cast<float>(scale), static_cast<float>(scale)});
+    return newEntity;
+}
+
+entity_t Factory::createScoreCoche(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale)
+{
+    entity_t newEntity = _registry.spawn_entity(90);
+    _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
+    _registry.emplace_component<ECS::components::ScoreComponent>(newEntity, ECS::components::ScoreComponent{});
+    _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{0, 0, (int)texture->getSize().x, (int)texture->getSize().y, 1, 0.0f});
+    _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{static_cast<float>(scale), static_cast<float>(scale)});
+    _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
+    return newEntity;
+}
+
+entity_t Factory::createMusic(const std::string &musicPath, float volume, bool loop)
+{
+    entity_t newEntity = _registry.spawn_entity();
+    _registry.emplace_component<ECS::components::MusicComponent>(newEntity, ECS::components::MusicComponent{musicPath, volume, loop});
     return newEntity;
 }

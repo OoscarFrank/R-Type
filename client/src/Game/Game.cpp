@@ -25,10 +25,16 @@ Game::Game(std::string ip, int port) :
     this->_manager.loadTexture(client::getAssetPath("screens/LooserScreen.png"), Loader::toLoad::LooserScreen);
     this->_manager.loadTexture(client::getAssetPath("entity/missile/missile.png"), Loader::toLoad::Missile);
     this->_manager.loadTexture(client::getAssetPath("entity/monsters/monster1.png"), Loader::toLoad::Monster1);
+    this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob1.png"), Loader::toLoad::Monster2);
+    this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob2.png"), Loader::toLoad::Monster3);
+    this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob3.png"), Loader::toLoad::Monster4);
     this->_manager.loadTexture(client::getAssetPath("entity/player/player_move1.png"), Loader::toLoad::Player_move1);
     this->_manager.loadTexture(client::getAssetPath("entity/player/player_move2.png"), Loader::toLoad::Player_move2);
     this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
     this->_manager.loadTexture(client::getAssetPath("entity/player/player_move4.png"), Loader::toLoad::Player_move4);
+    this->_manager.loadTexture(client::getAssetPath("entity/player/PlayerLife.png"), Loader::toLoad::PlayerLife);
+    this->_manager.loadTexture(client::getAssetPath("entity/buttons/ScoreCoche.png"), Loader::toLoad::ScoreCoche);
+    this->_playerLife = 0;
 
     if (mode.isValid()) {
         this->_window.create(mode, "R-TYPE", sf::Style::Fullscreen);
@@ -60,7 +66,12 @@ Game::Game(std::string ip, int port) :
     this->eventMemory = 0;
     this->_gameOver = false;
     this->_menuEntity = -1;
-    this->_manager.createMusic(client::getAssetPath("songs/song.ogg"));
+
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::MAIN_MUSIC, this->_factory.createMusic(client::getAssetPath("songs/song.ogg"), 100, true));
+
+    this->handleMusic(this->ecs, EntityManager::MUSIC_TYPE::MAIN_MUSIC, [](ECS::components::MusicComponent &music) {
+        music.playMusic();
+    });
 
     this->_resMult = static_cast<float>(this->_screenSize.x)/ SCREEN_WIDTH;
 
@@ -81,7 +92,6 @@ Game::Game(std::string ip, int port) :
 
 Game::~Game()
 {
-    this->_manager.stopMusic();
 }
 
 void Game::refreshScreenSize()
@@ -149,6 +159,9 @@ void Game::update()
                 break;
             case 18:
                 this->handlePlayerDeath(packet);
+                break;
+            case 19:
+                this->handlePlayerLife(packet);
                 break;
             case 255:
                 _net.resend(packet.getData().getDataUShort());
@@ -280,9 +293,25 @@ void Game::handleEnnemiPosition(Network::Packet &packet)
 
     entity_t res = getEnnemiEntityFromId(id);
     if (res == 0) {
-        entity_t newEntity = this->_factory.createEnnemi(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster1)); // TO REPLACE
-        this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
-        this->_ennemies.push_back(std::make_pair(id, newEntity));
+        switch ((int)type) {
+            case 2: {
+                entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster2), this->_resMult);
+                this->_ennemies.push_back(std::make_pair(id, newEntity));
+            }
+                break;
+            case 3: {
+                entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster3), this->_resMult);
+                this->_ennemies.push_back(std::make_pair(id, newEntity));
+            }
+                break;
+            case 4: {
+                entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster4), this->_resMult);
+                this->_ennemies.push_back(std::make_pair(id, newEntity));
+            }
+                break;
+            default:
+                break;
+        }
     } else {
         this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(res, x, y));
     }
@@ -321,6 +350,8 @@ void Game::handleRoomJoin(Network::Packet &packet)
     this->_playerEntity = newEntity;
     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
 
+    this->_scoreCoche = this->_factory.createScoreCoche((((this->_window.getSize().x / 2) - ((660.0 * this->_resMult) / 2))), 0.0f, this->_manager.getTexture(Loader::Loader::ScoreCoche), this->_resMult);
+
     // ECS::systems::ScaleSystem().update(this->ecs);
 }
 
@@ -335,6 +366,7 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
                 comp.setScrollSpeed(comp.getScrollSpeed() * 4.0f);
             });
         }
+        this->_playerLife = this->_factory.createPlayerLife(10.0f, this->_window.getSize().y - (100.0f * this->_resMult), this->_manager.getTexture(Loader::Loader::PlayerLife), this->_resMult);
     }
 }
 
@@ -456,4 +488,14 @@ void Game::handlePlayerDeath(Network::Packet &packet)
             return pair.first == id;
         }), this->_players.end());
     }
+}
+
+void Game::handlePlayerLife(Network::Packet &packet)
+{
+    int life = packet.getData().getDataUInt();
+    if (this->_playerLife == 0)
+        return;
+    this->ecs.modify_component<ECS::components::TextureRectComponent>(this->_playerLife, [life](ECS::components::TextureRectComponent &comp) {
+        comp.setFrameOnTexture(life / 10);
+    });
 }

@@ -10,3 +10,5 @@
 #include "ScaleComponent.hpp"
 #include "ButtonComponent.hpp"
 #include "AnimationComponent.hpp"
+#include "ScoreComponent.hpp"
+#include "MusicComponent.hpp"

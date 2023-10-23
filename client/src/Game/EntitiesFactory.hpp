@@ -56,8 +56,13 @@ namespace game {
          * @return entity_t
          */
             entity_t createEnnemi(float x, float y, const std::shared_ptr<sf::Texture> &texture);
+            entity_t createEnnemi4frames(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale);
             entity_t createBlackband(sf::IntRect rect, const std::shared_ptr<sf::Texture> &texture);
-            
+
+            entity_t createPlayerLife(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale);
+            entity_t createScoreCoche(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale);
+
+            entity_t createMusic(const std::string &musicPath, float volume = 100.0f, bool loop = false);
         private:
             ECS::Registry &_registry;
     };

@@ -24,11 +24,16 @@ namespace game {
                 Player_move1, Player_move2, Player_move3, Player_move4,
                 Missile,
                 Monster1,
+                Monster2,
+                Monster3,
+                Monster4,
                 CreateRoomButton,
                 JoinRoomButton,
                 QuitButton,
                 LooserScreen,
-                BlackPixel
+                BlackPixel,
+                PlayerLife,
+                ScoreCoche
             };
         /**
          * @brief Load a texture from a path
@@ -50,11 +55,8 @@ namespace game {
          * @return const std::shared_ptr<sf::Texture>&
          */
             const std::shared_ptr<sf::Texture> &getTexture(toLoad type) const;
-            void createMusic(const std::string path);
-            void stopMusic();
 
         private:
             std::unordered_map<Loader::toLoad, std::shared_ptr<sf::Texture>> _textures;
-            sf::Music _music;
     };
 }

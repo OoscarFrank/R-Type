@@ -86,5 +86,6 @@ namespace game {
             void handlePlayerDisconnected(Network::Packet &packet);
             void handleRoomJoin(Network::Packet &packet);
             void handlePlayerJoinGame(Network::Packet &packet);
+            void handlePlayerLife(Network::Packet &packet);
     };
 }

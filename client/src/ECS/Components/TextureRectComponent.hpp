@@ -35,6 +35,11 @@ namespace ECS {
          * @return const sf::IntRect& 
          */
             const sf::IntRect &getTextureRect() const { return _textureRect; }
+            void setFrameOnTexture(int frame) {
+                if (frame > _numFrames)
+                    frame = 0;
+                _textureRect.left = frame * _frameWidth;
+            }
 
             sf::IntRect _textureRect;
             int _frameWidth;
