@@ -13,7 +13,7 @@ namespace game {
             ~EntityManager();
 
         enum MUSIC_TYPE {
-            MAIN_MUSIC,
+            SOUND_OF_SPACE = 1,
         };
 
         protected:

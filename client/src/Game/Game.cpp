@@ -67,11 +67,9 @@ Game::Game(std::string ip, int port) :
     this->_gameOver = false;
     this->_menuEntity = -1;
 
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::MAIN_MUSIC, this->_factory.createMusic(client::getAssetPath("songs/song.ogg"), 100, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::SOUND_OF_SPACE, this->_factory.createMusic(client::getAssetPath("songs/song.ogg"), 100, true));
 
-    this->handleMusic(this->ecs, EntityManager::MUSIC_TYPE::MAIN_MUSIC, [](ECS::components::MusicComponent &music) {
-        music.playMusic();
-    });
+    
 
     this->_resMult = static_cast<float>(this->_screenSize.x)/ SCREEN_WIDTH;
 
@@ -362,7 +360,9 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
     this->currentSong = packet.getData().getDataUChar();
     
     if (this->_started == true) {
-        std::cout << (int)this->currentSong << std::endl;
+        this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [](ECS::components::MusicComponent &music) {
+            music.playMusic();
+        });
         for (auto &parallax : this->_parallax ) {
             this->ecs.modify_component<ECS::components::ParallaxComponent>(parallax, [](ECS::components::ParallaxComponent &comp) {
                 comp.setScrollSpeed(comp.getScrollSpeed() * 4.0f);
