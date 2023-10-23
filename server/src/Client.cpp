@@ -40,10 +40,7 @@ std::pair<size_t, Stream> Client::getNextInst()
                 int count = 0;
                 for (_lastCmdNbrRecieved++; test != _lastCmdNbrRecieved; _lastCmdNbrRecieved++) {
                     std::cout << "Cmd not recieved: " << _lastCmdNbrRecieved << std::endl;
-                    Stream out;
-                    out.setDataUChar(255);
-                    out.setDataUShort(_lastCmdNbrRecieved);
-                    send(out);
+                    send(StreamFactory::askResend(_lastCmdNbrRecieved));
                     ++count;
                     if (count > 50) {
                         std::cout << "Too many commands not recieved " << test << " " << _lastCmdNbrRecieved << std::endl;
