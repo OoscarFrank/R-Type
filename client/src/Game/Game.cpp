@@ -16,7 +16,7 @@ Game::Game(std::string ip, int port) :
     _lastPing(std::chrono::system_clock::now())
 {
     sf::VideoMode mode = sf::VideoMode::getDesktopMode();
-    this->_manager.loadTexture(client::getAssetPath("entity/BlackPixel.png"), Loader::toLoad::BlackPixel);
+    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/BlackPixel.png"), Loader::toLoad::BlackPixel);
     this->_manager.loadTexture(client::getAssetPath("parallax/background.png"), Loader::toLoad::ParallaxFirstbkg);
     this->_manager.loadTexture(client::getAssetPath("parallax/background2.png"), Loader::toLoad::ParallaxSecondbkg);
     this->_manager.loadTexture(client::getAssetPath("entity/buttons/CreateRoomButton.png"), Loader::toLoad::CreateRoomButton);
@@ -34,6 +34,13 @@ Game::Game(std::string ip, int port) :
     this->_manager.loadTexture(client::getAssetPath("entity/player/player_move4.png"), Loader::toLoad::Player_move4);
     this->_manager.loadTexture(client::getAssetPath("entity/player/PlayerLife.png"), Loader::toLoad::PlayerLife);
     this->_manager.loadTexture(client::getAssetPath("entity/buttons/ScoreCoche.png"), Loader::toLoad::ScoreCoche);
+    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/RedPixel.png"), Loader::toLoad::RedPixel);
+    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/GreenPixel.png"), Loader::toLoad::GreenPixel);
+    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/BluePixel.png"), Loader::toLoad::BluePixel);
+    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/CyanPixel.png"), Loader::toLoad::CyanPixel);
+    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/PurplePixel.png"), Loader::toLoad::PurplePixel);
+    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/YellowPixel.png"), Loader::toLoad::YellowPixel);
+    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/WhitePixel.png"), Loader::toLoad::WhitePixel);
     this->_playerLife = 0;
 
     if (mode.isValid()) {
@@ -67,7 +74,10 @@ Game::Game(std::string ip, int port) :
     this->_gameOver = false;
     this->_menuEntity = -1;
 
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::SOUND_OF_SPACE, this->_factory.createMusic(client::getAssetPath("songs/song.ogg"), 100, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::SOUND_OF_SPACE, this->_factory.createMusic(client::getAssetPath("songs/SOUND_OF_SPACE.ogg"), 100, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::TURN_ON_THE_LIGHTS, this->_factory.createMusic(client::getAssetPath("songs/TURN_ON_THE_LIGHTS.ogg"), 100, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::PUSH_UP, this->_factory.createMusic(client::getAssetPath("songs/PUSH_UP.ogg"), 100, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::VOIS_SUR_TON_CHEMIN, this->_factory.createMusic(client::getAssetPath("songs/VOIS_SUR_TON_CHEMIN.ogg"), 100, true));
 
     
 
@@ -86,6 +96,15 @@ Game::Game(std::string ip, int port) :
     this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_buttons[0], ECS::components::ScaleComponent{_resMult, _resMult});
     this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_buttons[1], ECS::components::ScaleComponent{_resMult, _resMult});
     this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_buttons[2], ECS::components::ScaleComponent{_resMult, _resMult});
+
+    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::RedPixel), _screenSize.x, _screenSize.y));
+    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::GreenPixel), _screenSize.x, _screenSize.y));
+    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::BluePixel), _screenSize.x, _screenSize.y));
+    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::YellowPixel), _screenSize.x, _screenSize.y));
+    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::PurplePixel), _screenSize.x, _screenSize.y));
+    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::CyanPixel), _screenSize.x, _screenSize.y));
+    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::WhitePixel), _screenSize.x, _screenSize.y));
+
 }
 
 Game::~Game()
@@ -160,6 +179,9 @@ void Game::update()
                 break;
             case 19:
                 this->handlePlayerLife(packet);
+                break;
+            case 21:
+                this->handleStrobes(packet);
                 break;
             case 255:
                 _net.resend(packet.getData().getDataUShort());
@@ -500,4 +522,24 @@ void Game::handlePlayerLife(Network::Packet &packet)
     this->ecs.modify_component<ECS::components::TextureRectComponent>(this->_playerLife, [life](ECS::components::TextureRectComponent &comp) {
         comp.setFrameOnTexture(life / 10);
     });
+}
+
+void Game::handleStrobes(Network::Packet &packet)
+{
+    unsigned char color = packet.getData().getDataUChar();
+    unsigned char onOff = packet.getData().getDataUChar();
+
+    if (onOff) {
+        this->ecs.modify_component<ECS::components::PositionComponent>(this->_strobes[color - 1], [](ECS::components::PositionComponent &comp) {
+            comp.setX(0.0f);
+            comp.setY(0.0f);
+        });
+    } else {
+        float x = this->_screenSize.x;
+        float y = this->_screenSize.y;
+        this->ecs.modify_component<ECS::components::PositionComponent>(this->_strobes[color - 1], [x, y](ECS::components::PositionComponent &comp) {
+            comp.setX(x);
+            comp.setY(y);
+        });
+    }
 }

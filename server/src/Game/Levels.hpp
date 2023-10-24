@@ -8,6 +8,7 @@
 #include <map>
 #include <algorithm>
 #include <unordered_map>
+#include <tuple>
 
 class Room;
 
@@ -36,22 +37,52 @@ public:
                 public:
                     EntityEvents(unsigned char entity);
                     ~EntityEvents();
-                    std::vector<size_t> getSpawns(size_t lastTimecode, size_t currentTimecode);
+                    std::vector<size_t> getSpawns(size_t currentTimecode);
                     void addSpawn(size_t timecode, size_t pos);
                     unsigned char getEntity() const;
                     void sort();
+                    bool isFinished() const;
+            };
+
+            class StrobeEvent
+            {
+                private:
+                    std::vector<std::tuple<size_t, unsigned char, bool>> _strobe;
+                    std::vector<std::tuple<size_t, unsigned char, bool>>::iterator _it;
+                    bool _init = true;
+                public:
+                    StrobeEvent();
+                    ~StrobeEvent();
+                    std::vector<std::tuple<size_t, unsigned char, bool>> getEvents(size_t currentTimecode);
+                    void addColor(size_t timecode, unsigned char color, size_t duration);
+                    void sort();
+                    bool isFinished() const;
+
+                    enum {
+                        RED = 1,
+                        GREEN,
+                        BLUE,
+                        YELLOW,
+                        PURPLE,
+                        CYAN,
+                        WHITE
+                    };
             };
 
             enum Songs {
-                SOUND_OF_SPACE = 1
+                SOUND_OF_SPACE = 1,
+                TURN_ON_THE_LIGHTS,
+                PUSH_UP,
+                VOIS_SUR_TON_CHEMIN
             };
 
             Level(const std::string &path);
             ~Level();
             std::vector<EntityEvents> &getEvents();
-            size_t getDuration() const;
+            StrobeEvent &getStrobes();
             unsigned char getStage() const;
             unsigned char getSong() const;
+            bool isEnded() const;
 
             class OpenError : public std::exception {
                 public:
@@ -66,16 +97,15 @@ public:
         private:
             void parsStage(const std::string &line, const std::string &path);
             void parsSong(const std::string &line, const std::string &path);
-            void parsDuration(const std::string &line, const std::string &path);
             void parsEvents(const std::string &line, const std::string &path);
             std::vector<EntityEvents> _events;
+            StrobeEvent _strobes;
             unsigned char _stage = 0;
             unsigned char _song = 0;
-            size_t _duration = 0;
 
             char _parserEntity = -1;
     };
-    Levels();
+    Levels(std::vector<std::string> files);
     ~Levels();
 
     void start();
@@ -85,7 +115,6 @@ public:
 
 private:
     size_t _currentLvl;
-    chronoTime _lastRefresh;
     chronoTime _lvlStart;
     std::vector<Levels::Level> _levels;
 

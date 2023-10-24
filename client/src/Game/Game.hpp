@@ -12,7 +12,18 @@
 #define SERVER_HEIGHT       2160
 #define SERVER_RATIO      16.0f / 9.0f
 
+
+
 namespace game {
+    enum Colors {
+        RED = 1,
+        GREEN,
+        BLUE,
+        YELLOW,
+        PURPLE,
+        CYAN,
+        WHITE
+    };
     class Game: public EntityManager {
         public:
         /**
@@ -45,6 +56,7 @@ namespace game {
             sf::Vector2f _realScreenSize;
             sf::Vector2u _realScreenSizeU;
 
+            std::vector<entity_t> _strobes;
             unsigned char currentSong;
 
             sf::Vector2u topLeftOffeset;
@@ -88,5 +100,6 @@ namespace game {
             void handleRoomJoin(Network::Packet &packet);
             void handlePlayerJoinGame(Network::Packet &packet);
             void handlePlayerLife(Network::Packet &packet);
+            void handleStrobes(Network::Packet &packet);
     };
 }

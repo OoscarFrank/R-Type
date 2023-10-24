@@ -63,6 +63,7 @@ namespace game {
             entity_t createScoreCoche(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale);
 
             entity_t createMusic(const std::string &musicPath, float volume = 100.0f, bool loop = false);
+            entity_t createStrobe(const std::shared_ptr<sf::Texture> &texture, float x, float y);
         private:
             ECS::Registry &_registry;
     };

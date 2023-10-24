@@ -484,3 +484,12 @@ Stream StreamFactory::askResend(u_short nbr)
     out << 255_uc << nbr;
     return out;
 }
+
+Stream StreamFactory::strobe(u_char color, bool onOff)
+{
+    Stream out;
+    out.setDataUChar(21);
+    out.setDataUChar(color);
+    out.setDataUChar(static_cast<u_char>(onOff));
+    return out;
+}

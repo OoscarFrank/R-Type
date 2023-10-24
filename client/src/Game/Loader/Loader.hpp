@@ -33,7 +33,14 @@ namespace game {
                 LooserScreen,
                 BlackPixel,
                 PlayerLife,
-                ScoreCoche
+                ScoreCoche,
+                RedPixel,
+                GreenPixel,
+                BluePixel,
+                CyanPixel,
+                YellowPixel,
+                PurplePixel,
+                WhitePixel,
             };
         /**
          * @brief Load a texture from a path
