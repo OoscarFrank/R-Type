@@ -20,18 +20,22 @@ public:
         Packet(const Stream &data, int instruction);
         Packet();
         ~Packet();
+        Packet &operator>>(u_char &data);
+        Packet &operator>>(u_short &data);
+        Packet &operator>>(u_int &data);
+        Packet &operator>>(char &data);
+        Packet &operator>>(short &data);
+        Packet &operator>>(int &data);
+        Packet &operator>>(bool &data);
         int getInstruction() const;
         Stream &getData();
     };
 
     Network(std::string ip = "127.0.0.1", int port = 4242);
     ~Network();
-    void setInst(unsigned char inst);
     void send(const Stream &stream);
-    void send();
     void resend(u_short cmdNbr);
     void read();
-    Stream &getStreamOut();
     Queue<Network::Packet> &getQueueIn();
     std::pair<size_t, Stream> getNextInst();
     void startReceive();
@@ -53,10 +57,6 @@ private:
     asio::ip::udp::socket _socket;
     asio::ip::udp::endpoint _serverEndpoint;
     bool _closed;
-
-
-    Stream _streamOut;
-    unsigned char _instOut;
 
     Stream _streamIn;
     Queue<Network::Packet> _queueIn;

@@ -1,5 +1,6 @@
 #include "Stream.hpp"
 
+using namespace TypesLitterals;
 
 Stream::Stream()
 {
@@ -152,6 +153,47 @@ char Stream::getDataChar()
     return out;
 }
 
+Stream &Stream::operator>>(u_char &data)
+{
+    data = this->getDataUChar();
+    return *this;
+}
+
+Stream &Stream::operator>>(u_short &data)
+{
+    data = this->getDataUShort();
+    return *this;
+}
+
+Stream &Stream::operator>>(u_int &data)
+{
+    data = this->getDataUInt();
+    return *this;
+}
+
+Stream &Stream::operator>>(char &data)
+{
+    data = this->getDataChar();
+    return *this;
+}
+
+Stream &Stream::operator>>(short &data)
+{
+    data = this->getDataShort();
+    return *this;
+}
+
+Stream &Stream::operator>>(int &data)
+{
+    data = this->getDataInt();
+    return *this;
+}
+
+Stream &Stream::operator>>(bool &data)
+{
+    data = this->getDataUChar();
+    return *this;
+}
 
 void Stream::setDataUInt(unsigned int data)
 {
@@ -203,6 +245,54 @@ void Stream::setDataChar(char data)
     this->_buffer.push_back(data);
 }
 
+Stream &Stream::operator<<(const Stream &stream)
+{
+    for (auto &c : stream.getBuffer())
+        this->_buffer.push_back(c);
+    return *this;
+}
+
+Stream &Stream::operator<<(u_char data)
+{
+    this->setDataUChar(data);
+    return *this;
+}
+
+Stream &Stream::operator<<(u_short data)
+{
+    this->setDataUShort(data);
+    return *this;
+}
+
+Stream &Stream::operator<<(u_int data)
+{
+    this->setDataUInt(data);
+    return *this;
+}
+
+Stream &Stream::operator<<(char data)
+{
+    this->setDataChar(data);
+    return *this;
+}
+
+Stream &Stream::operator<<(short data)
+{
+    this->setDataShort(data);
+    return *this;
+}
+
+Stream &Stream::operator<<(int data)
+{
+    this->setDataInt(data);
+    return *this;
+}
+
+Stream &Stream::operator<<(bool data)
+{
+    this->setDataUChar(data);
+    return *this;
+}
 
 void Stream::setDataCharArray(const char *data, size_t size)
 {

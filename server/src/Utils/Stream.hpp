@@ -1,17 +1,16 @@
-#ifndef STREAM_HPP
-#define STREAM_HPP
+#pragma once
 
 #include <vector>
 #include <iostream>
 #include <string>
 
 namespace TypesLitterals {
-    inline char operator""_c(unsigned long long c);
-    inline short operator""_s(unsigned long long c);
-    inline int operator""_i(unsigned long long c);
-    inline u_char operator""_uc(unsigned long long c);
-    inline u_short operator""_us(unsigned long long c);
-    inline u_int operator""_ui(unsigned long long c);
+    constexpr char operator""_c(unsigned long long c) { return static_cast<char>(c); }
+    constexpr short operator""_s(unsigned long long c) { return static_cast<short>(c); }
+    constexpr int operator""_i(unsigned long long c) { return static_cast<int>(c); }
+    constexpr u_char operator""_uc(unsigned long long c) { return static_cast<u_char>(c); }
+    constexpr u_short operator""_us(unsigned long long c) { return static_cast<u_short>(c); }
+    constexpr u_int operator""_ui(unsigned long long c) { return static_cast<u_int>(c); }
 }
 
 class Stream
@@ -107,5 +106,3 @@ namespace StreamFactory {
     Stream askResend(u_short nbr);
     Stream strobe(u_char color, bool onOff);
 }
-
-#endif

@@ -4,6 +4,7 @@
 
 using namespace game;
 using entity_t = std::size_t;
+using namespace TypesLitterals;
 
 Game::Game(std::string ip, int port) :
     _manager(Loader()),
@@ -79,7 +80,7 @@ Game::Game(std::string ip, int port) :
     this->_musics.emplace(EntityManager::MUSIC_TYPE::PUSH_UP, this->_factory.createMusic(client::getAssetPath("songs/PUSH_UP.ogg"), 100, true));
     this->_musics.emplace(EntityManager::MUSIC_TYPE::VOIS_SUR_TON_CHEMIN, this->_factory.createMusic(client::getAssetPath("songs/VOIS_SUR_TON_CHEMIN.ogg"), 100, true));
 
-    
+
 
     this->_resMult = static_cast<float>(this->_screenSize.x)/ SCREEN_WIDTH;
 
@@ -184,7 +185,7 @@ void Game::update()
                 this->handleStrobes(packet);
                 break;
             case 255:
-                _net.resend(packet.getData().getDataUShort());
+                this->handleResend(packet);
                 break;
             default:
                 break;
@@ -192,8 +193,9 @@ void Game::update()
     }
     if (std::chrono::system_clock::now() - this->_lastPing > std::chrono::seconds(1)) {
         this->_lastPing = std::chrono::system_clock::now();
-        this->_net.setInst(12);
-        this->_net.send();
+        Stream out;
+        out << 12_uc;
+        this->_net.send(out);
     }
 }
 
@@ -203,22 +205,23 @@ void Game::sendMoveToServer()
         if (!this->_gameOver && (*i).getEntity() == this->_playerEntity) {
             char move = (*i).getEvent() & (UP | DOWN | LEFT | RIGHT);
             if ((*i).getEvent() & move) {
-                this->_net.setInst(2);
-                this->_net.getStreamOut().setDataUChar((*i).getEvent() & move);
-                this->_net.getStreamOut().setDataUChar(1);
-                this->_net.send();
+                Stream out;
+                out << 2_uc << static_cast<u_char>((*i).getEvent() & move) << 1_uc;
+                _net.send(out);
             }
             if ((*i).getEvent() & SPACE) {
-                this->_net.setInst(5);
-                this->_net.send();
+                Stream out;
+                out << 5_uc;
+                this->_net.send(out);
             }
         }
         if (this->_menuEntity != -1 && (*i).getEntity() == this->_menuEntity) {
             if ((*i).getEvent() & ENTER) {
                 this->ecs.kill_entity(this->_menuEntity);
                 this->_menuEntity = -1;
-                this->_net.setInst(9);
-                this->_net.send();
+                Stream out;
+                out << 9_uc;
+                this->_net.send(out);
             }
         }
     }
@@ -258,12 +261,11 @@ int Game::MainLoop()
 
 void Game::handlePlayerPosition(Network::Packet &packet)
 {
-    unsigned int id = packet.getData().getDataUInt();
-
-    unsigned short x = packet.getData().getDataUShort();
+    unsigned int id;
+    unsigned short x;
+    unsigned short y;
+    packet >> id >> x >> y;
     x *= this->_resMult;
-
-    unsigned short y = packet.getData().getDataUShort();
     y *= this->_resMult;
 
     this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(this->getPlayerEntityFromId(id), x, y));
@@ -271,13 +273,12 @@ void Game::handlePlayerPosition(Network::Packet &packet)
 
 void Game::handleMissilePosition(Network::Packet &packet)
 {
-    unsigned int id = packet.getData().getDataUInt();
-    unsigned char type = packet.getData().getDataUChar();
-
-    unsigned short x = packet.getData().getDataUShort();
+    unsigned int id;
+    unsigned char type;
+    unsigned short x;
+    unsigned short y;
+    packet >> id >> type >> x >> y;
     x *= this->_resMult;
-
-    unsigned short y = packet.getData().getDataUShort();
     y *= this->_resMult;
 
     (void)type;
@@ -294,21 +295,20 @@ void Game::handleMissilePosition(Network::Packet &packet)
 
 void Game::handlePlayerScore(Network::Packet &packet)
 {
-    unsigned int score = packet.getData().getDataUInt();
+    unsigned int score;
+    packet >> score;
 
     std::cout << "Score: " << score << std::endl;
 }
 
 void Game::handleEnnemiPosition(Network::Packet &packet)
 {
-    unsigned int id = packet.getData().getDataUInt();
-
-    unsigned char type = packet.getData().getDataUChar();
-
-    unsigned short x = packet.getData().getDataUShort();
+    unsigned int id;
+    unsigned char type;
+    unsigned short x;
+    unsigned short y;
+    packet >> id >> type >> x >> y;
     x *= this->_resMult;
-
-    unsigned short y = packet.getData().getDataUShort();
     y *= this->_resMult;
 
     entity_t res = getEnnemiEntityFromId(id);
@@ -342,8 +342,7 @@ void Game::handleRoomJoin(Network::Packet &packet)
     for (auto &button : this->_buttons) {
         this->ecs.kill_entity(button);
     }
-    this->_roomId = packet.getData().getDataUInt();
-    this->_playerId = packet.getData().getDataUInt();
+    packet >> this->_roomId >> this->_playerId;
 
     std::shared_ptr<sf::Texture> texture = nullptr;
 
@@ -377,10 +376,8 @@ void Game::handleRoomJoin(Network::Packet &packet)
 
 void Game::handleTimeoutMatchmaking(Network::Packet &packet)
 {
-    this->_startTimeLeft = packet.getData().getDataUInt();
-    this->_started = packet.getData().getDataUChar();
-    this->currentSong = packet.getData().getDataUChar();
-    
+    packet >> this->_startTimeLeft >> this->_started >> this->currentSong;
+
     if (this->_started == true) {
         this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [](ECS::components::MusicComponent &music) {
             music.playMusic();
@@ -396,7 +393,8 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
 
 void Game::handlePlayerJoinGame(Network::Packet &packet)
 {
-    unsigned int id = packet.getData().getDataUInt();
+    unsigned int id;
+    packet >> id;
     std::shared_ptr<sf::Texture> texture = nullptr;
 
     switch (id) {
@@ -427,7 +425,8 @@ void Game::handlePlayerJoinGame(Network::Packet &packet)
 
 void Game::handlePlayerDisconnected(Network::Packet &packet)
 {
-    unsigned int id = packet.getData().getDataUInt();
+    unsigned int id;
+    packet >> id;
     entity_t res = getPlayerEntityFromId(id);
 
     if (res != 0) {
@@ -445,13 +444,12 @@ void Game::handlePlayerDisconnected(Network::Packet &packet)
 
 void Game::handleMissileDeath(Network::Packet &packet)
 {
-    unsigned int id = packet.getData().getDataUInt();
-    unsigned char type = packet.getData().getDataUChar();
-
-    unsigned short x = packet.getData().getDataUShort();
+    unsigned int id;
+    unsigned char type;
+    unsigned short x;
+    unsigned short y;
+    packet >> id >> type >> x >> y;
     x *= this->_resMult;
-
-    unsigned short y = packet.getData().getDataUShort();
     y *= this->_resMult;
 
     entity_t res = getMissileEntityFromId(id);
@@ -471,7 +469,8 @@ void Game::handleMissileDeath(Network::Packet &packet)
 
 void Game::handleEnnemiDeath(Network::Packet &packet)
 {
-    unsigned int id = packet.getData().getDataUInt();
+    unsigned int id;
+    packet >> id;
     entity_t res = getEnnemiEntityFromId(id);
 
     if (res != 0) {
@@ -489,13 +488,15 @@ void Game::handleEnnemiDeath(Network::Packet &packet)
 
 void Game::handleGameEnd(Network::Packet &packet)
 {
-    unsigned char type = packet.getData().getDataUChar();
+    unsigned char type;
+    packet >> type;
     this->_gameOver = true;
 }
 
 void Game::handlePlayerDeath(Network::Packet &packet)
 {
-    unsigned int id = packet.getData().getDataUInt();
+    unsigned int id;
+    packet >> id;
     entity_t res = getPlayerEntityFromId(id);
     if (res == this->_playerEntity) {
         this->_looser.push_back(this->_factory.createLooserScreen(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::LooserScreen)));
@@ -516,7 +517,8 @@ void Game::handlePlayerDeath(Network::Packet &packet)
 
 void Game::handlePlayerLife(Network::Packet &packet)
 {
-    int life = packet.getData().getDataUInt();
+    int life;
+    packet >> life;
     if (this->_playerLife == 0)
         return;
     this->ecs.modify_component<ECS::components::TextureRectComponent>(this->_playerLife, [life](ECS::components::TextureRectComponent &comp) {
@@ -526,9 +528,9 @@ void Game::handlePlayerLife(Network::Packet &packet)
 
 void Game::handleStrobes(Network::Packet &packet)
 {
-    unsigned char color = packet.getData().getDataUChar();
-    unsigned char onOff = packet.getData().getDataUChar();
-
+    unsigned char color;
+    unsigned char onOff;
+    packet >> color >> onOff;
     if (onOff) {
         this->ecs.modify_component<ECS::components::PositionComponent>(this->_strobes[color - 1], [](ECS::components::PositionComponent &comp) {
             comp.setX(0.0f);
@@ -542,4 +544,11 @@ void Game::handleStrobes(Network::Packet &packet)
             comp.setY(y);
         });
     }
+}
+
+void Game::handleResend(Network::Packet &packet)
+{
+    u_short nbr;
+    packet >> nbr;
+    _net.resend(nbr);
 }

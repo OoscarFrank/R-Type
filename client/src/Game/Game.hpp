@@ -101,5 +101,6 @@ namespace game {
             void handlePlayerJoinGame(Network::Packet &packet);
             void handlePlayerLife(Network::Packet &packet);
             void handleStrobes(Network::Packet &packet);
+            void handleResend(Network::Packet &packet);
     };
 }
