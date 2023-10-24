@@ -3,11 +3,12 @@
 #include <algorithm>
 
 
-Levels::Levels()
+Levels::Levels(std::vector<std::string> files)
 {
     _currentLvl = 0;
     try {
-        this->_levels.push_back(Levels::Level("stages/stage1.script"));
+        for(auto i = files.begin(); i != files.end(); ++i)
+            this->_levels.push_back(Levels::Level((*i)));
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
         exit(1);
@@ -20,7 +21,6 @@ Levels::~Levels()
 void Levels::start()
 {
     _lvlStart = chronoNow;
-    _lastRefresh = chronoNow;
 }
 
 const Levels::Level &Levels::getLevel() const
@@ -30,8 +30,6 @@ const Levels::Level &Levels::getLevel() const
 
 void Levels::update(Room &room)
 {
-    size_t last = chronoDiff(chronoMs, _lastRefresh, _lvlStart);
-    this->_lastRefresh = chronoNow;
     size_t current = chronoDiff(chronoMs, chronoNow, _lvlStart);
     std::vector<size_t> tmp;
 
@@ -113,6 +111,11 @@ void Levels::Level::EntityEvents::sort()
 }
 
 
+bool Levels::Level::EntityEvents::isFinished() const
+{
+    return _it == _spawns.end();
+}
+
 
 
 
@@ -159,6 +162,10 @@ void Levels::Level::StrobeEvent::sort()
     });
 }
 
+bool Levels::Level::StrobeEvent::isFinished() const
+{
+    return _it == _strobe.end();
+}
 
 
 
@@ -186,7 +193,6 @@ Levels::Level::Level(const std::string &path)
     while (getline(file, line)) {
         parsStage(line, path);
         parsSong(line, path);
-        parsDuration(line, path);
         parsEvents(line, path);
     }
     file.close();
@@ -223,28 +229,6 @@ void Levels::Level::parsStage(const std::string &line, const std::string &path)
     }
 }
 
-void Levels::Level::parsDuration(const std::string &line, const std::string &path)
-{
-    if (line.find("DURATION") != std::string::npos) {
-        size_t pos;
-        if ((pos = line.find(":")) == std::string::npos) {
-            Levels::Level::ParsError err;
-            err._msg =  "Erreur lors de la lecture du fichier " + path + " : DURATION";
-            throw err;
-            return;
-        } else {
-            try {
-                this->_duration = std::stoul(line.substr(pos + 1));
-            } catch (const std::exception& e) {
-                Levels::Level::ParsError err;
-                err._msg =  "Erreur lors de la lecture du fichier " + path + " : DURATION";
-                throw err;
-                return;
-            }
-        }
-    }
-}
-
 void Levels::Level::parsSong(const std::string &line, const std::string &path)
 {
     if (line.find("SONG") != std::string::npos) {
@@ -258,6 +242,12 @@ void Levels::Level::parsSong(const std::string &line, const std::string &path)
             std::string song = line.substr(pos + 1);
             if (song.find("SOUND_OF_SPACE") != std::string::npos)
                 this->_song = Levels::Level::SOUND_OF_SPACE;
+            else if (song.find("TURN_ON_THE_LIGHTS") != std::string::npos)
+                this->_song = Levels::Level::TURN_ON_THE_LIGHTS;
+            else if (song.find("PUSH_UP") != std::string::npos)
+                this->_song = Levels::Level::PUSH_UP;
+            else if (song.find("VOIS_SUR_TON_CHEMIN") != std::string::npos)
+                this->_song = Levels::Level::VOIS_SUR_TON_CHEMIN;
             else {
                 Levels::Level::ParsError err;
                 err._msg =  "Erreur lors de la lecture du fichier " + path + " : SONG";
@@ -427,11 +417,6 @@ std::vector<Levels::Level::EntityEvents> &Levels::Level::getEvents()
     return this->_events;
 }
 
-size_t Levels::Level::getDuration() const
-{
-    return this->_duration;
-}
-
 unsigned char Levels::Level::getStage() const
 {
     return this->_stage;
@@ -440,4 +425,17 @@ unsigned char Levels::Level::getStage() const
 unsigned char Levels::Level::getSong() const
 {
     return this->_song;
+}
+
+bool Levels::Level::isEnded() const
+{
+    for(auto i = this->_events.begin(); i != this->_events.end(); ++i) {
+        if(!(*i).isFinished()) {
+            return false;
+        }
+    }
+
+    if (!this->_strobes.isFinished())
+        return false;
+    return true;
 }

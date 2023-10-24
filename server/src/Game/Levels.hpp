@@ -41,6 +41,7 @@ public:
                     void addSpawn(size_t timecode, size_t pos);
                     unsigned char getEntity() const;
                     void sort();
+                    bool isFinished() const;
             };
 
             class StrobeEvent
@@ -55,6 +56,7 @@ public:
                     std::vector<std::tuple<size_t, unsigned char, bool>> getEvents(size_t currentTimecode);
                     void addColor(size_t timecode, unsigned char color, size_t duration);
                     void sort();
+                    bool isFinished() const;
 
                     enum {
                         RED = 1,
@@ -68,16 +70,19 @@ public:
             };
 
             enum Songs {
-                SOUND_OF_SPACE = 1
+                SOUND_OF_SPACE = 1,
+                TURN_ON_THE_LIGHTS,
+                PUSH_UP,
+                VOIS_SUR_TON_CHEMIN
             };
 
             Level(const std::string &path);
             ~Level();
             std::vector<EntityEvents> &getEvents();
             StrobeEvent &getStrobes();
-            size_t getDuration() const;
             unsigned char getStage() const;
             unsigned char getSong() const;
+            bool isEnded() const;
 
             class OpenError : public std::exception {
                 public:
@@ -92,17 +97,15 @@ public:
         private:
             void parsStage(const std::string &line, const std::string &path);
             void parsSong(const std::string &line, const std::string &path);
-            void parsDuration(const std::string &line, const std::string &path);
             void parsEvents(const std::string &line, const std::string &path);
             std::vector<EntityEvents> _events;
             StrobeEvent _strobes;
             unsigned char _stage = 0;
             unsigned char _song = 0;
-            size_t _duration = 0;
 
             char _parserEntity = -1;
     };
-    Levels();
+    Levels(std::vector<std::string> files);
     ~Levels();
 
     void start();
@@ -112,7 +115,6 @@ public:
 
 private:
     size_t _currentLvl;
-    chronoTime _lastRefresh;
     chronoTime _lvlStart;
     std::vector<Levels::Level> _levels;
 

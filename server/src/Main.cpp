@@ -7,9 +7,13 @@
 #include "Utils/Instruction.hpp"
 #include "Router.hpp"
 
-void exec(int port)
-{
+void exec(int port, std::vector<std::string> stages)
+{   
     std::cout << "starting server..." << std::endl;
+    if (stages.empty()) {
+        throw std::runtime_error("No stages given");
+    }
+
     asio::io_context io_context;
     asio::ip::udp::socket socket(io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), port));
     Queue<Reader::Packet> queueIn;
@@ -17,7 +21,7 @@ void exec(int port)
     Reader reader(socket, queueIn, clients);
     RoomManager rm;
     Router router(rm);
-    Levels levels;
+    Levels levels(stages);
 
     std::cout << "Server listening on port " << port << std::endl;
 
@@ -31,11 +35,24 @@ void exec(int port)
     }
 }
 
+void printHelp()
+{
+    std::cout << "USAGE: ./r-type_server -p port -s stage1 stage2 ..." << std::endl;
+    std::cout << "\tport\t\tis the port number (default : 4242)" << std::endl;
+    std::cout << "\tstages\t\tare the paths of the scripts files" << std::endl;
+}
+
 int main(int argc, char **argv)
 {
     try {
         Args args(argc, argv);
-        exec(args.getFlagValue<int>("-p", 4242));
+
+        if (args.isFlagSet("--help") || args.isFlagSet("-help") || args.isFlagSet("-h")) {
+            printHelp();
+            return 0;
+        }
+
+        exec(args.getFlagValue<int>("-p", 4242), args.getFlagValues<std::string>("-s"));
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
         return 84;
