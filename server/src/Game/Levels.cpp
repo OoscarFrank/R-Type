@@ -2,10 +2,9 @@
 #include "Room.hpp"
 #include <algorithm>
 
-Levels::Levels(Room &room):
-    _room(room),
-    _currentLvl(0)
+Levels::Levels()
 {
+    _currentLvl = 0;
     try {
         this->_levels.push_back(Levels::Level("stages/stage1.script"));
     } catch (const std::exception& e) {
@@ -28,7 +27,7 @@ const Levels::Level &Levels::getLevel() const
     return this->_levels[_currentLvl];
 }
 
-void Levels::update()
+void Levels::update(Room &room)
 {
     size_t last = chronoDiff(chronoMs, _lastRefresh, _lvlStart);
     this->_lastRefresh = chronoNow;
@@ -37,15 +36,15 @@ void Levels::update()
 
     tmp = this->_levels[_currentLvl].getEvents()[Monster::LITTLE_MONSTER - 2].getSpawns(last, current);
     for (auto i = tmp.begin(); i != tmp.end(); ++i)
-        _room.addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, (*i));
+        room.addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, (*i));
 
     tmp = this->_levels[_currentLvl].getEvents()[Monster::ZIGZAGER_MONSTER - 2].getSpawns(last, current);
     for (auto i = tmp.begin(); i != tmp.end(); ++i)
-        _room.addMonster(IEntity::Type::ZIGZAGER_MONSTER, SCREEN_WIDTH, (*i));
+        room.addMonster(IEntity::Type::ZIGZAGER_MONSTER, SCREEN_WIDTH, (*i));
 
     tmp = this->_levels[_currentLvl].getEvents()[Monster::FOLLOWER_MONSTER - 2].getSpawns(last, current);
     for (auto i = tmp.begin(); i != tmp.end(); ++i)
-        _room.addMonster(IEntity::Type::FOLLOWER_MONSTER, SCREEN_WIDTH, (*i));
+        room.addMonster(IEntity::Type::FOLLOWER_MONSTER, SCREEN_WIDTH, (*i));
 }
 
 Levels::Level::EntityEvents::EntityEvents(unsigned char entity)

@@ -59,7 +59,7 @@ class Room
          * @param client The client that created the room
          * @param privateRoom If the room is private or not (default: false)
          */
-        Room(u_int id, std::shared_ptr<Client> client, bool privateRoom = false);
+        Room(u_int id, std::shared_ptr<Client> client, Levels &levels, bool privateRoom = false);
         ~Room();
         Room(const Room &room) = delete;
         Room(Room &&room) = delete;

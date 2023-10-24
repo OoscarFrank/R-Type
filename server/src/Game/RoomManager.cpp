@@ -22,23 +22,23 @@ void RoomManager::_clearRooms()
     }
 }
 
-void RoomManager:: createRoom(Reader::Packet &packet, bool privateRoom)
+void RoomManager:: createRoom(Reader::Packet &packet, Levels &levels, bool privateRoom)
 {
     _clearRooms();
-    std::unique_ptr<Room> newRoom = std::make_unique<Room>(_roomIds++, packet.getClient(), privateRoom);
+    std::unique_ptr<Room> newRoom = std::make_unique<Room>(_roomIds++, packet.getClient(), levels, privateRoom);
     std::cout << "New room: " << newRoom->getId() << std::endl;
     _roomsMutex.lock();
     _rooms.push_back(std::move(newRoom));
     _roomsMutex.unlock();
 }
 
-void RoomManager::searchRoom(Reader::Packet &packet)
+void RoomManager::searchRoom(Reader::Packet &packet, Levels &levels)
 {
     _clearRooms();
     _roomsMutex.lock();
     if (_rooms.size() == 0) {
         _roomsMutex.unlock();
-        this->createRoom(packet);
+        this->createRoom(packet, levels);
         return;
     }
 
@@ -50,7 +50,7 @@ void RoomManager::searchRoom(Reader::Packet &packet)
         }
     }
     _roomsMutex.unlock();
-    this->createRoom(packet);
+    this->createRoom(packet, levels);
 }
 
 Room &RoomManager::getRoom(u_int id)

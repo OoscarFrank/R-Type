@@ -23,8 +23,6 @@ using chronoMin = std::chrono::minutes;
 class Levels
 {
 public:
-    
-
 
     class Level {
         public:
@@ -77,16 +75,15 @@ public:
 
             char _parserEntity = -1;
     };
-    Levels(Room &room);
+    Levels();
     ~Levels();
 
     void start();
-    void update();
+    void update(Room &room);
     size_t lvl() const { return 1;}
     const Level &getLevel() const;
 
 private:
-    Room &_room;
     size_t _currentLvl;
     chronoTime _lastRefresh;
     chronoTime _lvlStart;

@@ -9,6 +9,7 @@
 
 void exec(int port)
 {
+    std::cout << "starting server..." << std::endl;
     asio::io_context io_context;
     asio::ip::udp::socket socket(io_context, asio::ip::udp::endpoint(asio::ip::udp::v4(), port));
     Queue<Reader::Packet> queueIn;
@@ -16,6 +17,7 @@ void exec(int port)
     Reader reader(socket, queueIn, clients);
     RoomManager rm;
     Router router(rm);
+    Levels levels;
 
     std::cout << "Server listening on port " << port << std::endl;
 
@@ -23,8 +25,8 @@ void exec(int port)
     ThreadPool reqPool(nbThread / 2, 10);
     while (true) {
         Reader::Packet value = queueIn.pop();
-        reqPool.submit([value, &router]() {
-            router.route(value);
+        reqPool.submit([value, &router, &levels]() {
+            router.route(value, levels);
         });
     }
 }

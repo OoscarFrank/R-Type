@@ -9,17 +9,17 @@ class Router {
         Router(RoomManager &rm);
         ~Router() = default;
 
-        void route(Reader::Packet packet);
+        void route(Reader::Packet packet, Levels &levels);
 
     private:
         RoomManager &_rm;
-        std::map<int, void (Router::*)(Reader::Packet &packet)> _functions;
+        std::map<int, void (Router::*)(Reader::Packet &packet, Levels &levels)> _functions;
 
-        void _movePlayer(Reader::Packet &packet);
-        void _fireMissile(Reader::Packet &packet);
-        void _createRoom(Reader::Packet &packet);
-        void _searchRoom(Reader::Packet &packet);
-        void _ping(Reader::Packet &packet);
+        void _movePlayer(Reader::Packet &packet, Levels &levels);
+        void _fireMissile(Reader::Packet &packet, Levels &levels);
+        void _createRoom(Reader::Packet &packet, Levels &levels);
+        void _searchRoom(Reader::Packet &packet, Levels &levels);
+        void _ping(Reader::Packet &packet, Levels &levels);
 
-        void _cmdNotRecieved(Reader::Packet &packet);
+        void _cmdNotRecieved(Reader::Packet &packet, Levels &levels);
 };

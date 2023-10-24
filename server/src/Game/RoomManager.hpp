@@ -29,14 +29,14 @@ class RoomManager
          * @param packet The packet received from the client
          * @param privateRoom If the room is private or not
          */
-        void createRoom(Reader::Packet &packet, bool privateRoom = false);
+        void createRoom(Reader::Packet &packet, Levels &levels , bool privateRoom = false);
         /**
          * @brief Search a room for the client
          * If no room is found or all rooms are full, it will create a new one
          *
          * @param packet The packet received from the client
          */
-        void searchRoom(Reader::Packet &packet);
+        void searchRoom(Reader::Packet &packet, Levels &levels);
 
         /**
          * @brief Get a room by its id

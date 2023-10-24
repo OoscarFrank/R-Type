@@ -3,8 +3,8 @@
 #include <bitset>
 #include <cmath>
 
-Room::Room(u_int id, std::shared_ptr<Client> client, bool privateRoom):
-    _levels(*this)
+Room::Room(u_int id, std::shared_ptr<Client> client, Levels &levels, bool privateRoom):
+    _levels(levels)
 {
     _id = id;
     _playersIds = 0;
@@ -194,7 +194,7 @@ void Room::update()
         checkCollisionPlayer();
         checkCollisionMonsters();
 
-        _levels.update();
+        _levels.update(*this);
         _playersMutex.unlock();
     }
     if (_state == WAIT) {
