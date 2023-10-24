@@ -1,5 +1,13 @@
 #include "Stream.hpp"
 
+inline char TypesLitterals::operator""_c(unsigned long long c) { return static_cast<char>(c); }
+inline short TypesLitterals::operator""_s(unsigned long long c) { return static_cast<short>(c); }
+inline int TypesLitterals::operator""_i(unsigned long long c) { return static_cast<int>(c); }
+inline u_char TypesLitterals::operator""_uc(unsigned long long c) { return static_cast<u_char>(c); }
+inline u_short TypesLitterals::operator""_us(unsigned long long c) { return static_cast<u_short>(c); }
+inline u_int TypesLitterals::operator""_ui(unsigned long long c) { return static_cast<u_int>(c); }
+
+using namespace TypesLitterals;
 
 Stream::Stream()
 {
@@ -153,6 +161,47 @@ char Stream::getDataChar()
     return out;
 }
 
+Stream &Stream::operator>>(u_char &data)
+{
+    data = this->getDataUChar();
+    return *this;
+}
+
+Stream &Stream::operator>>(u_short &data)
+{
+    data = this->getDataUShort();
+    return *this;
+}
+
+Stream &Stream::operator>>(u_int &data)
+{
+    data = this->getDataUInt();
+    return *this;
+}
+
+Stream &Stream::operator>>(char &data)
+{
+    data = this->getDataChar();
+    return *this;
+}
+
+Stream &Stream::operator>>(short &data)
+{
+    data = this->getDataShort();
+    return *this;
+}
+
+Stream &Stream::operator>>(int &data)
+{
+    data = this->getDataInt();
+    return *this;
+}
+
+Stream &Stream::operator>>(bool &data)
+{
+    data = this->getDataUChar();
+    return *this;
+}
 
 void Stream::setDataUInt(unsigned int data)
 {
@@ -204,6 +253,54 @@ void Stream::setDataChar(char data)
     this->_buffer.push_back(data);
 }
 
+Stream &Stream::operator<<(const Stream &stream)
+{
+    for (auto &c : stream.getBuffer())
+        this->_buffer.push_back(c);
+    return *this;
+}
+
+Stream &Stream::operator<<(u_char data)
+{
+    this->setDataUChar(data);
+    return *this;
+}
+
+Stream &Stream::operator<<(u_short data)
+{
+    this->setDataUShort(data);
+    return *this;
+}
+
+Stream &Stream::operator<<(u_int data)
+{
+    this->setDataUInt(data);
+    return *this;
+}
+
+Stream &Stream::operator<<(char data)
+{
+    this->setDataChar(data);
+    return *this;
+}
+
+Stream &Stream::operator<<(short data)
+{
+    this->setDataShort(data);
+    return *this;
+}
+
+Stream &Stream::operator<<(int data)
+{
+    this->setDataInt(data);
+    return *this;
+}
+
+Stream &Stream::operator<<(bool data)
+{
+    this->setDataUChar(data);
+    return *this;
+}
 
 void Stream::setDataCharArray(const char *data, size_t size)
 {
@@ -279,143 +376,112 @@ std::ostream &operator<<(std::ostream &os,const Stream &stream) {
 Stream StreamFactory::screenProgress(u_int progress)
 {
     Stream out;
-    out.setDataUChar(1);
-    out.setDataUInt(progress);
+    out << 1_uc << progress;
     return out;
 }
 
 Stream StreamFactory::playerPos(u_int id, short x, short y)
 {
     Stream out;
-    out.setDataUChar(3);
-    out.setDataUInt(id);
-    out.setDataShort(x);
-    out.setDataShort(y);
+    out << 3_uc << id << x << y;
     return out;
 }
 
 Stream StreamFactory::missilePos(u_int id, u_char type, short x, short y)
 {
     Stream out;
-    out.setDataUChar(4);
-    out.setDataUInt(id);
-    out.setDataUChar(type);
-    out.setDataShort(x);
-    out.setDataShort(y);
+    out << 4_uc << id << type << x << y;
     return out;
 }
 
 Stream StreamFactory::score(int score)
 {
     Stream out;
-    out.setDataUChar(6);
-    out.setDataInt(score);
+    out << 6_uc << score;
     return out;
 }
 
 Stream StreamFactory::monsterPos(u_int id, u_char type, short x, short y)
 {
     Stream out;
-    out.setDataUChar(7);
-    out.setDataUInt(id);
-    out.setDataUChar(type);
-    out.setDataShort(x);
-    out.setDataShort(y);
+    out << 7_uc << id << type << x << y;
     return out;
 }
 
 Stream StreamFactory::joinRoom(u_int roomId, u_int playerId)
 {
     Stream out;
-    out.setDataUChar(10);
-    out.setDataUInt(roomId);
-    out.setDataUInt(playerId);
+    out << 10_uc << roomId << playerId;
     return out;
 }
 
 Stream StreamFactory::waitGame(int time, bool start, unsigned char song)
 {
     Stream out;
-    out.setDataUChar(11);
-    out.setDataInt(time);
-    out.setDataUChar(start);
-    out.setDataUChar(song);
+    out << 11_uc << time << start << song;
     return out;
 }
 
 Stream StreamFactory::playerJoinedGame(u_int playerId)
 {
     Stream out;
-    out.setDataUChar(13);
-    out.setDataUInt(playerId);
+    out << 13_uc << playerId;
     return out;
 }
 
 Stream StreamFactory::playerLeftGame(u_int playerId)
 {
     Stream out;
-    out.setDataUChar(14);
-    out.setDataUInt(playerId);
+    out << 14_uc << playerId;
     return out;
 }
 
 Stream StreamFactory::missileDestroyed(u_int id, u_char type, short x, short y)
 {
     Stream out;
-    out.setDataUChar(15);
-    out.setDataUInt(id);
-    out.setDataUChar(type);
-    out.setDataShort(x);
-    out.setDataShort(y);
+    out << 15_uc << id << type << x << y;
     return out;
 }
 
 Stream StreamFactory::monsterDied(u_int id)
 {
     Stream out;
-    out.setDataUChar(16);
-    out.setDataUInt(id);
+    out << 16_uc << id;
     return out;
 }
 
 Stream StreamFactory::gameOver(u_char type)
 {
     Stream out;
-    out.setDataUChar(17);
-    out.setDataUChar(type);
+    out << 17_uc << type;
     return out;
 }
 
 Stream StreamFactory::playerDied(u_int id)
 {
     Stream out;
-    out.setDataUChar(18);
-    out.setDataUInt(id);
+    out << 18_uc << id;
     return out;
 }
 
 Stream StreamFactory::playerLife(int life)
 {
     Stream out;
-    out.setDataUChar(19);
-    out.setDataInt(life);
+    out << 19_uc << life;
     return out;
 }
 
 Stream StreamFactory::monsterLife(u_int id, int life)
 {
     Stream out;
-    out.setDataUChar(20);
-    out.setDataUInt(id);
-    out.setDataInt(life);
+    out << 20_uc << id << life;
     return out;
 }
 
 Stream StreamFactory::askResend(u_short nbr)
 {
     Stream out;
-    out.setDataUChar(255);
-    out.setDataUShort(nbr);
+    out << 255_uc << nbr;
     return out;
 }
 

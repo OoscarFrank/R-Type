@@ -5,6 +5,14 @@
 #include <iostream>
 #include <string>
 
+namespace TypesLitterals {
+    inline char operator""_c(unsigned long long c);
+    inline short operator""_s(unsigned long long c);
+    inline int operator""_i(unsigned long long c);
+    inline u_char operator""_uc(unsigned long long c);
+    inline u_short operator""_us(unsigned long long c);
+    inline u_int operator""_ui(unsigned long long c);
+}
 
 class Stream
 {
@@ -39,6 +47,15 @@ public:
     void setDataShort(short data);
     void setDataChar(char data);
 
+    Stream &operator<<(const Stream &stream);
+    Stream &operator<<(u_char data);
+    Stream &operator<<(u_short data);
+    Stream &operator<<(u_int data);
+    Stream &operator<<(char data);
+    Stream &operator<<(short data);
+    Stream &operator<<(int data);
+    Stream &operator<<(bool data);
+
     size_t size() const;
     void clear();
 
@@ -48,6 +65,14 @@ public:
     int getDataInt();
     short getDataShort();
     char getDataChar();
+
+    Stream &operator>>(u_char &data);
+    Stream &operator>>(u_short &data);
+    Stream &operator>>(u_int &data);
+    Stream &operator>>(char &data);
+    Stream &operator>>(short &data);
+    Stream &operator>>(int &data);
+    Stream &operator>>(bool &data);
 
     Stream subStream(size_t pos) const;
     Stream subStream(size_t start, size_t size) const;
