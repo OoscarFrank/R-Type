@@ -1,10 +1,17 @@
-#ifndef STREAM_HPP
-#define STREAM_HPP
+#pragma once
 
 #include <vector>
 #include <iostream>
 #include <string>
 
+namespace TypesLitterals {
+    constexpr char operator""_c(unsigned long long c) { return static_cast<char>(c); }
+    constexpr short operator""_s(unsigned long long c) { return static_cast<short>(c); }
+    constexpr int operator""_i(unsigned long long c) { return static_cast<int>(c); }
+    constexpr u_char operator""_uc(unsigned long long c) { return static_cast<u_char>(c); }
+    constexpr u_short operator""_us(unsigned long long c) { return static_cast<u_short>(c); }
+    constexpr u_int operator""_ui(unsigned long long c) { return static_cast<u_int>(c); }
+}
 
 class Stream
 {
@@ -39,6 +46,15 @@ public:
     void setDataShort(short data);
     void setDataChar(char data);
 
+    Stream &operator<<(const Stream &stream);
+    Stream &operator<<(u_char data);
+    Stream &operator<<(u_short data);
+    Stream &operator<<(u_int data);
+    Stream &operator<<(char data);
+    Stream &operator<<(short data);
+    Stream &operator<<(int data);
+    Stream &operator<<(bool data);
+
     size_t size() const;
     void clear();
 
@@ -48,6 +64,14 @@ public:
     int getDataInt();
     short getDataShort();
     char getDataChar();
+
+    Stream &operator>>(u_char &data);
+    Stream &operator>>(u_short &data);
+    Stream &operator>>(u_int &data);
+    Stream &operator>>(char &data);
+    Stream &operator>>(short &data);
+    Stream &operator>>(int &data);
+    Stream &operator>>(bool &data);
 
     Stream subStream(size_t pos) const;
     Stream subStream(size_t start, size_t size) const;
@@ -81,6 +105,6 @@ namespace StreamFactory {
     Stream monsterLife(u_int id, int life);
     Stream askResend(u_short nbr);
     Stream strobe(u_char color, bool onOff);
-}
+    Stream changeLevel(u_int timout, u_char song, bool started);
 
-#endif
+}

@@ -64,6 +64,48 @@ Reader::Packet::~Packet()
 {
 }
 
+Reader::Packet &Reader::Packet::operator>>(u_char &data)
+{
+    _data >> data;
+    return *this;
+}
+
+Reader::Packet &Reader::Packet::operator>>(u_short &data)
+{
+    _data >> data;
+    return *this;
+}
+
+Reader::Packet &Reader::Packet::operator>>(u_int &data)
+{
+    _data >> data;
+    return *this;
+}
+
+Reader::Packet &Reader::Packet::operator>>(char &data)
+{
+    _data >> data;
+    return *this;
+}
+
+Reader::Packet &Reader::Packet::operator>>(short &data)
+{
+    _data >> data;
+    return *this;
+}
+
+Reader::Packet &Reader::Packet::operator>>(int &data)
+{
+    _data >> data;
+    return *this;
+}
+
+Reader::Packet &Reader::Packet::operator>>(bool &data)
+{
+    _data >> data;
+    return *this;
+}
+
 int Reader::Packet::getInstruction() const
 {
     return _instruction;

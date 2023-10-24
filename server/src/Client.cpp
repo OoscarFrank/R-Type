@@ -70,9 +70,7 @@ void Client::send(const Stream &stream)
                 u_short nbr = ++_cmdNbr;
                 _sentPackets[nbr] = stream;
                 tmp.clear();
-                tmp.setDataUChar(stream[0]);
-                tmp.setDataUShort(nbr);
-                tmp += stream.subStream(1);
+                tmp << stream[0] << nbr << stream.subStream(1);
             }
             break;
         }
