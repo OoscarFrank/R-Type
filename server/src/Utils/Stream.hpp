@@ -105,4 +105,6 @@ namespace StreamFactory {
     Stream monsterLife(u_int id, int life);
     Stream askResend(u_short nbr);
     Stream strobe(u_char color, bool onOff);
+    Stream changeLevel(u_int timout, u_char song, bool started);
+
 }

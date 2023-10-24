@@ -102,5 +102,6 @@ namespace game {
             void handlePlayerLife(Network::Packet &packet);
             void handleStrobes(Network::Packet &packet);
             void handleResend(Network::Packet &packet);
+            void handleChangeLevel(Network::Packet &packet);
     };
 }

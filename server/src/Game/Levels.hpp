@@ -42,6 +42,7 @@ public:
                     unsigned char getEntity() const;
                     void sort();
                     bool isFinished() const;
+                    void setInit(bool init);
             };
 
             class StrobeEvent
@@ -57,6 +58,7 @@ public:
                     void addColor(size_t timecode, unsigned char color, size_t duration);
                     void sort();
                     bool isFinished() const;
+                    void setInit(bool init);
 
                     enum {
                         RED = 1,
@@ -116,6 +118,9 @@ public:
 private:
     size_t _currentLvl;
     chronoTime _lvlStart;
+    chronoTime _endTime;
+    chronoTime _lastUpdate;
+    bool _ended = false;
     std::vector<Levels::Level> _levels;
 
 };

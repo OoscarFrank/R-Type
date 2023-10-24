@@ -309,3 +309,8 @@ bool Room::isPrivate() const
 {
     return _private;
 }
+
+bool Room::isMonster() const
+{
+    return !this->_monsters.empty();
+}
