@@ -43,7 +43,7 @@ void RoomManager::searchRoom(Reader::Packet &packet, Levels &levels)
     }
 
     for (auto i = this->_rooms.begin(); i != this->_rooms.end(); i++) {
-        if ((**i).getNbPlayer() < (**i).getMaxPlayer()) {
+        if ((**i).getNbPlayer() < (**i).getMaxPlayer() && !(**i).isPrivate() && (**i).getState() == Room::WAIT) {
             (**i).addPlayer(packet.getClient());
             _roomsMutex.unlock();
             return;

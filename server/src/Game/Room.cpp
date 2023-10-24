@@ -225,7 +225,6 @@ void Room::startGame()
     _lastMapRefresh = NOW;
     _lastPlayerUpdate = NOW;
     _lastMissileUpdate = NOW;
-    
 
     sendToAll(StreamFactory::waitGame(0, true, _levels.getLevel().getSong()));
     _levels.start();
@@ -304,4 +303,9 @@ std::pair<short, short> Room::getNearestPlayerPos(const IEntity &entity)
         }
     }
     return nearest;
+}
+
+bool Room::isPrivate() const
+{
+    return _private;
 }
