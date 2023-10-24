@@ -23,13 +23,14 @@ Factory::~Factory()
 {
 }
 
-entity_t Factory::createButton(float x, float y, const std::shared_ptr<sf::Texture> &texture)
+entity_t Factory::createButton(float x, float y, const std::shared_ptr<sf::Texture> &texture, const sf::Vector2f &scale)
 {
     entity_t newEntity = _registry.spawn_entity(80);
     _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
     _registry.emplace_component<ECS::components::ButtonComponent>(newEntity, ECS::components::ButtonComponent{});
     _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{0, 0, (int)texture->getSize().x, (int)texture->getSize().y, 2, 0.0f});
     _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
+    _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{scale.x, scale.y});
     return newEntity;
 }
 
@@ -51,7 +52,6 @@ entity_t Factory::createPlayer(float x, float y, const std::shared_ptr<sf::Textu
     _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{0, 0, (int)texture->getSize().x, (int)texture->getSize().y, 5, 150.0f});
     _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
     _registry.emplace_component<ECS::components::AnimationComponent>(newEntity, ECS::components::AnimationComponent{});
-    // _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{0.5, 0.5});
 
     return newEntity;
 }

@@ -20,6 +20,12 @@ namespace game {
 
         };
 
+        enum BUTTON_TYPE {
+            CREATE_GAME,
+            JOIN_GAME,
+            EXIT_SYSTEM
+        };
+
         protected:
             entity_t getPlayerEntityFromId(unsigned int id);
             entity_t getMissileEntityFromId(unsigned int id);
@@ -27,13 +33,13 @@ namespace game {
             void handleMusic(ECS::Registry &ecs, MUSIC_TYPE type, std::function<void(ECS::components::MusicComponent&)> callback);
 
             std::unordered_map<MUSIC_TYPE, entity_t> _musics;
+            std::unordered_map<BUTTON_TYPE, entity_t> _buttons;
             std::vector<std::pair<size_t, entity_t>> _players;
             std::vector<std::pair<size_t, entity_t>> _missiles;
             std::vector<std::pair<size_t, entity_t>> _ennemies;
             std::vector<ECS::systems::MovableSystem::EntityPos> _entityPositions;
             std::vector<ECS::systems::ControllableSystem::EntityEvent> _entityEvents;
             std::vector<entity_t> _parallax;
-            std::vector<entity_t> _buttons;
             std::vector<entity_t> _looser;
             entity_t _menuEntity;
             entity_t _playerEntity;

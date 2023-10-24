@@ -79,7 +79,7 @@ Game::Game(std::string ip, int port) :
     this->_musics.emplace(EntityManager::MUSIC_TYPE::PUSH_UP, this->_factory.createMusic(client::getAssetPath("songs/PUSH_UP.ogg"), 100, true));
     this->_musics.emplace(EntityManager::MUSIC_TYPE::VOIS_SUR_TON_CHEMIN, this->_factory.createMusic(client::getAssetPath("songs/VOIS_SUR_TON_CHEMIN.ogg"), 100, true));
 
-    
+
 
     this->_resMult = static_cast<float>(this->_screenSize.x)/ SCREEN_WIDTH;
 
@@ -90,12 +90,9 @@ Game::Game(std::string ip, int port) :
     this->_menuEntity = this->ecs.spawn_entity();
     this->ecs.emplace_component<ECS::components::ControllableComponent>(this->_menuEntity, ECS::components::ControllableComponent{sf::Keyboard::Key::Up, sf::Keyboard::Key::Down, sf::Keyboard::Key::Left, sf::Keyboard::Key::Right, sf::Keyboard::Key::Enter});
 
-    this->_buttons.push_back(this->_factory.createButton(100.0f + this->topLeftOffeset.x, 100.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::CreateRoomButton)));
-    this->_buttons.push_back(this->_factory.createButton(100.0f + this->topLeftOffeset.x, 200.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::JoinRoomButton)));
-    this->_buttons.push_back(this->_factory.createButton(100.0f + this->topLeftOffeset.x, 300.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton)));
-    this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_buttons[0], ECS::components::ScaleComponent{_resMult, _resMult});
-    this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_buttons[1], ECS::components::ScaleComponent{_resMult, _resMult});
-    this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_buttons[2], ECS::components::ScaleComponent{_resMult, _resMult});
+    this->_buttons.emplace_back(EntityManager::BUTTON_TYPE::CREATE_GAME, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 100.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::CreateRoomButton), _resMult, _resMult));
+    this->_buttons.emplace_back(EntityManager::BUTTON_TYPE::JOIN_GAME, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 200.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::JoinRoomButton), _resMult, _resMult));
+    this->_buttons.emplace_back(EntityManager::BUTTON_TYPE::EXIT_SYSTEM, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 300.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton), _resMult, _resMult));
 
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::RedPixel), _screenSize.x, _screenSize.y));
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::GreenPixel), _screenSize.x, _screenSize.y));
@@ -380,7 +377,7 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
     this->_startTimeLeft = packet.getData().getDataUInt();
     this->_started = packet.getData().getDataUChar();
     this->currentSong = packet.getData().getDataUChar();
-    
+
     if (this->_started == true) {
         this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [](ECS::components::MusicComponent &music) {
             music.playMusic();
