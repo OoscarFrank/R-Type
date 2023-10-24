@@ -161,6 +161,9 @@ void Game::update()
             case 19:
                 this->handlePlayerLife(packet);
                 break;
+            case 21:
+                std::cout << "STROBE" << std::endl;
+                break;
             case 255:
                 _net.resend(packet.getData().getDataUShort());
                 break;

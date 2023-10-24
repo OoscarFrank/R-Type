@@ -418,3 +418,13 @@ Stream StreamFactory::askResend(u_short nbr)
     out.setDataUShort(nbr);
     return out;
 }
+
+Stream StreamFactory::strobe(u_char color, u_int duration, u_int times)
+{
+    Stream out;
+    out.setDataUChar(21);
+    out.setDataUChar(color);
+    out.setDataUInt(duration);
+    out.setDataUInt(times);
+    return out;
+}

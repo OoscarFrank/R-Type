@@ -21,7 +21,6 @@ Room::Room(u_int id, std::shared_ptr<Client> client, Levels &levels, bool privat
     _private = privateRoom;
     _lastWaitMessage = NOW;
     _thread = std::thread(&Room::refresh, this);
-
 }
 
 Room::~Room()

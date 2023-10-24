@@ -8,6 +8,7 @@
 #include <map>
 #include <algorithm>
 #include <unordered_map>
+#include <tuple>
 
 class Room;
 
@@ -36,10 +37,34 @@ public:
                 public:
                     EntityEvents(unsigned char entity);
                     ~EntityEvents();
-                    std::vector<size_t> getSpawns(size_t lastTimecode, size_t currentTimecode);
+                    std::vector<size_t> getSpawns(size_t currentTimecode);
                     void addSpawn(size_t timecode, size_t pos);
                     unsigned char getEntity() const;
                     void sort();
+            };
+
+            class StrobeEvent
+            {
+                private:
+                    std::vector<std::tuple<size_t, unsigned char, size_t, size_t>> _strobe;
+                    std::vector<std::tuple<size_t, unsigned char, size_t, size_t>>::iterator _it;
+                    bool _init = true;
+                public:
+                    StrobeEvent();
+                    ~StrobeEvent();
+                    std::vector<std::tuple<size_t, unsigned char, size_t, size_t>> getEvents(size_t currentTimecode);
+                    void addColor(size_t timecode, unsigned char color, size_t duration, size_t times);
+                    void sort();
+
+                    enum {
+                        RED = 1,
+                        GREEN,
+                        BLUE,
+                        YELLOW,
+                        PURPLE,
+                        CYAN,
+                        WHITE
+                    };
             };
 
             enum Songs {
@@ -49,6 +74,7 @@ public:
             Level(const std::string &path);
             ~Level();
             std::vector<EntityEvents> &getEvents();
+            StrobeEvent &getStrobes();
             size_t getDuration() const;
             unsigned char getStage() const;
             unsigned char getSong() const;
@@ -69,6 +95,7 @@ public:
             void parsDuration(const std::string &line, const std::string &path);
             void parsEvents(const std::string &line, const std::string &path);
             std::vector<EntityEvents> _events;
+            StrobeEvent _strobes;
             unsigned char _stage = 0;
             unsigned char _song = 0;
             size_t _duration = 0;

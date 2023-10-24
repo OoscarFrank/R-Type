@@ -57,6 +57,7 @@ struct Commands {
  * 18 serv - player died (id)
  * 19 serv - vie du joueur
  * 20 serv - vie de l'ennemie (id)
+ * 21 serv - strobes (color, duratio , nb)
  */
 #define OUT_COMMANDS { \
     {1, {UINT}, 4, false}, \
@@ -74,6 +75,7 @@ struct Commands {
     {18, {UINT}, 4, true}, \
     {19, {INT}, 4, true}, \
     {20, {UINT, INT}, 8, true}, \
+    {21, {UCHAR, UINT, UINT}, 9, false}, \
     {255, {USHORT}, 2, true} \
 }
 
