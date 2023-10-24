@@ -1,5 +1,6 @@
 #include "Levels.hpp"
 #include "Room.hpp"
+#include <algorithm>
 
 Levels::Levels(Room &room):
     _room(room),
@@ -57,14 +58,21 @@ Levels::Level::EntityEvents::~EntityEvents()
 
 }
 
-std::vector<size_t> Levels::Level::EntityEvents::getSpawns(size_t lastTimecode, size_t currentTimecode) const
+std::vector<size_t> Levels::Level::EntityEvents::getSpawns(size_t lastTimecode, size_t currentTimecode)
 {
     std::vector<size_t> out;
-    for(auto i = _spawns.begin(); i != _spawns.end(); ++i) {
-        if (i->first > lastTimecode && i->first <= currentTimecode) {
-            for(auto j = i->second.begin(); j != i->second.end(); ++j) {
+
+    if (_init) {
+        _it = _spawns.begin();
+        _init = false;
+    }
+    for(; _it != _spawns.end(); ++_it) {
+        if ( _it->first <= currentTimecode) {
+            for(auto j = _it->second.begin(); j != _it->second.end(); ++j) {
                 out.push_back(*j);
             }
+        } else {
+            break;
         }
     }
     return out;
@@ -72,16 +80,30 @@ std::vector<size_t> Levels::Level::EntityEvents::getSpawns(size_t lastTimecode, 
 
 void Levels::Level::EntityEvents::addSpawn(size_t timecode, size_t pos)
 {
-    if (this->_spawns[timecode].empty()) {
-        this->_spawns[timecode] = std::vector<size_t>();
+    bool found = false;
+    for(auto i = this->_spawns.begin(); i != this->_spawns.end(); ++i) {
+        if ((*i).first == timecode) {
+            (*i).second.push_back(pos);
+            return;
+        }
     }
-    this->_spawns[timecode].push_back(pos);
+    this->_spawns.push_back(std::make_pair(timecode, std::vector<size_t>{pos}));
 }
 
 unsigned char Levels::Level::EntityEvents::getEntity() const
 {
     return this->_entity;
 }
+
+void Levels::Level::EntityEvents::sort()
+{
+    std::sort(_spawns.begin(), _spawns.end(), [](std::pair<size_t, std::vector<size_t>> a, std::pair<size_t, std::vector<size_t>> b) {
+        return a.first < b.first;
+    });
+}
+
+
+
 
 Levels::Level::Level(const std::string &path)
 {
@@ -106,6 +128,11 @@ Levels::Level::Level(const std::string &path)
         parsEvents(line, path);
     }
     file.close();
+
+    for (auto i = this->_events.begin(); i != this->_events.end(); ++i)
+        (*i).sort();
+    
+
 }
 
 Levels::Level::~Level()
@@ -257,7 +284,7 @@ void Levels::Level::parsEvents(const std::string &line, const std::string &path)
 }
 
 
-std::vector<Levels::Level::EntityEvents> Levels::Level::getEvents() const
+std::vector<Levels::Level::EntityEvents> &Levels::Level::getEvents()
 {
     return this->_events;
 }

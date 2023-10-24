@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <algorithm>
+#include <unordered_map>
 
 class Room;
 
@@ -29,14 +31,17 @@ public:
             class EntityEvents
             {
                 private:
-                    std::map<size_t, std::vector<size_t>> _spawns;
+                    std::vector<std::pair<size_t, std::vector<size_t>>> _spawns;
                     unsigned char _entity;
+                    std::vector<std::pair<size_t, std::vector<size_t>>>::iterator _it;
+                    bool _init = true;
                 public:
                     EntityEvents(unsigned char entity);
                     ~EntityEvents();
-                    std::vector<size_t> getSpawns(size_t lastTimecode, size_t currentTimecode) const;
+                    std::vector<size_t> getSpawns(size_t lastTimecode, size_t currentTimecode);
                     void addSpawn(size_t timecode, size_t pos);
                     unsigned char getEntity() const;
+                    void sort();
             };
 
             enum Songs {
@@ -45,7 +50,7 @@ public:
 
             Level(const std::string &path);
             ~Level();
-            std::vector<EntityEvents> getEvents() const;
+            std::vector<EntityEvents> &getEvents();
             size_t getDuration() const;
             unsigned char getStage() const;
             unsigned char getSong() const;
@@ -65,7 +70,6 @@ public:
             void parsSong(const std::string &line, const std::string &path);
             void parsDuration(const std::string &line, const std::string &path);
             void parsEvents(const std::string &line, const std::string &path);
-
             std::vector<EntityEvents> _events;
             unsigned char _stage = 0;
             unsigned char _song = 0;
