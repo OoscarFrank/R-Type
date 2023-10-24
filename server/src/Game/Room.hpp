@@ -139,6 +139,7 @@ class Room
         u_int &getMissilesIds();
         void addMonster(IEntity::Type type, int x, int y);
         std::pair<short, short> getNearestPlayerPos(const IEntity &entity);
+        bool isPrivate() const;
 };
 
 #endif
