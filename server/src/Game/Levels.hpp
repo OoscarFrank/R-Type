@@ -46,14 +46,14 @@ public:
             class StrobeEvent
             {
                 private:
-                    std::vector<std::tuple<size_t, unsigned char, size_t, size_t>> _strobe;
-                    std::vector<std::tuple<size_t, unsigned char, size_t, size_t>>::iterator _it;
+                    std::vector<std::tuple<size_t, unsigned char, bool>> _strobe;
+                    std::vector<std::tuple<size_t, unsigned char, bool>>::iterator _it;
                     bool _init = true;
                 public:
                     StrobeEvent();
                     ~StrobeEvent();
-                    std::vector<std::tuple<size_t, unsigned char, size_t, size_t>> getEvents(size_t currentTimecode);
-                    void addColor(size_t timecode, unsigned char color, size_t duration, size_t times);
+                    std::vector<std::tuple<size_t, unsigned char, bool>> getEvents(size_t currentTimecode);
+                    void addColor(size_t timecode, unsigned char color, size_t duration);
                     void sort();
 
                     enum {

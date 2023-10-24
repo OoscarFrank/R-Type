@@ -47,10 +47,10 @@ void Levels::update(Room &room)
     for (auto i = tmp.begin(); i != tmp.end(); ++i)
         room.addMonster(IEntity::Type::FOLLOWER_MONSTER, SCREEN_WIDTH, (*i));
     
-    std::vector<std::tuple<size_t, unsigned char, size_t, size_t>> strobes = this->_levels[_currentLvl].getStrobes().getEvents(current);
+    std::vector<std::tuple<size_t, unsigned char, bool>> strobes = this->_levels[_currentLvl].getStrobes().getEvents(current);
 
     for(auto i = strobes.begin(); i != strobes.end(); ++i) {
-        room.sendToAll(StreamFactory::strobe(std::get<1>(*i), std::get<2>(*i), std::get<3>(*i)));
+        room.sendToAll(StreamFactory::strobe(std::get<1>(*i), std::get<2>(*i)));
     }
 }
 
@@ -126,9 +126,9 @@ Levels::Level::StrobeEvent::~StrobeEvent()
 {
 }
 
-std::vector<std::tuple<size_t, unsigned char, size_t, size_t>> Levels::Level::StrobeEvent::getEvents(size_t currentTimecode)
+std::vector<std::tuple<size_t, unsigned char, bool>> Levels::Level::StrobeEvent::getEvents(size_t currentTimecode)
 {
-    std::vector<std::tuple<size_t, unsigned char, size_t, size_t>> out;
+    std::vector<std::tuple<size_t, unsigned char, bool>> out;
 
     if (_init) {
         _it = _strobe.begin();
@@ -144,15 +144,17 @@ std::vector<std::tuple<size_t, unsigned char, size_t, size_t>> Levels::Level::St
     return out;
 }
 
-void Levels::Level::StrobeEvent::addColor(size_t timecode, unsigned char color, size_t duration, size_t times)
+void Levels::Level::StrobeEvent::addColor(size_t timecode, unsigned char color, size_t duration)
 {
-    std::tuple<size_t, unsigned char, size_t, size_t> tmp(timecode, color, duration, times);
-    this->_strobe.push_back(tmp);
+    std::tuple<size_t, unsigned char, bool> tmpOn(timecode, color, true);
+    this->_strobe.push_back(tmpOn);
+    std::tuple<size_t, unsigned char, bool> tmpOff(timecode + duration, color, false);
+    this->_strobe.push_back(tmpOff);
 }
 
 void Levels::Level::StrobeEvent::sort()
 {
-    std::sort(_strobe.begin(), _strobe.end(), [](std::tuple<size_t, unsigned char, size_t, size_t> a, std::tuple<size_t, unsigned char, size_t, size_t> b) {
+    std::sort(_strobe.begin(), _strobe.end(), [](std::tuple<size_t, unsigned char, bool> a, std::tuple<size_t, unsigned char, bool> b) {
         return std::get<0>(a) < std::get<0>(b);
     });
 }
@@ -406,7 +408,11 @@ void Levels::Level::parsEvents(const std::string &line, const std::string &path)
             throw err;
             return;
         }
-        _strobes.addColor(timeCode, color, duration, times);
+
+        for (size_t i = 0; i < times; i++) {
+
+            _strobes.addColor(timeCode + (i * (duration * 2)), color, duration);
+        }
     }
 }
 

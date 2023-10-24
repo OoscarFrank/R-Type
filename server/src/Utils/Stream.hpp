@@ -80,7 +80,7 @@ namespace StreamFactory {
     Stream playerLife(int life);
     Stream monsterLife(u_int id, int life);
     Stream askResend(u_short nbr);
-    Stream strobe(u_char color, u_int duration, u_int times);
+    Stream strobe(u_char color, bool onOff);
 }
 
 #endif

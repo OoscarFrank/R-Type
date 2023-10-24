@@ -133,3 +133,12 @@ entity_t Factory::createMusic(const std::string &musicPath, float volume, bool l
     _registry.emplace_component<ECS::components::MusicComponent>(newEntity, ECS::components::MusicComponent{musicPath, volume, loop});
     return newEntity;
 }
+
+entity_t Factory::createStrobe(const std::shared_ptr<sf::Texture> &texture, float x, float y)
+{
+    entity_t newEntity = _registry.spawn_entity(100);
+    _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
+    _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
+    _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{static_cast<float>(x), static_cast<float>(y)});
+    return newEntity;
+}
