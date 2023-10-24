@@ -427,3 +427,13 @@ Stream StreamFactory::strobe(u_char color, bool onOff)
     out.setDataUChar(static_cast<u_char>(onOff));
     return out;
 }
+
+Stream StreamFactory::changeLevel(u_int timout, u_char song, bool started)
+{
+    Stream out;
+    out.setDataUChar(22);
+    out.setDataUInt(timout);
+    out.setDataUChar(song);
+    out.setDataUChar(static_cast<u_char>(started));
+    return out;
+}

@@ -183,6 +183,9 @@ void Game::update()
             case 21:
                 this->handleStrobes(packet);
                 break;
+            case 22:
+                this->handleChangeLevel(packet);
+                break;
             case 255:
                 _net.resend(packet.getData().getDataUShort());
                 break;
@@ -542,4 +545,38 @@ void Game::handleStrobes(Network::Packet &packet)
             comp.setY(y);
         });
     }
+}
+
+void Game::handleChangeLevel(Network::Packet &packet)
+{
+    unsigned int timeout = packet.getData().getDataUInt();
+    unsigned char song = packet.getData().getDataUChar();
+    unsigned char started = packet.getData().getDataUChar();
+    unsigned int fadeOutTime = 5000;
+
+
+    if (!started) {
+        this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [timeout, fadeOutTime](ECS::components::MusicComponent &music) {
+            if (timeout <= fadeOutTime) {
+                int volume = 100 * timeout / fadeOutTime;
+                volume = (volume * -1) + 100;
+                music.setVolume(volume);
+            } else
+                music.setVolume(0);
+        });
+    }
+    if (started) {
+        this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [timeout](ECS::components::MusicComponent &music) {
+                music.stopmusic();
+        });
+        if (this->currentSong != song)
+            this->currentSong = song;
+        this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [](ECS::components::MusicComponent &music) {
+            music.setVolume(100);
+            music.playMusic();
+        });
+        
+    }
+    
+
 }

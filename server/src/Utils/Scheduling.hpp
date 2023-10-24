@@ -50,6 +50,7 @@
 #define SEND_WAIT_MESSAGE_TIME          200 // ms
 #define PLAYER_ALIVE_MAX_TIME           10 // seconds
 #define TIMEOUT_START_GAME              1000 // ms
+#define TIMEOUT_BETWEEN_LEVELS          5000 // ms
 #define GAME_OVER_REFRESH               500 // ms
 
 #endif

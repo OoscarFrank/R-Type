@@ -30,26 +30,54 @@ const Levels::Level &Levels::getLevel() const
 
 void Levels::update(Room &room)
 {
-    size_t current = chronoDiff(chronoMs, chronoNow, _lvlStart);
-    std::vector<size_t> tmp;
+    if (!_ended) {
 
-    tmp = this->_levels[_currentLvl].getEvents()[Monster::LITTLE_MONSTER - 2].getSpawns(current);
-    for (auto i = tmp.begin(); i != tmp.end(); ++i)
-        room.addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, (*i));
+        size_t current = chronoDiff(chronoMs, chronoNow, _lvlStart);
+        std::vector<size_t> tmp;
 
-    tmp = this->_levels[_currentLvl].getEvents()[Monster::ZIGZAGER_MONSTER - 2].getSpawns(current);
-    for (auto i = tmp.begin(); i != tmp.end(); ++i)
-        room.addMonster(IEntity::Type::ZIGZAGER_MONSTER, SCREEN_WIDTH, (*i));
+        tmp = this->_levels[_currentLvl].getEvents()[Monster::LITTLE_MONSTER - 2].getSpawns(current);
+        for (auto i = tmp.begin(); i != tmp.end(); ++i)
+            room.addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, (*i));
 
-    tmp = this->_levels[_currentLvl].getEvents()[Monster::FOLLOWER_MONSTER - 2].getSpawns(current);
-    for (auto i = tmp.begin(); i != tmp.end(); ++i)
-        room.addMonster(IEntity::Type::FOLLOWER_MONSTER, SCREEN_WIDTH, (*i));
-    
-    std::vector<std::tuple<size_t, unsigned char, bool>> strobes = this->_levels[_currentLvl].getStrobes().getEvents(current);
+        tmp = this->_levels[_currentLvl].getEvents()[Monster::ZIGZAGER_MONSTER - 2].getSpawns(current);
+        for (auto i = tmp.begin(); i != tmp.end(); ++i)
+            room.addMonster(IEntity::Type::ZIGZAGER_MONSTER, SCREEN_WIDTH, (*i));
 
-    for(auto i = strobes.begin(); i != strobes.end(); ++i) {
-        room.sendToAll(StreamFactory::strobe(std::get<1>(*i), std::get<2>(*i)));
+        tmp = this->_levels[_currentLvl].getEvents()[Monster::FOLLOWER_MONSTER - 2].getSpawns(current);
+        for (auto i = tmp.begin(); i != tmp.end(); ++i)
+            room.addMonster(IEntity::Type::FOLLOWER_MONSTER, SCREEN_WIDTH, (*i));
+        
+        std::vector<std::tuple<size_t, unsigned char, bool>> strobes = this->_levels[_currentLvl].getStrobes().getEvents(current);
+
+        for(auto i = strobes.begin(); i != strobes.end(); ++i) {
+            room.sendToAll(StreamFactory::strobe(std::get<1>(*i), std::get<2>(*i)));
+        }
+        if (this->_levels[_currentLvl].isEnded() && !room.isMonster()) {
+            _ended = true;
+            _endTime = chronoNow;
+            _currentLvl += 1;
+            _lastUpdate = chronoNow;
+        }
     }
+    if (_ended) {
+        if (_currentLvl < this->_levels.size()) {
+            if (chronoDiff(chronoMs, chronoNow, _endTime) < TIMEOUT_BETWEEN_LEVELS ) {
+                if (chronoDiff(chronoMs, chronoNow, _lastUpdate) > 200) {
+                    room.sendToAll(StreamFactory::changeLevel(chronoDiff(chronoMs, chronoNow, _endTime), this->_levels[_currentLvl].getSong(), false));
+                    _lastUpdate = chronoNow;
+                }
+            } else {
+                room.sendToAll(StreamFactory::changeLevel(0, this->_levels[_currentLvl].getSong(), true));
+                _ended = false;
+                _lvlStart = chronoNow;
+            }
+            
+        } else {
+            std::cout << "NO MORE STAGES !!!" << std::endl;
+        }
+    }
+
+
 }
 
 
@@ -116,6 +144,10 @@ bool Levels::Level::EntityEvents::isFinished() const
     return _it == _spawns.end();
 }
 
+void Levels::Level::EntityEvents::setInit(bool init)
+{
+    this->_init = init;
+}
 
 
 
@@ -168,7 +200,10 @@ bool Levels::Level::StrobeEvent::isFinished() const
 }
 
 
-
+void Levels::Level::StrobeEvent::setInit(bool init)
+{
+    this->_init = init;
+}
 
 
 
