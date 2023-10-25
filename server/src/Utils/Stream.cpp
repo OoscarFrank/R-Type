@@ -1,12 +1,5 @@
 #include "Stream.hpp"
 
-inline char TypesLitterals::operator""_c(unsigned long long c) { return static_cast<char>(c); }
-inline short TypesLitterals::operator""_s(unsigned long long c) { return static_cast<short>(c); }
-inline int TypesLitterals::operator""_i(unsigned long long c) { return static_cast<int>(c); }
-inline u_char TypesLitterals::operator""_uc(unsigned long long c) { return static_cast<u_char>(c); }
-inline u_short TypesLitterals::operator""_us(unsigned long long c) { return static_cast<u_short>(c); }
-inline u_int TypesLitterals::operator""_ui(unsigned long long c) { return static_cast<u_int>(c); }
-
 using namespace TypesLitterals;
 
 Stream::Stream()

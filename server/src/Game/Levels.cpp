@@ -47,7 +47,9 @@ void Levels::update(Room &room)
         tmp = this->_levels[_currentLvl].getEvents()[Monster::FOLLOWER_MONSTER - 2].getSpawns(current);
         for (auto i = tmp.begin(); i != tmp.end(); ++i)
             room.addMonster(IEntity::Type::FOLLOWER_MONSTER, SCREEN_WIDTH, (*i));
-        
+        tmp = this->_levels[_currentLvl].getEvents()[Monster::BURST_MONSTER - 2].getSpawns(current);
+        for (auto i = tmp.begin(); i != tmp.end(); ++i)
+            room.addMonster(IEntity::Type::BURST_MONSTER, SCREEN_WIDTH, (*i));
         std::vector<std::tuple<size_t, unsigned char, bool>> strobes = this->_levels[_currentLvl].getStrobes().getEvents(current);
 
         for(auto i = strobes.begin(); i != strobes.end(); ++i) {
@@ -223,6 +225,7 @@ Levels::Level::Level(const std::string &path)
     this->_events.push_back(EntityEvents(Monster::LITTLE_MONSTER));
     this->_events.push_back(EntityEvents(Monster::ZIGZAGER_MONSTER));
     this->_events.push_back(EntityEvents(Monster::FOLLOWER_MONSTER));
+    this->_events.push_back(EntityEvents(Monster::BURST_MONSTER));
 
 
     std::string line;
@@ -306,6 +309,8 @@ void Levels::Level::parsEvents(const std::string &line, const std::string &path,
         this->_parserEntity = Monster::FOLLOWER_MONSTER;
     else if (line.find("ZIGZAGER_MONSTER") != std::string::npos)
         this->_parserEntity = Monster::ZIGZAGER_MONSTER;
+    else if (line.find("BURST_MONSTER") != std::string::npos)
+        this->_parserEntity = Monster::BURST_MONSTER;
  
     if (this->_parserEntity != -1 && this->_parserEntity != 1) {
         size_t timeCode = 0;

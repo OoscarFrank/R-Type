@@ -1,6 +1,8 @@
 #include "Network.hpp"
 #include <bitset>
 
+using namespace TypesLitterals;
+
 Network::Network(std::string ip, int port) : _socket(_ioContext, asio::ip::udp::v4()), _serverEndpoint(asio::ip::address::from_string(ip), port), _inCommands(IN_COMMANDS), _outCommands(OUT_COMMANDS)
 {
     this->_ReaderThread = std::thread(&Network::read, this);
@@ -20,11 +22,6 @@ void Network::setClosed(bool closed)
     _closed = closed;
 }
 
-void Network::setInst(unsigned char inst)
-{
-    _instOut = inst;
-}
-
 void Network::send(const Stream &stream)
 {
     Stream tmp = stream;
@@ -39,9 +36,7 @@ void Network::send(const Stream &stream)
                 u_short nbr = ++_cmdNbr;
                 _sentPackets[nbr] = stream;
                 tmp.clear();
-                tmp.setDataUChar(stream[0]);
-                tmp.setDataUShort(nbr);
-                tmp += stream.subStream(1);
+                tmp << stream[0] << nbr << stream.subStream(1);
             }
             break;
         }
@@ -51,16 +46,6 @@ void Network::send(const Stream &stream)
         _socket.send_to(asio::buffer(tmp.toString()), _serverEndpoint);
     else
         std::cerr << "Endpoint is not IPv4" << std::endl;
-}
-
-void Network::send()
-{
-    Stream out;
-    out += _instOut;
-    out += _streamOut;
-    send(out);
-    _streamOut.clear();
-    _instOut = 0;
 }
 
 void Network::resend(u_short cmdNbr)
@@ -127,8 +112,7 @@ std::pair<size_t, Stream> Network::getNextInst()
                     for (_lastCmdNbrRecieved++; test != _lastCmdNbrRecieved; _lastCmdNbrRecieved++) {
                         std::cout << "Cmd not recieved: " << _lastCmdNbrRecieved << std::endl;
                         Stream out;
-                        out.setDataUChar(255);
-                        out.setDataUShort(_lastCmdNbrRecieved);
+                        out << 255_uc << _lastCmdNbrRecieved;
                         send(out);
                         ++count;
                         if (count > 50) {
@@ -148,11 +132,6 @@ std::pair<size_t, Stream> Network::getNextInst()
     return std::make_pair(0, Stream());
 }
 
-Stream &Network::getStreamOut()
-{
-    return _streamOut;
-}
-
 Network::Packet::Packet()
 {
 }
@@ -166,6 +145,48 @@ Network::Packet::Packet(const Stream &data, int instruction) : _data(data), _ins
 Network::Packet::~Packet()
 {
 
+}
+
+Network::Packet &Network::Packet::operator>>(u_char &data)
+{
+    _data >> data;
+    return *this;
+}
+
+Network::Packet &Network::Packet::operator>>(u_short &data)
+{
+    _data >> data;
+    return *this;
+}
+
+Network::Packet &Network::Packet::operator>>(u_int &data)
+{
+    _data >> data;
+    return *this;
+}
+
+Network::Packet &Network::Packet::operator>>(char &data)
+{
+    _data >> data;
+    return *this;
+}
+
+Network::Packet &Network::Packet::operator>>(short &data)
+{
+    _data >> data;
+    return *this;
+}
+
+Network::Packet &Network::Packet::operator>>(int &data)
+{
+    _data >> data;
+    return *this;
+}
+
+Network::Packet &Network::Packet::operator>>(bool &data)
+{
+    _data >> data;
+    return *this;
 }
 
 int Network::Packet::getInstruction() const

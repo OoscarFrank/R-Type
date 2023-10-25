@@ -9,6 +9,7 @@
 #include "Entities/Monsters/Little.hpp"
 #include "Entities/Monsters/Zigzager.hpp"
 #include "Entities/Monsters/Follower.hpp"
+#include "Entities/Monsters/BurstFire.hpp"
 #include "../Client.hpp"
 #include "Levels.hpp"
 
