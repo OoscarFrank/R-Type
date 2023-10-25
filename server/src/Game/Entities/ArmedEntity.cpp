@@ -47,3 +47,9 @@ void ArmedEntity::fireMissile(Missile::Type type, short vx, short vy)
     std::unique_lock<std::mutex> lock(_missilesMutex);
     _missiles.push_back(std::make_unique<Missile>(_room, type, ++_room.getMissilesIds(), _box.x + _box.width / 2, _box.y + _box.height / 2, vx, vy));
 }
+
+void ArmedEntity::fireMissile(Missile::Type type, short vx, short vy, short posX, short posY)
+{
+    std::unique_lock<std::mutex> lock(_missilesMutex);
+    _missiles.push_back(std::make_unique<Missile>(_room, type, ++_room.getMissilesIds(), posX, posY, vx, vy));
+}
