@@ -332,6 +332,11 @@ void Game::handleEnnemiPosition(Network::Packet &packet)
                 this->_ennemies.push_back(std::make_pair(id, newEntity));
             }
                 break;
+            case 5: {
+                entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster4), this->_resMult);
+                this->_ennemies.push_back(std::make_pair(id, newEntity));
+            }
+                break;
             default:
                 break;
         }

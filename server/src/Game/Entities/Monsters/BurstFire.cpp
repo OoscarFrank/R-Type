@@ -2,14 +2,14 @@
 #include "../../Room.hpp"
 
 BurstMonster::BurstMonster(Room &room, u_int id, short x, short y):
-    Monster(room, id, x, y, LITTLE_MONSTER_WIDTH, LITTLE_MONSTER_HEIGHT)
+    Monster(room, id, x, y, BURST_MONSTER_WIDTH, BURST_MONSTER_HEIGHT)
 {
     _life = 100;
     _burstCount = 0;
 }
 
 BurstMonster::BurstMonster(Room &room, u_int id, const std::pair<short, short> &pos):
-    Monster(room, id, pos, {LITTLE_MONSTER_WIDTH, LITTLE_MONSTER_HEIGHT})
+    Monster(room, id, pos, {BURST_MONSTER_WIDTH, BURST_MONSTER_HEIGHT})
 {
     _life = 100;
     _burstCount = 0;
@@ -28,7 +28,7 @@ void BurstMonster::refresh()
         _lastFire = now;
     }
     if (_burstCount < 3) {
-        if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= _burstCount * 200) {
+        if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= _burstCount * 80) {
             fireMissile(Missile::Type::LITTLE_MONSTER, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, 0);
             _burstCount++;
         }
