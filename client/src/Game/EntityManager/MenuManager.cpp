@@ -4,13 +4,15 @@ using namespace game;
 
 MenuManager::MenuManager()
 {
+    this->_lastButtonInput = NOW;
+    this->_selectedButton = CREATE_GAME;
 }
 
 MenuManager::~MenuManager()
 {
 }
 
-void MenuManager::addMenu(MENU_TYPE type, entity_t entity, bool isDisplay, std::vector<BUTTON_TYPE> buttons)
+void MenuManager::createMenu(MENU_TYPE type, entity_t entity, bool isDisplay, std::vector<BUTTON_TYPE> buttons)
 {
     if (this->_menu.find(type) != this->_menu.end())
         return;
@@ -22,11 +24,6 @@ void MenuManager::removeMenu(MENU_TYPE type)
     if (this->_menu.find(type) == this->_menu.end())
         return;
     this->_menu.erase(type);
-}
-
-bool MenuManager::isMenuExist(MENU_TYPE type)
-{
-    return this->_menu.find(type) != this->_menu.end();
 }
 
 entity_t MenuManager::getMenuEntity(MENU_TYPE type)
@@ -43,11 +40,11 @@ void MenuManager::changeMenuEntity(MENU_TYPE type, entity_t entity)
     this->_menu[type].first.first = entity;
 }
 
-void MenuManager::menuIsDisplayed(MENU_TYPE type, bool isDisplayed)
+bool MenuManager::menuState(MENU_TYPE type)
 {
     if (this->_menu.find(type) == this->_menu.end())
-        return;
-    this->_menu[type].first.second = isDisplayed;
+        return false;
+    return this->_menu[type].first.second;
 }
 
 void MenuManager::enableMenu(ECS::Registry &ecs, MENU_TYPE type)
@@ -72,40 +69,30 @@ void MenuManager::disableMenu(ECS::Registry &ecs, MENU_TYPE type)
         ecs.disableEntity(this->_buttons[button]);
 }
 
-
-void MenuManager::addButton(BUTTON_TYPE type, entity_t entity)
+void MenuManager::nextButtonInMenu(ECS::Registry &ecs, MENU_TYPE type)
 {
-    if (this->_buttons.find(type) != this->_buttons.end())
+    auto now = NOW;
+    if (now - this->_lastButtonInput < 150)
         return;
-    this->_buttons[type] = entity;
-}
+    this->_lastButtonInput = now;
 
-void MenuManager::removeButton(BUTTON_TYPE type)
-{
-    if (this->_buttons.find(type) == this->_buttons.end())
-        return;
-    this->_buttons.erase(type);
-}
-
-void MenuManager::addButtonToMenu(MENU_TYPE type, BUTTON_TYPE button)
-{
     if (this->_menu.find(type) == this->_menu.end())
         return;
-    this->_menu[type].second.push_back(button);
-}
-
-void MenuManager::removeButtonInMenu(MENU_TYPE type, BUTTON_TYPE button)
-{
-    if (this->_menu.find(type) == this->_menu.end())
+    auto &menu = this->_menu[type];
+    auto &buttons = menu.second;
+    if (buttons.size() == 0)
         return;
-    auto it = std::find(this->_menu[type].second.begin(), this->_menu[type].second.end(), button);
-    if (it != this->_menu[type].second.end())
-        this->_menu[type].second.erase(it);
-}
-
-std::vector<MenuManager::BUTTON_TYPE> MenuManager::getMenuButtons(MENU_TYPE type)
-{
-    if (this->_menu.find(type) == this->_menu.end())
-        return std::vector<BUTTON_TYPE>();
-    return this->_menu[type].second;
+    auto it = std::find(buttons.begin(), buttons.end(), this->_selectedButton);
+    if (it == buttons.end())
+        return;
+    ecs.modify_component<ECS::components::TextureRectComponent>(this->_buttons[this->_selectedButton], [](ECS::components::TextureRectComponent &comp) {
+        comp.setFrameOnTexture(0);
+    });
+    if (it + 1 == buttons.end())
+        this->_selectedButton = buttons[0];
+    else
+        this->_selectedButton = *(it + 1);
+    ecs.modify_component<ECS::components::TextureRectComponent>(this->_buttons[this->_selectedButton], [](ECS::components::TextureRectComponent &comp) {
+        comp.setFrameOnTexture(1);
+    });
 }

@@ -95,7 +95,7 @@ Game::Game(std::string ip, int port) :
     // create menus
     entity_t entity_mainMenu = this->ecs.spawn_entity();
     this->ecs.emplace_component<ECS::components::ControllableComponent>(entity_mainMenu, ECS::components::ControllableComponent{sf::Keyboard::Key::Up, sf::Keyboard::Key::Down, sf::Keyboard::Key::Left, sf::Keyboard::Key::Right, sf::Keyboard::Key::Enter});
-    this->addMenu(MAIN_MENU, entity_mainMenu, true, std::vector<BUTTON_TYPE>({CREATE_GAME, JOIN_GAME, EXIT_SYSTEM}));
+    this->createMenu(MAIN_MENU, entity_mainMenu, true, std::vector<BUTTON_TYPE>({CREATE_GAME, JOIN_GAME, EXIT_SYSTEM}));
     this->enableMenu(this->ecs, MAIN_MENU);
 
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::RedPixel), _screenSize.x, _screenSize.y));
@@ -201,12 +201,14 @@ void Game::update()
 void Game::sendMoveToServer()
 {
     for (auto i = this->_entityEvents.begin(); i != this->_entityEvents.end(); ++i) {
-        if (this->isMenuExist(MENU_TYPE::MAIN_MENU) && (*i).getEntity() == this->getMenuEntity(MENU_TYPE::MAIN_MENU)) {
+        if (this->menuState(MENU_TYPE::MAIN_MENU) == true && (*i).getEntity() == this->getMenuEntity(MENU_TYPE::MAIN_MENU)) {
             if ((*i).getEvent() & ENTER) {
                 this->disableMenu(this->ecs, MAIN_MENU);
                 this->_net.setInst(9);
                 this->_net.send();
-                continue;
+            }
+            if ((*i).getEvent() & DOWN) {
+                this->nextButtonInMenu(this->ecs, MAIN_MENU);
             }
             continue;
         }
@@ -217,12 +219,10 @@ void Game::sendMoveToServer()
                 this->_net.getStreamOut().setDataUChar((*i).getEvent() & move);
                 this->_net.getStreamOut().setDataUChar(1);
                 this->_net.send();
-                continue;
             }
             if ((*i).getEvent() & SPACE) {
                 this->_net.setInst(5);
                 this->_net.send();
-                continue;
             }
             continue;
         }
