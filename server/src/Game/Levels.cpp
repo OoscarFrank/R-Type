@@ -47,11 +47,12 @@ void Levels::update(Room &room)
         tmp = this->_levels[_currentLvl].getEvents()[Monster::FOLLOWER_MONSTER - 2].getSpawns(current);
         for (auto i = tmp.begin(); i != tmp.end(); ++i)
             room.addMonster(IEntity::Type::FOLLOWER_MONSTER, SCREEN_WIDTH, (*i));
+
         tmp = this->_levels[_currentLvl].getEvents()[Monster::BURST_MONSTER - 2].getSpawns(current);
         for (auto i = tmp.begin(); i != tmp.end(); ++i)
             room.addMonster(IEntity::Type::BURST_MONSTER, SCREEN_WIDTH, (*i));
-        std::vector<std::tuple<size_t, unsigned char, bool>> strobes = this->_levels[_currentLvl].getStrobes().getEvents(current);
 
+        std::vector<std::tuple<size_t, unsigned char, bool>> strobes = this->_levels[_currentLvl].getStrobes().getEvents(current);
         for(auto i = strobes.begin(); i != strobes.end(); ++i) {
             room.sendToAll(StreamFactory::strobe(std::get<1>(*i), std::get<2>(*i)));
         }
@@ -246,28 +247,6 @@ Levels::Level::Level(const std::string &path)
 Levels::Level::~Level()
 {
 }
-
-// void Levels::Level::parsStage(const std::string &line, const std::string &path)
-// {
-//     if (line.find("STAGE") != std::string::npos) {
-//         size_t pos;
-//         if ((pos = line.find(":")) == std::string::npos) {
-//             Levels::Level::ParsError err;
-//             err._msg =  "Error while reading file : " + path + " : STAGE";
-//             throw err;
-//             return;
-//         } else {
-//             try {
-//                 this->_stage = std::stoi(line.substr(pos + 1));
-//             } catch (const std::exception& e) {
-//                 Levels::Level::ParsError err;
-//                 err._msg =  "Error while reading file : " + path + " : STAGE";
-//                 throw err;
-//                 return;
-//             }
-//         }
-//     }
-// }
 
 void Levels::Level::parsSong(const std::string &line, const std::string &path, size_t line_nb)
 {
