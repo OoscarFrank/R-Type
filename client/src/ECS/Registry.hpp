@@ -126,14 +126,39 @@ namespace ECS
          *
          * @return entity_t
          */
-        entity_t spawn_entity(std::size_t zIndex = 0)
+        entity_t spawn_entity(std::size_t zIndex = 0, bool state = true)
         {
             entity_t entity = _next_entity_id++;
-            _entity_to_index[entity] = std::make_pair(true, zIndex);
+            _entity_to_index[entity] = std::make_pair(state, zIndex);
 
             _entities.push_back(entity);
             return entity;
         }
+
+        void disableEntity(entity_t const &entity)
+        {
+            if (_entity_to_index.find(entity) == _entity_to_index.end()) {
+                throw std::runtime_error("Entity not found.");
+            }
+            _entity_to_index[entity].first = false;
+        }
+
+        void enableEntity(entity_t const &entity)
+        {
+            if (_entity_to_index.find(entity) == _entity_to_index.end()) {
+                throw std::runtime_error("Entity not found.");
+            }
+            _entity_to_index[entity].first = true;
+        }
+
+        bool isEntityEnabled(entity_t const &entity)
+        {
+            if (_entity_to_index.find(entity) == _entity_to_index.end()) {
+                throw std::runtime_error("Entity not found.");
+            }
+            return _entity_to_index[entity].first;
+        }
+
         /**
          * @brief Get an entity from an index
          *

@@ -1,13 +1,11 @@
 #pragma once
 
-#include <iostream>
-#include <vector>
-#include "../ECS/Systems/Systems.hpp"
+#include "MenuManager.hpp"
 
 using entity_t = std::size_t;
 
 namespace game {
-    class EntityManager {
+    class EntityManager: public MenuManager {
         public:
             EntityManager();
             ~EntityManager();
@@ -20,12 +18,6 @@ namespace game {
 
         };
 
-        enum BUTTON_TYPE {
-            CREATE_GAME,
-            JOIN_GAME,
-            EXIT_SYSTEM
-        };
-
         protected:
             entity_t getPlayerEntityFromId(unsigned int id);
             entity_t getMissileEntityFromId(unsigned int id);
@@ -33,7 +25,6 @@ namespace game {
             void handleMusic(ECS::Registry &ecs, MUSIC_TYPE type, std::function<void(ECS::components::MusicComponent&)> callback);
 
             std::unordered_map<MUSIC_TYPE, entity_t> _musics;
-            std::unordered_map<BUTTON_TYPE, entity_t> _buttons;
             std::vector<std::pair<size_t, entity_t>> _players;
             std::vector<std::pair<size_t, entity_t>> _missiles;
             std::vector<std::pair<size_t, entity_t>> _ennemies;
@@ -41,7 +32,6 @@ namespace game {
             std::vector<ECS::systems::ControllableSystem::EntityEvent> _entityEvents;
             std::vector<entity_t> _parallax;
             std::vector<entity_t> _looser;
-            entity_t _menuEntity;
             entity_t _playerEntity;
             entity_t _playerLife;
             entity_t _scoreCoche;

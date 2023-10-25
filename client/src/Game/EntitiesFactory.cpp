@@ -25,7 +25,7 @@ Factory::~Factory()
 
 entity_t Factory::createButton(float x, float y, const std::shared_ptr<sf::Texture> &texture, const sf::Vector2f &scale)
 {
-    entity_t newEntity = _registry.spawn_entity(80);
+    entity_t newEntity = _registry.spawn_entity(80, false);
     _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
     _registry.emplace_component<ECS::components::ButtonComponent>(newEntity, ECS::components::ButtonComponent{});
     _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{0, 0, (int)texture->getSize().x, (int)texture->getSize().y, 2, 0.0f});
