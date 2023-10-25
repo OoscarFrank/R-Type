@@ -82,7 +82,6 @@ public:
             ~Level();
             std::vector<EntityEvents> &getEvents();
             StrobeEvent &getStrobes();
-            unsigned char getStage() const;
             unsigned char getSong() const;
             bool isEnded() const;
 
@@ -97,12 +96,10 @@ public:
                     const char *what() const noexcept override { return _msg.c_str(); }
             };
         private:
-            void parsStage(const std::string &line, const std::string &path);
-            void parsSong(const std::string &line, const std::string &path);
-            void parsEvents(const std::string &line, const std::string &path);
+            void parsSong(const std::string &line, const std::string &path, size_t line_nb);
+            void parsEvents(const std::string &line, const std::string &path, size_t line_nb);
             std::vector<EntityEvents> _events;
             StrobeEvent _strobes;
-            unsigned char _stage = 0;
             unsigned char _song = 0;
 
             char _parserEntity = -1;
