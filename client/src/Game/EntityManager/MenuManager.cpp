@@ -2,7 +2,7 @@
 
 using namespace game;
 
-MenuManager::MenuManager()
+MenuManager::MenuManager(ECS::Registry &ecs): _ecs(ecs)
 {
     this->_lastButtonInput = NOW;
     this->_selectedButton = NO_BUTTON;
@@ -12,10 +12,10 @@ MenuManager::~MenuManager()
 {
 }
 
-void MenuManager::initFirstButton(ECS::Registry &ecs, BUTTON_TYPE type)
+void MenuManager::initFirstButton(BUTTON_TYPE type)
 {
     this->_selectedButton = type;
-    ecs.modify_component<ECS::components::TextureRectComponent>(this->_buttons[this->_selectedButton], [](ECS::components::TextureRectComponent &comp) {
+    this->_ecs.modify_component<ECS::components::TextureRectComponent>(this->_buttons[this->_selectedButton], [](ECS::components::TextureRectComponent &comp) {
         comp.setFrameOnTexture(1);
     });
 
@@ -33,6 +33,13 @@ void MenuManager::removeMenu(MENU_TYPE type)
     if (this->_menu.find(type) == this->_menu.end())
         return;
     this->_menu.erase(type);
+}
+
+void MenuManager::createButton(BUTTON_TYPE type, entity_t entity)
+{
+    if (this->_buttons.find(type) != this->_buttons.end())
+        return;
+    this->_buttons.emplace(type, entity);
 }
 
 entity_t MenuManager::getMenuEntity(MENU_TYPE type)
@@ -56,26 +63,26 @@ bool MenuManager::menuState(MENU_TYPE type)
     return this->_menu[type].first.second;
 }
 
-void MenuManager::enableMenu(ECS::Registry &ecs, MENU_TYPE type)
+void MenuManager::enableMenu(MENU_TYPE type)
 {
     if (this->_menu.find(type) == this->_menu.end())
         return;
     auto &menu = this->_menu[type];
     menu.first.second = true;
-    ecs.enableEntity(menu.first.first);
+    this->_ecs.enableEntity(menu.first.first);
     for (auto &button : menu.second)
-        ecs.enableEntity(this->_buttons[button]);
+        this->_ecs.enableEntity(this->_buttons[button]);
 }
 
-void MenuManager::disableMenu(ECS::Registry &ecs, MENU_TYPE type)
+void MenuManager::disableMenu(MENU_TYPE type)
 {
     if (this->_menu.find(type) == this->_menu.end())
         return;
     auto &menu = this->_menu[type];
     menu.first.second = false;
-    ecs.disableEntity(menu.first.first);
+    this->_ecs.disableEntity(menu.first.first);
     for (auto &button : menu.second)
-        ecs.disableEntity(this->_buttons[button]);
+        this->_ecs.disableEntity(this->_buttons[button]);
 }
 
 bool MenuManager::checkLastButtonInput()
@@ -87,7 +94,7 @@ bool MenuManager::checkLastButtonInput()
     return true;
 }
 
-void MenuManager::nextButtonInMenu(ECS::Registry &ecs, MENU_TYPE type)
+void MenuManager::nextButtonInMenu(MENU_TYPE type)
 {
     if (this->checkLastButtonInput() == false)
         return;
@@ -101,19 +108,19 @@ void MenuManager::nextButtonInMenu(ECS::Registry &ecs, MENU_TYPE type)
     auto it = std::find(buttons.begin(), buttons.end(), this->_selectedButton);
     if (it == buttons.end())
         return;
-    ecs.modify_component<ECS::components::TextureRectComponent>(this->_buttons[this->_selectedButton], [](ECS::components::TextureRectComponent &comp) {
+    this->_ecs.modify_component<ECS::components::TextureRectComponent>(this->_buttons[this->_selectedButton], [](ECS::components::TextureRectComponent &comp) {
         comp.setFrameOnTexture(0);
     });
     if (it + 1 == buttons.end())
         this->_selectedButton = buttons[0];
     else
         this->_selectedButton = *(it + 1);
-    ecs.modify_component<ECS::components::TextureRectComponent>(this->_buttons[this->_selectedButton], [](ECS::components::TextureRectComponent &comp) {
+    this->_ecs.modify_component<ECS::components::TextureRectComponent>(this->_buttons[this->_selectedButton], [](ECS::components::TextureRectComponent &comp) {
         comp.setFrameOnTexture(1);
     });
 }
 
-void MenuManager::previousButtonInMenu(ECS::Registry &ecs, MENU_TYPE type)
+void MenuManager::previousButtonInMenu(MENU_TYPE type)
 {
     if (this->checkLastButtonInput() == false)
         return;
@@ -127,14 +134,14 @@ void MenuManager::previousButtonInMenu(ECS::Registry &ecs, MENU_TYPE type)
     auto it = std::find(buttons.begin(), buttons.end(), this->_selectedButton);
     if (it == buttons.end())
         return;
-    ecs.modify_component<ECS::components::TextureRectComponent>(this->_buttons[this->_selectedButton], [](ECS::components::TextureRectComponent &comp) {
+    this->_ecs.modify_component<ECS::components::TextureRectComponent>(this->_buttons[this->_selectedButton], [](ECS::components::TextureRectComponent &comp) {
         comp.setFrameOnTexture(0);
     });
     if (it == buttons.begin())
         this->_selectedButton = buttons[buttons.size() - 1];
     else
         this->_selectedButton = *(it - 1);
-    ecs.modify_component<ECS::components::TextureRectComponent>(this->_buttons[this->_selectedButton], [](ECS::components::TextureRectComponent &comp) {
+    this->_ecs.modify_component<ECS::components::TextureRectComponent>(this->_buttons[this->_selectedButton], [](ECS::components::TextureRectComponent &comp) {
         comp.setFrameOnTexture(1);
     });
 }

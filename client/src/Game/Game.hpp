@@ -6,6 +6,7 @@
 #include "../ECS/Registry.hpp"
 #include "../Network/Network.hpp"
 #include "EntitiesFactory.hpp"
+#include "EntityManager/MenuManager.hpp"
 #include "EntityManager/EntityManager.hpp"
 
 #define SERVER_WIDTH        3840
@@ -50,6 +51,13 @@ namespace game {
 
             void sendMoveToServer();
 
+            enum gameState {
+                MENU,
+                MATCHMAKING,
+                GAME,
+                ENDGAME
+            };
+
         private:
             sf::RenderWindow _window;
             sf::Vector2f _screenSize;
@@ -72,13 +80,14 @@ namespace game {
             ECS::Registry ecs;
             Factory _factory;
             Network _net;
+            MenuManager _menuManager;
 
             long _lastTime;
             float _resMult;
 
             unsigned int _roomId;
             unsigned int _playerId;
-            bool _gameOver;
+            gameState _gameState;
 
             unsigned int _startTimeLeft;
             unsigned char _started;
