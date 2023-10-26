@@ -36,8 +36,14 @@ class Boss1Monster: public Monster {
         virtual void refresh();
         virtual int getDamage();
 
-        private:
-            int _burstCount;
+    private:
+        void _fireMissilesAllDirections();
+        std::chrono::system_clock::time_point _burst;
+        std::chrono::system_clock::time_point _burstSpam;
+        std::chrono::system_clock::time_point _changeVelocity;
+        u_char _nbrBurst;
+        short _vx;
+        short _vy;
 };
 
 #endif
