@@ -50,6 +50,13 @@ namespace game {
 
             void sendMoveToServer();
 
+            enum gameState {
+                MENU,
+                MATCHMAKING,
+                GAME,
+                ENDGAME
+            };
+
         private:
             sf::RenderWindow _window;
             sf::Vector2f _screenSize;
@@ -78,7 +85,7 @@ namespace game {
 
             unsigned int _roomId;
             unsigned int _playerId;
-            bool _gameOver;
+            gameState _gameState;
 
             unsigned int _startTimeLeft;
             unsigned char _started;
