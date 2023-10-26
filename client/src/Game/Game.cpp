@@ -88,9 +88,29 @@ Game::Game(std::string ip, int port) :
     this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_parallax[1], ECS::components::ScaleComponent{_resMult, _resMult});
 
     // create buttons
-    this->_buttons.emplace(EntityManager::BUTTON_TYPE::CREATE_GAME, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 100.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::CreateRoomButton), sf::Vector2f(_resMult, _resMult)));
-    this->_buttons.emplace(EntityManager::BUTTON_TYPE::JOIN_GAME, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 200.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::JoinRoomButton), sf::Vector2f(_resMult, _resMult)));
-    this->_buttons.emplace(EntityManager::BUTTON_TYPE::EXIT_SYSTEM, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 300.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton), sf::Vector2f(_resMult, _resMult)));
+    this->_buttons.emplace(EntityManager::BUTTON_TYPE::CREATE_GAME, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 100.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::CreateRoomButton), sf::Vector2f(_resMult, _resMult),
+    [&](void) {
+        this->disableMenu(this->ecs, MAIN_MENU);
+        this->_net.setInst(8);
+        this->_net.getStreamOut().setDataUChar(0);
+        this->_net.send();
+    }
+    ));
+
+    this->_buttons.emplace(EntityManager::BUTTON_TYPE::JOIN_GAME, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 200.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::JoinRoomButton), sf::Vector2f(_resMult, _resMult),
+    [&](void) {
+        this->disableMenu(this->ecs, MAIN_MENU);
+        this->_net.setInst(9);
+        this->_net.send();
+
+    }
+    ));
+    this->_buttons.emplace(EntityManager::BUTTON_TYPE::EXIT_SYSTEM, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 300.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton), sf::Vector2f(_resMult, _resMult),
+    [&](void) {
+        std::cout << "Exiting system" << std::endl;
+        this->_window.close();
+    }
+    ));
 
     // create menus
     entity_t entity_mainMenu = this->ecs.spawn_entity();
@@ -202,10 +222,8 @@ void Game::sendMoveToServer()
 {
     for (auto i = this->_entityEvents.begin(); i != this->_entityEvents.end(); ++i) {
         if (this->menuState(MENU_TYPE::MAIN_MENU) == true && (*i).getEntity() == this->getMenuEntity(MENU_TYPE::MAIN_MENU)) {
-            if ((*i).getEvent() & ENTER) {
-                this->disableMenu(this->ecs, MAIN_MENU);
-                this->_net.setInst(9);
-                this->_net.send();
+            if ((*i).getEvent() & RIGHT) {
+                this->executeButtonInMenu(this->ecs);
             }
             if ((*i).getEvent() & DOWN) {
                 this->nextButtonInMenu(this->ecs, MAIN_MENU);

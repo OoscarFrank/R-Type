@@ -39,6 +39,7 @@ namespace game {
 
             void nextButtonInMenu(ECS::Registry &ecs, MENU_TYPE type);
             void previousButtonInMenu(ECS::Registry &ecs, MENU_TYPE type);
+            void executeButtonInMenu(ECS::Registry &ecs);
 
             std::unordered_map<BUTTON_TYPE, entity_t> _buttons;
             std::unordered_map<MENU_TYPE, std::pair<std::pair<entity_t, bool>, std::vector<BUTTON_TYPE>>> _menu; // MENU_TYPE, menu entity, isDisplayed, buttons
