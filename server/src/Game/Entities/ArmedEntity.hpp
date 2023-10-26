@@ -55,6 +55,8 @@ class ArmedEntity: public AEntity {
          * @param type The type of the missile to fire (see Missile::Type)
          */
         virtual void fireMissile(Missile::Type type, short vx, short vy);
+
+        virtual void fireMissile(Missile::Type type, short vx, short vy, short posX, short posY);
         std::chrono::system_clock::time_point _lastFire;
 
     private:
