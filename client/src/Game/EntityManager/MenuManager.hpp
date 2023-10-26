@@ -29,6 +29,7 @@ namespace game {
 
         protected:
             BUTTON_TYPE _selectedButton;
+            void initFirstButton(ECS::Registry &ecs, BUTTON_TYPE type);
             void createMenu(MENU_TYPE type, entity_t entity, bool isDisplay, std::vector<BUTTON_TYPE> buttons);
             void removeMenu(MENU_TYPE type);
             entity_t getMenuEntity(MENU_TYPE type);

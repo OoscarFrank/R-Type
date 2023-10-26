@@ -56,12 +56,13 @@ entity_t Factory::createPlayer(float x, float y, const std::shared_ptr<sf::Textu
     return newEntity;
 }
 
-entity_t Factory::createParallax(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scrollSpeed, float ratio)
+entity_t Factory::createParallax(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scrollSpeed, const sf::Vector2f &scale, float ratio)
 {
     entity_t newEntity = _registry.spawn_entity(20);
     _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
     _registry.emplace_component<ECS::components::ParallaxComponent>(newEntity, ECS::components::ParallaxComponent{scrollSpeed, (float)(texture->getSize().x) * ratio});
     _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
+    _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{scale.x, scale.y});
     return newEntity;
 }
 

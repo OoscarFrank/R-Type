@@ -5,11 +5,20 @@ using namespace game;
 MenuManager::MenuManager()
 {
     this->_lastButtonInput = NOW;
-    this->_selectedButton = CREATE_GAME;
+    this->_selectedButton = NO_BUTTON;
 }
 
 MenuManager::~MenuManager()
 {
+}
+
+void MenuManager::initFirstButton(ECS::Registry &ecs, BUTTON_TYPE type)
+{
+    this->_selectedButton = type;
+    ecs.modify_component<ECS::components::TextureRectComponent>(this->_buttons[this->_selectedButton], [](ECS::components::TextureRectComponent &comp) {
+        comp.setFrameOnTexture(1);
+    });
+
 }
 
 void MenuManager::createMenu(MENU_TYPE type, entity_t entity, bool isDisplay, std::vector<BUTTON_TYPE> buttons)

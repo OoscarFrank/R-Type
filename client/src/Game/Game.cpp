@@ -82,10 +82,8 @@ Game::Game(std::string ip, int port) :
 
     this->_resMult = static_cast<float>(this->_screenSize.x)/ SCREEN_WIDTH;
 
-    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.070f * _resMult), _resMult));
-    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.1f * _resMult), _resMult));
-    this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_parallax[0], ECS::components::ScaleComponent{_resMult, _resMult});
-    this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_parallax[1], ECS::components::ScaleComponent{_resMult, _resMult});
+    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.070f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
+    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.1f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
 
     // create buttons
     this->_buttons.emplace(EntityManager::BUTTON_TYPE::CREATE_GAME, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 100.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::CreateRoomButton), sf::Vector2f(_resMult, _resMult),
@@ -107,7 +105,6 @@ Game::Game(std::string ip, int port) :
     ));
     this->_buttons.emplace(EntityManager::BUTTON_TYPE::EXIT_SYSTEM, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 300.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton), sf::Vector2f(_resMult, _resMult),
     [&](void) {
-        std::cout << "Exiting system" << std::endl;
         this->_window.close();
     }
     ));
@@ -116,6 +113,7 @@ Game::Game(std::string ip, int port) :
     entity_t entity_mainMenu = this->ecs.spawn_entity();
     this->ecs.emplace_component<ECS::components::ControllableComponent>(entity_mainMenu, ECS::components::ControllableComponent{sf::Keyboard::Key::Up, sf::Keyboard::Key::Down, sf::Keyboard::Key::Left, sf::Keyboard::Key::Right, sf::Keyboard::Key::Enter});
     this->createMenu(MAIN_MENU, entity_mainMenu, true, std::vector<BUTTON_TYPE>({CREATE_GAME, JOIN_GAME, EXIT_SYSTEM}));
+    this->initFirstButton(this->ecs, CREATE_GAME);
     this->enableMenu(this->ecs, MAIN_MENU);
 
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::RedPixel), _screenSize.x, _screenSize.y));
