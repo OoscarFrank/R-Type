@@ -23,8 +23,9 @@ void Router::route(Reader::Packet packet, Levels &levels)
 
 void Router::_movePlayer(Reader::Packet &packet, Levels &levels)
 {
-    char move = packet.getData().getDataChar();
-    char nbr = packet.getData().getDataChar();
+    char move;
+    char nbr;
+    packet >> move >> nbr;
     _rm.getRoom(packet.getClient()).movePlayer(packet.getClient(), move, nbr);
 }
 
@@ -36,7 +37,9 @@ void Router::_fireMissile(Reader::Packet &packet, Levels &levels)
 
 void Router::_createRoom(Reader::Packet &packet, Levels &levels)
 {
-    _rm.createRoom(packet, levels, ((packet.getData().getDataChar() == 1) ? true : false));
+    bool isPrivate;
+    packet >> isPrivate;
+    _rm.createRoom(packet, levels, isPrivate);
 }
 
 void Router::_searchRoom(Reader::Packet &packet, Levels &levels)
@@ -49,5 +52,7 @@ void Router::_ping(Reader::Packet &packet, Levels &levels)
 
 void Router::_cmdNotRecieved(Reader::Packet &packet, Levels &levels)
 {
-    packet.getClient()->resend(packet.getData().getDataUShort());
+    u_short cmdNbr;
+    packet >> cmdNbr;
+    packet.getClient()->resend(cmdNbr);
 }

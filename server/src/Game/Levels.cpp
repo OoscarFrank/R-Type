@@ -1,6 +1,7 @@
 #include "Levels.hpp"
 #include "Room.hpp"
 #include <algorithm>
+#include <string>
 
 
 Levels::Levels(std::vector<std::string> files)
@@ -30,26 +31,60 @@ const Levels::Level &Levels::getLevel() const
 
 void Levels::update(Room &room)
 {
-    size_t current = chronoDiff(chronoMs, chronoNow, _lvlStart);
-    std::vector<size_t> tmp;
+    if (!_ended) {
 
-    tmp = this->_levels[_currentLvl].getEvents()[Monster::LITTLE_MONSTER - 2].getSpawns(current);
-    for (auto i = tmp.begin(); i != tmp.end(); ++i)
-        room.addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, (*i));
+        size_t current = chronoDiff(chronoMs, chronoNow, _lvlStart);
+        std::vector<size_t> tmp;
 
-    tmp = this->_levels[_currentLvl].getEvents()[Monster::ZIGZAGER_MONSTER - 2].getSpawns(current);
-    for (auto i = tmp.begin(); i != tmp.end(); ++i)
-        room.addMonster(IEntity::Type::ZIGZAGER_MONSTER, SCREEN_WIDTH, (*i));
+        tmp = this->_levels[_currentLvl].getEvents()[Monster::LITTLE_MONSTER - 2].getSpawns(current);
+        for (auto i = tmp.begin(); i != tmp.end(); ++i)
+            room.addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, (*i));
 
-    tmp = this->_levels[_currentLvl].getEvents()[Monster::FOLLOWER_MONSTER - 2].getSpawns(current);
-    for (auto i = tmp.begin(); i != tmp.end(); ++i)
-        room.addMonster(IEntity::Type::FOLLOWER_MONSTER, SCREEN_WIDTH, (*i));
-    
-    std::vector<std::tuple<size_t, unsigned char, bool>> strobes = this->_levels[_currentLvl].getStrobes().getEvents(current);
+        tmp = this->_levels[_currentLvl].getEvents()[Monster::ZIGZAGER_MONSTER - 2].getSpawns(current);
+        for (auto i = tmp.begin(); i != tmp.end(); ++i)
+            room.addMonster(IEntity::Type::ZIGZAGER_MONSTER, SCREEN_WIDTH, (*i));
 
-    for(auto i = strobes.begin(); i != strobes.end(); ++i) {
-        room.sendToAll(StreamFactory::strobe(std::get<1>(*i), std::get<2>(*i)));
+        tmp = this->_levels[_currentLvl].getEvents()[Monster::FOLLOWER_MONSTER - 2].getSpawns(current);
+        for (auto i = tmp.begin(); i != tmp.end(); ++i)
+            room.addMonster(IEntity::Type::FOLLOWER_MONSTER, SCREEN_WIDTH, (*i));
+
+        tmp = this->_levels[_currentLvl].getEvents()[Monster::BURST_MONSTER - 2].getSpawns(current);
+        for (auto i = tmp.begin(); i != tmp.end(); ++i)
+            room.addMonster(IEntity::Type::BURST_MONSTER, SCREEN_WIDTH, (*i));
+
+        tmp = this->_levels[_currentLvl].getEvents()[Monster::BOSS1 - 2].getSpawns(current);
+        for (auto i = tmp.begin(); i != tmp.end(); ++i)
+            room.addMonster(IEntity::Type::BOSS1, SCREEN_WIDTH, (*i));
+        std::vector<std::tuple<size_t, unsigned char, bool>> strobes = this->_levels[_currentLvl].getStrobes().getEvents(current);
+        for(auto i = strobes.begin(); i != strobes.end(); ++i) {
+            room.sendToAll(StreamFactory::strobe(std::get<1>(*i), std::get<2>(*i)));
+        }
+        if (this->_levels[_currentLvl].isEnded() && !room.isMonster()) {
+            _ended = true;
+            _endTime = chronoNow;
+            _currentLvl += 1;
+            _lastUpdate = chronoNow;
+        }
     }
+    if (_ended) {
+        if (_currentLvl < this->_levels.size()) {
+            if (chronoDiff(chronoMs, chronoNow, _endTime) < TIMEOUT_BETWEEN_LEVELS ) {
+                if (chronoDiff(chronoMs, chronoNow, _lastUpdate) > 200) {
+                    room.sendToAll(StreamFactory::changeLevel(chronoDiff(chronoMs, chronoNow, _endTime), this->_levels[_currentLvl].getSong(), false));
+                    _lastUpdate = chronoNow;
+                }
+            } else {
+                room.sendToAll(StreamFactory::changeLevel(0, this->_levels[_currentLvl].getSong(), true));
+                _ended = false;
+                _lvlStart = chronoNow;
+            }
+            
+        } else {
+            std::cout << "NO MORE STAGES !!!" << std::endl;
+        }
+    }
+
+
 }
 
 
@@ -116,6 +151,10 @@ bool Levels::Level::EntityEvents::isFinished() const
     return _it == _spawns.end();
 }
 
+void Levels::Level::EntityEvents::setInit(bool init)
+{
+    this->_init = init;
+}
 
 
 
@@ -168,7 +207,10 @@ bool Levels::Level::StrobeEvent::isFinished() const
 }
 
 
-
+void Levels::Level::StrobeEvent::setInit(bool init)
+{
+    this->_init = init;
+}
 
 
 
@@ -187,13 +229,16 @@ Levels::Level::Level(const std::string &path)
     this->_events.push_back(EntityEvents(Monster::LITTLE_MONSTER));
     this->_events.push_back(EntityEvents(Monster::ZIGZAGER_MONSTER));
     this->_events.push_back(EntityEvents(Monster::FOLLOWER_MONSTER));
+    this->_events.push_back(EntityEvents(Monster::BURST_MONSTER));
+    this->_events.push_back(EntityEvents(Monster::BOSS1));
 
 
     std::string line;
+    size_t line_nb = 1;
     while (getline(file, line)) {
-        parsStage(line, path);
-        parsSong(line, path);
-        parsEvents(line, path);
+        parsSong(line, path, line_nb);
+        parsEvents(line, path, line_nb);
+        line_nb += 1;
     }
     file.close();
 
@@ -207,35 +252,13 @@ Levels::Level::~Level()
 {
 }
 
-void Levels::Level::parsStage(const std::string &line, const std::string &path)
-{
-    if (line.find("STAGE") != std::string::npos) {
-        size_t pos;
-        if ((pos = line.find(":")) == std::string::npos) {
-            Levels::Level::ParsError err;
-            err._msg =  "Erreur lors de la lecture du fichier " + path + " : STAGE";
-            throw err;
-            return;
-        } else {
-            try {
-                this->_stage = std::stoi(line.substr(pos + 1));
-            } catch (const std::exception& e) {
-                Levels::Level::ParsError err;
-                err._msg =  "Erreur lors de la lecture du fichier " + path + " : STAGE";
-                throw err;
-                return;
-            }
-        }
-    }
-}
-
-void Levels::Level::parsSong(const std::string &line, const std::string &path)
+void Levels::Level::parsSong(const std::string &line, const std::string &path, size_t line_nb)
 {
     if (line.find("SONG") != std::string::npos) {
         size_t pos;
         if ((pos = line.find(":")) == std::string::npos) {
             Levels::Level::ParsError err;
-            err._msg =  "Erreur lors de la lecture du fichier " + path + " : SONG";
+            err._msg =  "Error while reading file : " + path + "\nMissing ':'" + "\nLine : " + std::to_string(line_nb);
             throw err;
             return;
         } else {
@@ -250,7 +273,7 @@ void Levels::Level::parsSong(const std::string &line, const std::string &path)
                 this->_song = Levels::Level::VOIS_SUR_TON_CHEMIN;
             else {
                 Levels::Level::ParsError err;
-                err._msg =  "Erreur lors de la lecture du fichier " + path + " : SONG";
+                err._msg =  "Error while reading file : " + path + "\nInvalid song : " + song + "\nLine : " + std::to_string(line_nb) + ". Errur";
                 throw err;
                 return;
             }
@@ -258,7 +281,7 @@ void Levels::Level::parsSong(const std::string &line, const std::string &path)
     }
 }
 
-void Levels::Level::parsEvents(const std::string &line, const std::string &path)
+void Levels::Level::parsEvents(const std::string &line, const std::string &path, size_t line_nb)
 {
 
     if (line.find("STROBES") != std::string::npos)
@@ -269,6 +292,10 @@ void Levels::Level::parsEvents(const std::string &line, const std::string &path)
         this->_parserEntity = Monster::FOLLOWER_MONSTER;
     else if (line.find("ZIGZAGER_MONSTER") != std::string::npos)
         this->_parserEntity = Monster::ZIGZAGER_MONSTER;
+    else if (line.find("BURST_MONSTER") != std::string::npos)
+        this->_parserEntity = Monster::BURST_MONSTER;
+    else if (line.find("BOSS1") != std::string::npos)
+        this->_parserEntity = Monster::BOSS1;
  
     if (this->_parserEntity != -1 && this->_parserEntity != 1) {
         size_t timeCode = 0;
@@ -283,7 +310,7 @@ void Levels::Level::parsEvents(const std::string &line, const std::string &path)
         }
         if ((pos = line.find(":")) == std::string::npos) {
             Levels::Level::ParsError err;
-            err._msg =  "Erreur lors de la lecture du fichier " + path + " : EVENT";
+            err._msg =  "Error while reading file : " + path + "\nMissing ':'" + "\nLine : " + std::to_string(line_nb);
             throw err;
             return;
         }
@@ -298,7 +325,7 @@ void Levels::Level::parsEvents(const std::string &line, const std::string &path)
                 poses.push_back(value);
             } catch (const std::exception& e) {
                 Levels::Level::ParsError err;
-                err._msg =  "Erreur lors de la lecture du fichier " + path + " : EVENT";
+                err._msg =  "Error while reading file : " + path + "\nInvalid monster pos : " + tmp + "\nLine : " + std::to_string(line_nb);
                 throw err;
                 return;
             }
@@ -313,19 +340,28 @@ void Levels::Level::parsEvents(const std::string &line, const std::string &path)
             size_t times = 0;
             if ((pipePos = newLine.find("|")) == std::string::npos) {
                 Levels::Level::ParsError err;
-                err._msg =  "Erreur lors de la lecture du fichier " + path + " : EVENT";
+                err._msg =  "Error while reading file : " + path + "\nMissing '|'" + "\nLine : " + std::to_string(line_nb);
                 throw err;
                 return;
             }
             try {
                 freq = std::stoul(newLine);
-                times = std::stoul(newLine.substr(pipePos + 1));
             } catch (const std::exception& e) {
                 Levels::Level::ParsError err;
-                err._msg =  "Erreur lors de la lecture du fichier " + path + " : EVENT";
+                err._msg =  "Error while reading file : " + path + "\nInvalid value :" + newLine + "\nLine : " + std::to_string(line_nb);
                 throw err;
                 return;
             }
+
+            try {
+                times = std::stoul(newLine.substr(pipePos + 1));
+            } catch (const std::exception& e) {
+                Levels::Level::ParsError err;
+                err._msg =  "Error while reading file : " + path + "\nInvalid value :" + newLine.substr(pipePos + 1) + "\nLine : " + std::to_string(line_nb);
+                throw err;
+                return;
+            }
+
             size_t it = 0;
             for (size_t i = 0; i < times + 1; i++) {
                 this->_events[this->_parserEntity - 2 /* +2 parcque enum monstres commence a 2 */] .addSpawn(timeCode + (freq * i), poses[it]);
@@ -343,9 +379,15 @@ void Levels::Level::parsEvents(const std::string &line, const std::string &path)
         } catch (const std::exception& e) {
             return;
         }
-        if ((pos = line.find(":")) == std::string::npos || (pipePos = line.find("|")) == std::string::npos) {
+        if ((pos = line.find(":")) == std::string::npos) {
             Levels::Level::ParsError err;
-            err._msg =  "Erreur lors de la lecture du fichier " + path + " : EVENT";
+            err._msg =  "Error while reading file : " + path + "\nMissing ':'" + "\nLine : " + std::to_string(line_nb);
+            throw err;
+            return;
+        }
+        if ((pipePos = line.find("|")) == std::string::npos) {
+            Levels::Level::ParsError err;
+            err._msg =  "Error while reading file : " + path + "\nMissing '|'" + "\nLine : " + std::to_string(line_nb);
             throw err;
             return;
         }
@@ -367,14 +409,14 @@ void Levels::Level::parsEvents(const std::string &line, const std::string &path)
             color = StrobeEvent::WHITE;
         else {
             Levels::Level::ParsError err;
-            err._msg =  "Erreur lors de la lecture du fichier " + path + " : EVENT";
+            err._msg =  "Error while reading file : " + path + "\nInvalid color : " + colorStr + "\nLine : " + std::to_string(line_nb);
             throw err;
             return;
         }
         std::string newLine = line.substr(pipePos + 1);
         if ((pipePos = newLine.find("|")) == std::string::npos) {
             Levels::Level::ParsError err;
-            err._msg =  "Erreur lors de la lecture du fichier " + path + " : EVENT";
+            err._msg =  "Error while reading file : " + path + "\nMissing '|'" + "\nLine : " + std::to_string(line_nb);
             throw err;
             return;
         }
@@ -383,7 +425,7 @@ void Levels::Level::parsEvents(const std::string &line, const std::string &path)
             duration = std::stoul(newLine);
         } catch (const std::exception& e) {
             Levels::Level::ParsError err;
-            err._msg =  "Erreur lors de la lecture du fichier " + path + " : EVENT";
+            err._msg =  "Error while reading file : " + path + "\nInvalid value : " + newLine + "\nLine : " + std::to_string(line_nb);
             throw err;
             return;
         }
@@ -394,7 +436,7 @@ void Levels::Level::parsEvents(const std::string &line, const std::string &path)
             times = std::stoul(newLine);
         } catch (const std::exception& e) {
             Levels::Level::ParsError err;
-            err._msg =  "Erreur lors de la lecture du fichier " + path + " : EVENT";
+            err._msg =  "Error while reading file : " + path + "\nInvalid value : " + newLine + "\nLine : " + std::to_string(line_nb);
             throw err;
             return;
         }
@@ -417,10 +459,10 @@ std::vector<Levels::Level::EntityEvents> &Levels::Level::getEvents()
     return this->_events;
 }
 
-unsigned char Levels::Level::getStage() const
-{
-    return this->_stage;
-}
+// unsigned char Levels::Level::getStage() const
+// {
+//     return this->_stage;
+// }
 
 unsigned char Levels::Level::getSong() const
 {

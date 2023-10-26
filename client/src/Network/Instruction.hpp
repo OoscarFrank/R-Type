@@ -62,6 +62,7 @@ struct Commands {
  * 19 serv - vie du joueur
  * 20 serv - vie de l'ennemie (id)
  * 21 serv - strobes (color, on/off)
+ * 22 serv - next level starting (time)
  */
 #define IN_COMMANDS { \
     {1, {UINT}, 4, false}, \
@@ -80,5 +81,6 @@ struct Commands {
     {19, {INT}, 4, true}, \
     {20, {UINT, INT}, 8, true}, \
     {21, {UCHAR, UCHAR}, 2, true}, \
+    {22, {UINT, UCHAR, UCHAR}, 6, true}, \
     {255, {USHORT}, 2, true} \
 }

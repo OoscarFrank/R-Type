@@ -7,3 +7,4 @@
 #include "ParallaxSystem.hpp"
 #include "MovableSystem.hpp"
 #include "ScaleSystem.hpp"
+#include "TextSystem.hpp"

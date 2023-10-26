@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "../../Error/MyError.hpp"
 #include <SFML/Audio.hpp>
+#include <memory>
 
 namespace game {
     class Loader {
@@ -41,6 +42,7 @@ namespace game {
                 YellowPixel,
                 PurplePixel,
                 WhitePixel,
+                Arial,
             };
         /**
          * @brief Load a texture from a path
@@ -63,7 +65,11 @@ namespace game {
          */
             const std::shared_ptr<sf::Texture> &getTexture(toLoad type) const;
 
+            void loadFont(const std::string path, toLoad type);
+            void unloadFont(toLoad type);
+            const std::shared_ptr<sf::Font> &getFont(toLoad type) const;
         private:
             std::unordered_map<Loader::toLoad, std::shared_ptr<sf::Texture>> _textures;
+            std::unordered_map<Loader::toLoad, std::shared_ptr<sf::Font>> _fonts;
     };
 }

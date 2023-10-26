@@ -1,9 +1,11 @@
 #include "./Game.hpp"
 #include "../ECS/Components/Components.hpp"
 #include "../ECS/Systems/Systems.hpp"
+#include <iomanip>
 
 using namespace game;
 using entity_t = std::size_t;
+using namespace TypesLitterals;
 
 Game::Game(std::string ip, int port) :
     _manager(Loader()),
@@ -16,31 +18,37 @@ Game::Game(std::string ip, int port) :
     _lastPing(std::chrono::system_clock::now())
 {
     sf::VideoMode mode = sf::VideoMode::getDesktopMode();
-    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/BlackPixel.png"), Loader::toLoad::BlackPixel);
-    this->_manager.loadTexture(client::getAssetPath("parallax/background.png"), Loader::toLoad::ParallaxFirstbkg);
-    this->_manager.loadTexture(client::getAssetPath("parallax/background2.png"), Loader::toLoad::ParallaxSecondbkg);
-    this->_manager.loadTexture(client::getAssetPath("entity/buttons/CreateRoomButton.png"), Loader::toLoad::CreateRoomButton);
-    this->_manager.loadTexture(client::getAssetPath("entity/buttons/JoinRoomButton.png"), Loader::toLoad::JoinRoomButton);
-    this->_manager.loadTexture(client::getAssetPath("entity/buttons/QuitButton.png"), Loader::toLoad::QuitButton);
-    this->_manager.loadTexture(client::getAssetPath("screens/LooserScreen.png"), Loader::toLoad::LooserScreen);
-    this->_manager.loadTexture(client::getAssetPath("entity/missile/missile.png"), Loader::toLoad::Missile);
-    this->_manager.loadTexture(client::getAssetPath("entity/monsters/monster1.png"), Loader::toLoad::Monster1);
-    this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob1.png"), Loader::toLoad::Monster2);
-    this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob2.png"), Loader::toLoad::Monster3);
-    this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob3.png"), Loader::toLoad::Monster4);
-    this->_manager.loadTexture(client::getAssetPath("entity/player/player_move1.png"), Loader::toLoad::Player_move1);
-    this->_manager.loadTexture(client::getAssetPath("entity/player/player_move2.png"), Loader::toLoad::Player_move2);
-    this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
-    this->_manager.loadTexture(client::getAssetPath("entity/player/player_move4.png"), Loader::toLoad::Player_move4);
-    this->_manager.loadTexture(client::getAssetPath("entity/player/PlayerLife.png"), Loader::toLoad::PlayerLife);
-    this->_manager.loadTexture(client::getAssetPath("entity/buttons/ScoreCoche.png"), Loader::toLoad::ScoreCoche);
-    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/RedPixel.png"), Loader::toLoad::RedPixel);
-    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/GreenPixel.png"), Loader::toLoad::GreenPixel);
-    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/BluePixel.png"), Loader::toLoad::BluePixel);
-    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/CyanPixel.png"), Loader::toLoad::CyanPixel);
-    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/PurplePixel.png"), Loader::toLoad::PurplePixel);
-    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/YellowPixel.png"), Loader::toLoad::YellowPixel);
-    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/WhitePixel.png"), Loader::toLoad::WhitePixel);
+    try {
+        this->_manager.loadTexture(client::getAssetPath("entity/Pixels/BlackPixel.png"), Loader::toLoad::BlackPixel);
+        this->_manager.loadTexture(client::getAssetPath("parallax/background.png"), Loader::toLoad::ParallaxFirstbkg);
+        this->_manager.loadTexture(client::getAssetPath("parallax/background2.png"), Loader::toLoad::ParallaxSecondbkg);
+        this->_manager.loadTexture(client::getAssetPath("entity/buttons/CreateRoomButton.png"), Loader::toLoad::CreateRoomButton);
+        this->_manager.loadTexture(client::getAssetPath("entity/buttons/JoinRoomButton.png"), Loader::toLoad::JoinRoomButton);
+        this->_manager.loadTexture(client::getAssetPath("entity/buttons/QuitButton.png"), Loader::toLoad::QuitButton);
+        this->_manager.loadTexture(client::getAssetPath("screens/LooserScreen.png"), Loader::toLoad::LooserScreen);
+        this->_manager.loadTexture(client::getAssetPath("entity/missile/missile.png"), Loader::toLoad::Missile);
+        this->_manager.loadTexture(client::getAssetPath("entity/monsters/monster1.png"), Loader::toLoad::Monster1);
+        this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob1.png"), Loader::toLoad::Monster2);
+        this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob2.png"), Loader::toLoad::Monster3);
+        this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob3.png"), Loader::toLoad::Monster4);
+        this->_manager.loadTexture(client::getAssetPath("entity/player/player_move1.png"), Loader::toLoad::Player_move1);
+        this->_manager.loadTexture(client::getAssetPath("entity/player/player_move2.png"), Loader::toLoad::Player_move2);
+        this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
+        this->_manager.loadTexture(client::getAssetPath("entity/player/player_move4.png"), Loader::toLoad::Player_move4);
+        this->_manager.loadTexture(client::getAssetPath("entity/player/PlayerLife.png"), Loader::toLoad::PlayerLife);
+        this->_manager.loadTexture(client::getAssetPath("entity/buttons/ScoreCoche.png"), Loader::toLoad::ScoreCoche);
+        this->_manager.loadTexture(client::getAssetPath("entity/Pixels/RedPixel.png"), Loader::toLoad::RedPixel);
+        this->_manager.loadTexture(client::getAssetPath("entity/Pixels/GreenPixel.png"), Loader::toLoad::GreenPixel);
+        this->_manager.loadTexture(client::getAssetPath("entity/Pixels/BluePixel.png"), Loader::toLoad::BluePixel);
+        this->_manager.loadTexture(client::getAssetPath("entity/Pixels/CyanPixel.png"), Loader::toLoad::CyanPixel);
+        this->_manager.loadTexture(client::getAssetPath("entity/Pixels/PurplePixel.png"), Loader::toLoad::PurplePixel);
+        this->_manager.loadTexture(client::getAssetPath("entity/Pixels/YellowPixel.png"), Loader::toLoad::YellowPixel);
+        this->_manager.loadTexture(client::getAssetPath("entity/Pixels/WhitePixel.png"), Loader::toLoad::WhitePixel);
+        this->_manager.loadFont(client::getAssetPath("fonts/arial.ttf"), Loader::toLoad::Arial);
+    } catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        exit(84);
+    }
     this->_playerLife = 0;
 
     if (mode.isValid()) {
@@ -89,17 +97,18 @@ Game::Game(std::string ip, int port) :
     this->_buttons.emplace(EntityManager::BUTTON_TYPE::CREATE_GAME, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 100.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::CreateRoomButton), sf::Vector2f(_resMult, _resMult),
     [&](void) {
         this->disableMenu(this->ecs, MAIN_MENU);
-        this->_net.setInst(8);
-        this->_net.getStreamOut().setDataUChar(0);
-        this->_net.send();
+        Stream out;
+        out << 8_uc << 0_uc;
+        this->_net.send(out);
     }
     ));
 
     this->_buttons.emplace(EntityManager::BUTTON_TYPE::JOIN_GAME, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 200.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::JoinRoomButton), sf::Vector2f(_resMult, _resMult),
     [&](void) {
         this->disableMenu(this->ecs, MAIN_MENU);
-        this->_net.setInst(9);
-        this->_net.send();
+        Stream out;
+        out << 9_uc;
+        this->_net.send(out);
 
     }
     ));
@@ -202,8 +211,11 @@ void Game::update()
             case 21:
                 this->handleStrobes(packet);
                 break;
+            case 22:
+                this->handleChangeLevel(packet);
+                break;
             case 255:
-                _net.resend(packet.getData().getDataUShort());
+                this->handleResend(packet);
                 break;
             default:
                 break;
@@ -211,8 +223,9 @@ void Game::update()
     }
     if (std::chrono::system_clock::now() - this->_lastPing > std::chrono::seconds(1)) {
         this->_lastPing = std::chrono::system_clock::now();
-        this->_net.setInst(12);
-        this->_net.send();
+        Stream out;
+        out << 12_uc;
+        this->_net.send(out);
     }
 }
 
@@ -234,14 +247,14 @@ void Game::sendMoveToServer()
         if (!this->_gameOver && (*i).getEntity() == this->_playerEntity) {
             char move = (*i).getEvent() & (UP | DOWN | LEFT | RIGHT);
             if ((*i).getEvent() & move) {
-                this->_net.setInst(2);
-                this->_net.getStreamOut().setDataUChar((*i).getEvent() & move);
-                this->_net.getStreamOut().setDataUChar(1);
-                this->_net.send();
+                Stream out;
+                out << 2_uc << static_cast<u_char>((*i).getEvent() & move) << 1_uc;
+                _net.send(out);
             }
             if ((*i).getEvent() & SPACE) {
-                this->_net.setInst(5);
-                this->_net.send();
+                Stream out;
+                out << 5_uc;
+                this->_net.send(out);
             }
             continue;
         }
@@ -266,6 +279,7 @@ int Game::MainLoop()
         ECS::systems::ParallaxSystem().update(this->ecs, deltaTime, this->topLeftOffeset);
         ECS::systems::MovableSystem().update(this->ecs, this->_entityPositions, this->topLeftOffeset);
         ECS::systems::ScaleSystem().update(this->ecs);
+        ECS::systems::TextSystem().update(this->ecs, this->_texts);
         this->_window.clear();
         // DRAW SYSTEM CALL HERE
         ECS::systems::DrawSystem().update(this->ecs, this->_window);
@@ -282,12 +296,11 @@ int Game::MainLoop()
 
 void Game::handlePlayerPosition(Network::Packet &packet)
 {
-    unsigned int id = packet.getData().getDataUInt();
-
-    unsigned short x = packet.getData().getDataUShort();
+    unsigned int id;
+    unsigned short x;
+    unsigned short y;
+    packet >> id >> x >> y;
     x *= this->_resMult;
-
-    unsigned short y = packet.getData().getDataUShort();
     y *= this->_resMult;
 
     this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(this->getPlayerEntityFromId(id), x, y));
@@ -295,13 +308,12 @@ void Game::handlePlayerPosition(Network::Packet &packet)
 
 void Game::handleMissilePosition(Network::Packet &packet)
 {
-    unsigned int id = packet.getData().getDataUInt();
-    unsigned char type = packet.getData().getDataUChar();
-
-    unsigned short x = packet.getData().getDataUShort();
+    unsigned int id;
+    unsigned char type;
+    unsigned short x;
+    unsigned short y;
+    packet >> id >> type >> x >> y;
     x *= this->_resMult;
-
-    unsigned short y = packet.getData().getDataUShort();
     y *= this->_resMult;
 
     (void)type;
@@ -318,21 +330,20 @@ void Game::handleMissilePosition(Network::Packet &packet)
 
 void Game::handlePlayerScore(Network::Packet &packet)
 {
-    unsigned int score = packet.getData().getDataUInt();
+    unsigned int score;
+    packet >> score;
 
     std::cout << "Score: " << score << std::endl;
 }
 
 void Game::handleEnnemiPosition(Network::Packet &packet)
 {
-    unsigned int id = packet.getData().getDataUInt();
-
-    unsigned char type = packet.getData().getDataUChar();
-
-    unsigned short x = packet.getData().getDataUShort();
+    unsigned int id;
+    unsigned char type;
+    unsigned short x;
+    unsigned short y;
+    packet >> id >> type >> x >> y;
     x *= this->_resMult;
-
-    unsigned short y = packet.getData().getDataUShort();
     y *= this->_resMult;
 
     entity_t res = getEnnemiEntityFromId(id);
@@ -353,6 +364,11 @@ void Game::handleEnnemiPosition(Network::Packet &packet)
                 this->_ennemies.push_back(std::make_pair(id, newEntity));
             }
                 break;
+            case 5: {
+                entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster4), this->_resMult);
+                this->_ennemies.push_back(std::make_pair(id, newEntity));
+            }
+                break;
             default:
                 break;
         }
@@ -363,8 +379,7 @@ void Game::handleEnnemiPosition(Network::Packet &packet)
 
 void Game::handleRoomJoin(Network::Packet &packet)
 {
-    this->_roomId = packet.getData().getDataUInt();
-    this->_playerId = packet.getData().getDataUInt();
+    packet >> this->_roomId >> this->_playerId;
 
     std::shared_ptr<sf::Texture> texture = nullptr;
 
@@ -396,11 +411,10 @@ void Game::handleRoomJoin(Network::Packet &packet)
 
 void Game::handleTimeoutMatchmaking(Network::Packet &packet)
 {
-    this->_startTimeLeft = packet.getData().getDataUInt();
-    this->_started = packet.getData().getDataUChar();
-    this->currentSong = packet.getData().getDataUChar();
+    packet >> this->_startTimeLeft >> this->_started >> this->currentSong;
 
     if (this->_started == true) {
+        this->ecs.kill_entity(_timerText);
         this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [](ECS::components::MusicComponent &music) {
             music.playMusic();
         });
@@ -410,12 +424,22 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
             });
         }
         this->_playerLife = this->_factory.createPlayerLife(10.0f, this->_window.getSize().y - (100.0f * this->_resMult), this->_manager.getTexture(Loader::Loader::PlayerLife), this->_resMult);
+    } else {
+        float timer = this->_startTimeLeft / 1000.0f;
+        std::ostringstream ss;
+        ss << std::fixed << std::setprecision(1) << timer;
+        if (_timerText == 0) {
+            _timerText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - 25, 10, 40);
+        } else {
+            this->_texts.insert(std::make_pair(_timerText, ss.str()));
+        }
     }
 }
 
 void Game::handlePlayerJoinGame(Network::Packet &packet)
 {
-    unsigned int id = packet.getData().getDataUInt();
+    unsigned int id;
+    packet >> id;
     std::shared_ptr<sf::Texture> texture = nullptr;
 
     switch (id) {
@@ -446,7 +470,8 @@ void Game::handlePlayerJoinGame(Network::Packet &packet)
 
 void Game::handlePlayerDisconnected(Network::Packet &packet)
 {
-    unsigned int id = packet.getData().getDataUInt();
+    unsigned int id;
+    packet >> id;
     entity_t res = getPlayerEntityFromId(id);
 
     if (res != 0) {
@@ -464,13 +489,12 @@ void Game::handlePlayerDisconnected(Network::Packet &packet)
 
 void Game::handleMissileDeath(Network::Packet &packet)
 {
-    unsigned int id = packet.getData().getDataUInt();
-    unsigned char type = packet.getData().getDataUChar();
-
-    unsigned short x = packet.getData().getDataUShort();
+    unsigned int id;
+    unsigned char type;
+    unsigned short x;
+    unsigned short y;
+    packet >> id >> type >> x >> y;
     x *= this->_resMult;
-
-    unsigned short y = packet.getData().getDataUShort();
     y *= this->_resMult;
 
     entity_t res = getMissileEntityFromId(id);
@@ -490,7 +514,8 @@ void Game::handleMissileDeath(Network::Packet &packet)
 
 void Game::handleEnnemiDeath(Network::Packet &packet)
 {
-    unsigned int id = packet.getData().getDataUInt();
+    unsigned int id;
+    packet >> id;
     entity_t res = getEnnemiEntityFromId(id);
 
     if (res != 0) {
@@ -508,13 +533,15 @@ void Game::handleEnnemiDeath(Network::Packet &packet)
 
 void Game::handleGameEnd(Network::Packet &packet)
 {
-    unsigned char type = packet.getData().getDataUChar();
+    unsigned char type;
+    packet >> type;
     this->_gameOver = true;
 }
 
 void Game::handlePlayerDeath(Network::Packet &packet)
 {
-    unsigned int id = packet.getData().getDataUInt();
+    unsigned int id;
+    packet >> id;
     entity_t res = getPlayerEntityFromId(id);
     if (res == this->_playerEntity) {
         this->_looser.push_back(this->_factory.createLooserScreen(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::LooserScreen)));
@@ -535,7 +562,8 @@ void Game::handlePlayerDeath(Network::Packet &packet)
 
 void Game::handlePlayerLife(Network::Packet &packet)
 {
-    int life = packet.getData().getDataUInt();
+    int life;
+    packet >> life;
     if (this->_playerLife == 0)
         return;
     this->ecs.modify_component<ECS::components::TextureRectComponent>(this->_playerLife, [life](ECS::components::TextureRectComponent &comp) {
@@ -545,9 +573,9 @@ void Game::handlePlayerLife(Network::Packet &packet)
 
 void Game::handleStrobes(Network::Packet &packet)
 {
-    unsigned char color = packet.getData().getDataUChar();
-    unsigned char onOff = packet.getData().getDataUChar();
-
+    unsigned char color;
+    unsigned char onOff;
+    packet >> color >> onOff;
     if (onOff) {
         this->ecs.modify_component<ECS::components::PositionComponent>(this->_strobes[color - 1], [](ECS::components::PositionComponent &comp) {
             comp.setX(0.0f);
@@ -560,5 +588,44 @@ void Game::handleStrobes(Network::Packet &packet)
             comp.setX(x);
             comp.setY(y);
         });
+    }
+}
+
+void Game::handleResend(Network::Packet &packet)
+{
+    u_short nbr;
+    packet >> nbr;
+    _net.resend(nbr);
+}
+
+void Game::handleChangeLevel(Network::Packet &packet)
+{
+    unsigned int timeout = packet.getData().getDataUInt();
+    unsigned char song = packet.getData().getDataUChar();
+    unsigned char started = packet.getData().getDataUChar();
+    unsigned int fadeOutTime = 5000;
+
+
+    if (!started) {
+        this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [timeout, fadeOutTime](ECS::components::MusicComponent &music) {
+            if (timeout <= fadeOutTime) {
+                int volume = 100 * timeout / fadeOutTime;
+                volume = (volume * -1) + 100;
+                music.setVolume(volume);
+            } else
+                music.setVolume(0);
+        });
+    }
+    if (started) {
+        this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [timeout](ECS::components::MusicComponent &music) {
+                music.stopmusic();
+        });
+        if (this->currentSong != song)
+            this->currentSong = song;
+        this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [](ECS::components::MusicComponent &music) {
+            music.setVolume(100);
+            music.playMusic();
+        });
+
     }
 }

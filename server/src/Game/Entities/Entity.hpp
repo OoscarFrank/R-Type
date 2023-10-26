@@ -96,6 +96,8 @@ class IEntity {
             LITTLE_MONSTER,
             ZIGZAGER_MONSTER,
             FOLLOWER_MONSTER,
+            BURST_MONSTER,
+            BOSS1,
         };
 };
 

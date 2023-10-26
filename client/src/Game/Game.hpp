@@ -64,8 +64,9 @@ namespace game {
             entity_t _blackBandTopLeft;
             entity_t _blackBandBottomRight;
 
-            // sf::IntRect topLeftBand;
-            // sf::IntRect bottomRightBand;
+
+            std::unordered_map<entity_t, std::string> _texts;
+            entity_t _timerText = 0;
 
             Loader _manager;
             ECS::Registry ecs;
@@ -101,5 +102,7 @@ namespace game {
             void handlePlayerJoinGame(Network::Packet &packet);
             void handlePlayerLife(Network::Packet &packet);
             void handleStrobes(Network::Packet &packet);
+            void handleResend(Network::Packet &packet);
+            void handleChangeLevel(Network::Packet &packet);
     };
 }

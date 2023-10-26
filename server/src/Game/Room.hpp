@@ -9,6 +9,8 @@
 #include "Entities/Monsters/Little.hpp"
 #include "Entities/Monsters/Zigzager.hpp"
 #include "Entities/Monsters/Follower.hpp"
+#include "Entities/Monsters/BurstFire.hpp"
+#include "Entities/Monsters/Boss1.hpp"
 #include "../Client.hpp"
 #include "Levels.hpp"
 
@@ -140,6 +142,7 @@ class Room
         void addMonster(IEntity::Type type, int x, int y);
         std::pair<short, short> getNearestPlayerPos(const IEntity &entity);
         bool isPrivate() const;
+        bool isMonster() const;
 };
 
 #endif
