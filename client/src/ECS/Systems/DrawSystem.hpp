@@ -35,6 +35,25 @@ namespace ECS {
                                 window.draw(sprite->getSprite());
                             }
                         }
+
+                        auto &textComponents = ecs.get_components<components::TextComponent>();
+
+                        for (size_t i = 0; i < textComponents.size() ; ++i) {
+                        // for (const auto &entity : ecs.get_entity_sprite_order()) {
+                            auto &text = textComponents[i];
+                            if (text) {
+                                try {
+                                    if (ecs.hasComponent<components::PositionComponent>(i)) {
+                                        auto &position = ecs.getComponent<components::PositionComponent>(i);
+                                        text->setPosition({position.getX(), position.getY()});
+                                    }
+                                } catch (std::exception &e) {
+                                    std::cerr << e.what() << std::endl;
+                                }
+                                window.draw(text->getText());
+                            }
+                        }
+
                     } catch (std::exception &e) {
                         std::cerr << e.what() << std::endl;
                     }

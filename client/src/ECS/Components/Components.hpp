@@ -12,3 +12,4 @@
 #include "AnimationComponent.hpp"
 #include "ScoreComponent.hpp"
 #include "MusicComponent.hpp"
+#include "TextComponent.hpp"

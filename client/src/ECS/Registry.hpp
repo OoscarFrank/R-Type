@@ -120,7 +120,6 @@ namespace ECS
             return optionalComponent.value();
         }
 
-    public:
         /**
          * @brief Create new entity
          *
@@ -186,6 +185,12 @@ namespace ECS
 
             if (this->hasComponent<components::ButtonComponent>(e))
                 this->remove_component<components::ButtonComponent>(e);
+            
+            if (this->hasComponent<components::ScaleComponent>(e))
+                this->remove_component<components::ScaleComponent>(e);
+            
+            if (this->hasComponent<components::TextComponent>(e))
+                this->remove_component<components::TextComponent>(e);
 
             _entity_to_index.erase(it);
             if (_entity_sprite_order.count(e) > 0) {

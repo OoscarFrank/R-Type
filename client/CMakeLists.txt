@@ -34,6 +34,7 @@ file(COPY ${CMAKE_SOURCE_DIR}/assets/entity/ DESTINATION ${CMAKE_BINARY_DIR}/Rel
 file(COPY ${CMAKE_SOURCE_DIR}/assets/parallax/ DESTINATION ${CMAKE_BINARY_DIR}/Release/assets/parallax)
 file(COPY ${CMAKE_SOURCE_DIR}/assets/screens/ DESTINATION ${CMAKE_BINARY_DIR}/Release/assets/screens)
 file(COPY ${CMAKE_SOURCE_DIR}/assets/entity/buttons DESTINATION ${CMAKE_BINARY_DIR}/Release/assets/entity/buttons)
+file(COPY ${CMAKE_SOURCE_DIR}/assets/fonts/ DESTINATION ${CMAKE_BINARY_DIR}/Release/assets/fonts)
 file(COPY ${CMAKE_SOURCE_DIR}/assets/songs/ DESTINATION ${CMAKE_BINARY_DIR}/Release/assets/songs/)
 
 if(WIN32)

@@ -17,6 +17,7 @@ Factory::Factory(ECS::Registry &registry): _registry(registry)
     this->_registry.register_component<ECS::components::AnimationComponent>();
     this->_registry.register_component<ECS::components::ScoreComponent>();
     this->_registry.register_component<ECS::components::MusicComponent>();
+    this->_registry.register_component<ECS::components::TextComponent>();
 }
 
 Factory::~Factory()
@@ -140,5 +141,13 @@ entity_t Factory::createStrobe(const std::shared_ptr<sf::Texture> &texture, floa
     _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
     _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
     _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{static_cast<float>(x), static_cast<float>(y)});
+    return newEntity;
+}
+
+entity_t Factory::createText(const std::string &text, const std::shared_ptr<sf::Font> &font, const float &x, const float &y, const size_t &size, const sf::Color &color, const sf::Text::Style &style)
+{
+    entity_t newEntity = _registry.spawn_entity(100);
+    _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
+    _registry.emplace_component<ECS::components::TextComponent>(newEntity, ECS::components::TextComponent{*font.get(), text, size, color, style});
     return newEntity;
 }

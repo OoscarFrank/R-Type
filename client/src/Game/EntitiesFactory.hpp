@@ -64,6 +64,8 @@ namespace game {
 
             entity_t createMusic(const std::string &musicPath, float volume = 100.0f, bool loop = false);
             entity_t createStrobe(const std::shared_ptr<sf::Texture> &texture, float x, float y);
+
+            entity_t createText(const std::string &text, const std::shared_ptr<sf::Font> &font, const float &x = 0, const float &y = 0, const size_t &size = 20, const sf::Color &color = sf::Color::White, const sf::Text::Style &style = sf::Text::Style::Regular);
         private:
             ECS::Registry &_registry;
     };
