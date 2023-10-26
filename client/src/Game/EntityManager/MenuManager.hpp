@@ -2,8 +2,8 @@
 
 #include <iostream>
 #include <vector>
-#include "../../ECS/Systems/Systems.hpp"
 #include "../../Utils.hpp"
+#include "../../ECS/Registry.hpp"
 #include <chrono>
 
 using entity_t = std::size_t;
@@ -11,7 +11,7 @@ using entity_t = std::size_t;
 namespace game {
     class MenuManager {
         public:
-            MenuManager();
+            MenuManager(ECS::Registry &ecs);
             ~MenuManager();
 
             enum BUTTON_TYPE {
@@ -27,25 +27,29 @@ namespace game {
                 LOOSER_MENU
             };
 
-        protected:
-            BUTTON_TYPE _selectedButton;
-            void initFirstButton(ECS::Registry &ecs, BUTTON_TYPE type);
+
+            void initFirstButton(BUTTON_TYPE type);
             void createMenu(MENU_TYPE type, entity_t entity, bool isDisplay, std::vector<BUTTON_TYPE> buttons);
             void removeMenu(MENU_TYPE type);
+
+            void createButton(BUTTON_TYPE type, entity_t entity);
+
             entity_t getMenuEntity(MENU_TYPE type);
             void changeMenuEntity(MENU_TYPE type, entity_t entity);
             bool menuState(MENU_TYPE type);
-            void enableMenu(ECS::Registry &ecs, MENU_TYPE type);
-            void disableMenu(ECS::Registry &ecs, MENU_TYPE type);
+            void enableMenu(MENU_TYPE type);
+            void disableMenu(MENU_TYPE type);
 
-            void nextButtonInMenu(ECS::Registry &ecs, MENU_TYPE type);
-            void previousButtonInMenu(ECS::Registry &ecs, MENU_TYPE type);
+            void nextButtonInMenu(MENU_TYPE type);
+            void previousButtonInMenu(MENU_TYPE type);
             void executeButtonInMenu(ECS::Registry &ecs);
 
-            std::unordered_map<BUTTON_TYPE, entity_t> _buttons;
-            std::unordered_map<MENU_TYPE, std::pair<std::pair<entity_t, bool>, std::vector<BUTTON_TYPE>>> _menu; // MENU_TYPE, menu entity, isDisplayed, buttons
 
         private:
+            std::unordered_map<BUTTON_TYPE, entity_t> _buttons;
+            std::unordered_map<MENU_TYPE, std::pair<std::pair<entity_t, bool>, std::vector<BUTTON_TYPE>>> _menu; // MENU_TYPE, menu entity, isDisplayed, buttons
+            BUTTON_TYPE _selectedButton;
+            ECS::Registry &_ecs;
             bool checkLastButtonInput();
             long _lastButtonInput;
 

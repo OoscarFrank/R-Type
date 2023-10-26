@@ -6,6 +6,7 @@
 #include "../ECS/Registry.hpp"
 #include "../Network/Network.hpp"
 #include "EntitiesFactory.hpp"
+#include "EntityManager/MenuManager.hpp"
 #include "EntityManager/EntityManager.hpp"
 
 #define SERVER_WIDTH        3840
@@ -79,6 +80,7 @@ namespace game {
             ECS::Registry ecs;
             Factory _factory;
             Network _net;
+            MenuManager _menuManager;
 
             long _lastTime;
             float _resMult;

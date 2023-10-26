@@ -11,6 +11,7 @@ Game::Game(std::string ip, int port) :
     _manager(Loader()),
     _factory(Factory(ecs)),
     _net(Network(ip, port)),
+    _menuManager(ecs),
     _roomId(0),
     _playerId(0),
     _startTimeLeft(0),
@@ -94,26 +95,26 @@ Game::Game(std::string ip, int port) :
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.1f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
 
     // create buttons
-    this->_buttons.emplace(EntityManager::BUTTON_TYPE::CREATE_GAME, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 100.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::CreateRoomButton), sf::Vector2f(_resMult, _resMult),
+    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::CREATE_GAME, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 100.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::CreateRoomButton), sf::Vector2f(_resMult, _resMult),
     [&](void) {
-        this->disableMenu(this->ecs, MAIN_MENU);
+        this->_menuManager.disableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
         this->_gameState = gameState::MATCHMAKING;
         Stream out;
         out << 8_uc << 0_uc;
         this->_net.send(out);
-    }
-    ));
-    this->_buttons.emplace(EntityManager::BUTTON_TYPE::JOIN_GAME, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 200.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::JoinRoomButton), sf::Vector2f(_resMult, _resMult),
+    }));
+
+    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::JOIN_GAME, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 200.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::JoinRoomButton), sf::Vector2f(_resMult, _resMult),
     [&](void) {
-        this->disableMenu(this->ecs, MAIN_MENU);
+        this->_menuManager.disableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
         this->_gameState = gameState::MATCHMAKING;
         Stream out;
         out << 9_uc;
         this->_net.send(out);
-
     }
     ));
-    this->_buttons.emplace(EntityManager::BUTTON_TYPE::EXIT_SYSTEM, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 300.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton), sf::Vector2f(_resMult, _resMult),
+
+    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::EXIT_SYSTEM, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 300.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton), sf::Vector2f(_resMult, _resMult),
     [&](void) {
         this->_window.close();
     }
@@ -122,9 +123,9 @@ Game::Game(std::string ip, int port) :
     // create menus
     entity_t entity_mainMenu = this->ecs.spawn_entity();
     this->ecs.emplace_component<ECS::components::ControllableComponent>(entity_mainMenu, ECS::components::ControllableComponent{sf::Keyboard::Key::Up, sf::Keyboard::Key::Down, sf::Keyboard::Key::Left, sf::Keyboard::Key::Right, sf::Keyboard::Key::Enter});
-    this->createMenu(MAIN_MENU, entity_mainMenu, true, std::vector<BUTTON_TYPE>({CREATE_GAME, JOIN_GAME, EXIT_SYSTEM}));
-    this->initFirstButton(this->ecs, CREATE_GAME);
-    this->enableMenu(this->ecs, MAIN_MENU);
+    this->_menuManager.createMenu(MenuManager::MENU_TYPE::MAIN_MENU, entity_mainMenu, true, std::vector<MenuManager::BUTTON_TYPE>({MenuManager::BUTTON_TYPE::CREATE_GAME, MenuManager::BUTTON_TYPE::JOIN_GAME, MenuManager::BUTTON_TYPE::EXIT_SYSTEM}));
+    this->_menuManager.initFirstButton(MenuManager::BUTTON_TYPE::CREATE_GAME);
+    this->_menuManager.enableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
 
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::RedPixel), _screenSize.x, _screenSize.y));
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::GreenPixel), _screenSize.x, _screenSize.y));
@@ -233,15 +234,15 @@ void Game::update()
 void Game::sendMoveToServer()
 {
     for (auto i = this->_entityEvents.begin(); i != this->_entityEvents.end(); ++i) {
-        if (this->_gameState == gameState::MENU && (*i).getEntity() == this->getMenuEntity(MENU_TYPE::MAIN_MENU)) {
+        if (this->_gameState == gameState::MENU && (*i).getEntity() == this->_menuManager.getMenuEntity(MenuManager::MENU_TYPE::MAIN_MENU)) {
             if (((*i).getEvent() & RIGHT) || ((*i).getEvent() & ENTER)) {
-                this->executeButtonInMenu(this->ecs);
+                this->_menuManager.executeButtonInMenu(this->ecs);
             }
             if ((*i).getEvent() & DOWN) {
-                this->nextButtonInMenu(this->ecs, MAIN_MENU);
+                this->_menuManager.nextButtonInMenu(MenuManager::MENU_TYPE::MAIN_MENU);
             }
             if ((*i).getEvent() & UP) {
-                this->previousButtonInMenu(this->ecs, MAIN_MENU);
+                this->_menuManager.previousButtonInMenu(MenuManager::MENU_TYPE::MAIN_MENU);
             }
             continue;
         }
@@ -262,7 +263,6 @@ void Game::sendMoveToServer()
     }
     this->_entityEvents.clear();
 }
-
 
 
 int Game::MainLoop()

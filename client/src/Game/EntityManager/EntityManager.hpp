@@ -1,11 +1,11 @@
 #pragma once
 
-#include "MenuManager.hpp"
+#include "../../ECS/Systems/Systems.hpp"
 
 using entity_t = std::size_t;
 
 namespace game {
-    class EntityManager: public MenuManager {
+    class EntityManager {
         public:
             EntityManager();
             ~EntityManager();
