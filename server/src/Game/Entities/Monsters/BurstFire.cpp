@@ -29,12 +29,12 @@ void BurstMonster::refresh()
     }
     if (_burstCount <= 2) {
         if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= _burstCount * BURST_FIRE_TIME) {
-            fireMissile(Missile::Type::LITTLE_MONSTER, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, 0);
+            fireMissile(Missile::Type::LITTLE_MONSTER, -BURST_MONSTER_MISSILE_PROGRESS_STEP, 0);
             _burstCount++;
         }
     }
     if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= MONSTER_MOVE_TIME) {
-        move(-LITTLE_MONSTER_PROGRESS_STEP, 0);
+        move(-BURST_MONSTER_PROGRESS_STEP, 0);
         _room.sendToAll(StreamFactory::monsterPos(_id, IEntity::Type::BURST_MONSTER, _box.x, _box.y));
         _lastMove = now;
     }

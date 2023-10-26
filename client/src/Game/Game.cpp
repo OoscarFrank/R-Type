@@ -31,6 +31,7 @@ Game::Game(std::string ip, int port) :
         this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob1.png"), Loader::toLoad::Monster2);
         this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob2.png"), Loader::toLoad::Monster3);
         this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob3.png"), Loader::toLoad::Monster4);
+        this->_manager.loadTexture(client::getAssetPath("entity/monsters/boss1.png"), Loader::toLoad::Boss1);
         this->_manager.loadTexture(client::getAssetPath("entity/player/player_move1.png"), Loader::toLoad::Player_move1);
         this->_manager.loadTexture(client::getAssetPath("entity/player/player_move2.png"), Loader::toLoad::Player_move2);
         this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
@@ -208,6 +209,9 @@ void Game::update()
             case 19:
                 this->handlePlayerLife(packet);
                 break;
+            case 20:
+                this->handleMonsterLife(packet);
+                break;
             case 21:
                 this->handleStrobes(packet);
                 break;
@@ -366,6 +370,10 @@ void Game::handleEnnemiPosition(Network::Packet &packet)
                 break;
             case 5: {
                 entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster4), this->_resMult);
+                this->_ennemies.push_back(std::make_pair(id, newEntity));
+            }
+            case 6: {
+                entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss1), this->_resMult);
                 this->_ennemies.push_back(std::make_pair(id, newEntity));
             }
                 break;
@@ -569,6 +577,17 @@ void Game::handlePlayerLife(Network::Packet &packet)
     this->ecs.modify_component<ECS::components::TextureRectComponent>(this->_playerLife, [life](ECS::components::TextureRectComponent &comp) {
         comp.setFrameOnTexture(life / 10);
     });
+}
+
+void Game::handleMonsterLife(Network::Packet &packet)
+{
+    u_int id;
+    int life;
+    packet >> id >> life;
+    entity_t res = getEnnemiEntityFromId(id);
+    if (res == 0)
+        return;
+    std::cout << "Monster " << id << " life: " << life << std::endl;
 }
 
 void Game::handleStrobes(Network::Packet &packet)

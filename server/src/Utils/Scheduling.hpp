@@ -19,8 +19,14 @@
 #define BURST_MONSTER_HEIGHT       120
 #define BURST_MONSTER_WIDTH        198
 
-#define BOSS1_MONSTER_HEIGHT       58 * 2
-#define BOSS1_MONSTER_WIDTH        114 * 2
+#define BOSS1_MONSTER_HEIGHT       348
+#define BOSS1_MONSTER_WIDTH        570
+
+#define BOSS2_MONSTER_HEIGHT       348
+#define BOSS2_MONSTER_WIDTH        321
+
+#define BOSS3_MONSTER_HEIGHT       282
+#define BOSS3_MONSTER_WIDTH        317
 
 #define MISSILE_HEIGHT      1
 #define MISSILE_WIDTH       1
@@ -40,6 +46,12 @@
 #define FOLLOWER_MONSTER_PROGRESS_STEP          10
 #define FOLLOWER_MONSTER_MISSILE_PROGRESS_STEP  30
 
+#define BURST_MONSTER_PROGRESS_STEP             10
+#define BURST_MONSTER_MISSILE_PROGRESS_STEP     30
+
+#define BOSS1_MONSTER_PROGRESS_STEP             5
+#define BOSS1_MONSTER_MISSILE_PROGRESS_STEP     30
+
 // Times
 #define MAP_REFRESH_TIME                10 // ms
 
@@ -57,7 +69,7 @@
 
 #define SEND_WAIT_MESSAGE_TIME          200 // ms
 #define PLAYER_ALIVE_MAX_TIME           10 // seconds
-#define TIMEOUT_START_GAME              10000 // ms
+#define TIMEOUT_START_GAME              1000 // ms
 #define TIMEOUT_BETWEEN_LEVELS          5000 // ms
 #define GAME_OVER_REFRESH               500 // ms
 

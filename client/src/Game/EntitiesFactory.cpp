@@ -69,7 +69,7 @@ entity_t Factory::createParallax(float x, float y, const std::shared_ptr<sf::Tex
 
 entity_t Factory::createMissile(float x, float y, const std::shared_ptr<sf::Texture> &texture)
 {
-    entity_t newEntity = _registry.spawn_entity(70);
+    entity_t newEntity = _registry.spawn_entity(59);
     _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
     _registry.emplace_component<ECS::components::MovableComponent>(newEntity, ECS::components::MovableComponent{});
     _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});

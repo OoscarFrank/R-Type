@@ -28,6 +28,7 @@ namespace game {
                 Monster2,
                 Monster3,
                 Monster4,
+                Boss1,
                 CreateRoomButton,
                 JoinRoomButton,
                 QuitButton,
