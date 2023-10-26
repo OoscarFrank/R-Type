@@ -1,6 +1,7 @@
 #include "./Game.hpp"
 #include "../ECS/Components/Components.hpp"
 #include "../ECS/Systems/Systems.hpp"
+#include <iomanip>
 
 using namespace game;
 using entity_t = std::size_t;
@@ -17,31 +18,37 @@ Game::Game(std::string ip, int port) :
     _lastPing(std::chrono::system_clock::now())
 {
     sf::VideoMode mode = sf::VideoMode::getDesktopMode();
-    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/BlackPixel.png"), Loader::toLoad::BlackPixel);
-    this->_manager.loadTexture(client::getAssetPath("parallax/background.png"), Loader::toLoad::ParallaxFirstbkg);
-    this->_manager.loadTexture(client::getAssetPath("parallax/background2.png"), Loader::toLoad::ParallaxSecondbkg);
-    this->_manager.loadTexture(client::getAssetPath("entity/buttons/CreateRoomButton.png"), Loader::toLoad::CreateRoomButton);
-    this->_manager.loadTexture(client::getAssetPath("entity/buttons/JoinRoomButton.png"), Loader::toLoad::JoinRoomButton);
-    this->_manager.loadTexture(client::getAssetPath("entity/buttons/QuitButton.png"), Loader::toLoad::QuitButton);
-    this->_manager.loadTexture(client::getAssetPath("screens/LooserScreen.png"), Loader::toLoad::LooserScreen);
-    this->_manager.loadTexture(client::getAssetPath("entity/missile/missile.png"), Loader::toLoad::Missile);
-    this->_manager.loadTexture(client::getAssetPath("entity/monsters/monster1.png"), Loader::toLoad::Monster1);
-    this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob1.png"), Loader::toLoad::Monster2);
-    this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob2.png"), Loader::toLoad::Monster3);
-    this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob3.png"), Loader::toLoad::Monster4);
-    this->_manager.loadTexture(client::getAssetPath("entity/player/player_move1.png"), Loader::toLoad::Player_move1);
-    this->_manager.loadTexture(client::getAssetPath("entity/player/player_move2.png"), Loader::toLoad::Player_move2);
-    this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
-    this->_manager.loadTexture(client::getAssetPath("entity/player/player_move4.png"), Loader::toLoad::Player_move4);
-    this->_manager.loadTexture(client::getAssetPath("entity/player/PlayerLife.png"), Loader::toLoad::PlayerLife);
-    this->_manager.loadTexture(client::getAssetPath("entity/buttons/ScoreCoche.png"), Loader::toLoad::ScoreCoche);
-    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/RedPixel.png"), Loader::toLoad::RedPixel);
-    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/GreenPixel.png"), Loader::toLoad::GreenPixel);
-    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/BluePixel.png"), Loader::toLoad::BluePixel);
-    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/CyanPixel.png"), Loader::toLoad::CyanPixel);
-    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/PurplePixel.png"), Loader::toLoad::PurplePixel);
-    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/YellowPixel.png"), Loader::toLoad::YellowPixel);
-    this->_manager.loadTexture(client::getAssetPath("entity/Pixels/WhitePixel.png"), Loader::toLoad::WhitePixel);
+    try {
+        this->_manager.loadTexture(client::getAssetPath("entity/Pixels/BlackPixel.png"), Loader::toLoad::BlackPixel);
+        this->_manager.loadTexture(client::getAssetPath("parallax/background.png"), Loader::toLoad::ParallaxFirstbkg);
+        this->_manager.loadTexture(client::getAssetPath("parallax/background2.png"), Loader::toLoad::ParallaxSecondbkg);
+        this->_manager.loadTexture(client::getAssetPath("entity/buttons/CreateRoomButton.png"), Loader::toLoad::CreateRoomButton);
+        this->_manager.loadTexture(client::getAssetPath("entity/buttons/JoinRoomButton.png"), Loader::toLoad::JoinRoomButton);
+        this->_manager.loadTexture(client::getAssetPath("entity/buttons/QuitButton.png"), Loader::toLoad::QuitButton);
+        this->_manager.loadTexture(client::getAssetPath("screens/LooserScreen.png"), Loader::toLoad::LooserScreen);
+        this->_manager.loadTexture(client::getAssetPath("entity/missile/missile.png"), Loader::toLoad::Missile);
+        this->_manager.loadTexture(client::getAssetPath("entity/monsters/monster1.png"), Loader::toLoad::Monster1);
+        this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob1.png"), Loader::toLoad::Monster2);
+        this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob2.png"), Loader::toLoad::Monster3);
+        this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob3.png"), Loader::toLoad::Monster4);
+        this->_manager.loadTexture(client::getAssetPath("entity/player/player_move1.png"), Loader::toLoad::Player_move1);
+        this->_manager.loadTexture(client::getAssetPath("entity/player/player_move2.png"), Loader::toLoad::Player_move2);
+        this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
+        this->_manager.loadTexture(client::getAssetPath("entity/player/player_move4.png"), Loader::toLoad::Player_move4);
+        this->_manager.loadTexture(client::getAssetPath("entity/player/PlayerLife.png"), Loader::toLoad::PlayerLife);
+        this->_manager.loadTexture(client::getAssetPath("entity/buttons/ScoreCoche.png"), Loader::toLoad::ScoreCoche);
+        this->_manager.loadTexture(client::getAssetPath("entity/Pixels/RedPixel.png"), Loader::toLoad::RedPixel);
+        this->_manager.loadTexture(client::getAssetPath("entity/Pixels/GreenPixel.png"), Loader::toLoad::GreenPixel);
+        this->_manager.loadTexture(client::getAssetPath("entity/Pixels/BluePixel.png"), Loader::toLoad::BluePixel);
+        this->_manager.loadTexture(client::getAssetPath("entity/Pixels/CyanPixel.png"), Loader::toLoad::CyanPixel);
+        this->_manager.loadTexture(client::getAssetPath("entity/Pixels/PurplePixel.png"), Loader::toLoad::PurplePixel);
+        this->_manager.loadTexture(client::getAssetPath("entity/Pixels/YellowPixel.png"), Loader::toLoad::YellowPixel);
+        this->_manager.loadTexture(client::getAssetPath("entity/Pixels/WhitePixel.png"), Loader::toLoad::WhitePixel);
+        this->_manager.loadFont(client::getAssetPath("fonts/arial.ttf"), Loader::toLoad::Arial);
+    } catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        exit(84);
+    }
     this->_playerLife = 0;
 
     if (mode.isValid()) {
@@ -248,6 +255,7 @@ int Game::MainLoop()
         ECS::systems::ParallaxSystem().update(this->ecs, deltaTime, this->topLeftOffeset);
         ECS::systems::MovableSystem().update(this->ecs, this->_entityPositions, this->topLeftOffeset);
         ECS::systems::ScaleSystem().update(this->ecs);
+        ECS::systems::TextSystem().update(this->ecs, this->_texts);
         this->_window.clear();
         // DRAW SYSTEM CALL HERE
         ECS::systems::DrawSystem().update(this->ecs, this->_window);
@@ -382,6 +390,7 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
     packet >> this->_startTimeLeft >> this->_started >> this->currentSong;
 
     if (this->_started == true) {
+        this->ecs.kill_entity(_timerText);
         this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [](ECS::components::MusicComponent &music) {
             music.playMusic();
         });
@@ -391,6 +400,15 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
             });
         }
         this->_playerLife = this->_factory.createPlayerLife(10.0f, this->_window.getSize().y - (100.0f * this->_resMult), this->_manager.getTexture(Loader::Loader::PlayerLife), this->_resMult);
+    } else {
+        float timer = this->_startTimeLeft / 1000.0f;
+        std::ostringstream ss;
+        ss << std::fixed << std::setprecision(1) << timer;
+        if (_timerText == 0) {
+            _timerText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - 25, 10, 40);
+        } else {
+            this->_texts.insert(std::make_pair(_timerText, ss.str()));
+        }
     }
 }
 
