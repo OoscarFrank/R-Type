@@ -97,6 +97,7 @@ class IEntity {
             ZIGZAGER_MONSTER,
             FOLLOWER_MONSTER,
             BURST_MONSTER,
+            BOSS1,
         };
 };
 

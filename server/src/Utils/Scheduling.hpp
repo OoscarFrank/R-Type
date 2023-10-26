@@ -19,6 +19,9 @@
 #define BURST_MONSTER_HEIGHT       120
 #define BURST_MONSTER_WIDTH        198
 
+#define BOSS1_MONSTER_HEIGHT       58 * 2
+#define BOSS1_MONSTER_WIDTH        114 * 2
+
 #define MISSILE_HEIGHT      1
 #define MISSILE_WIDTH       1
 
@@ -47,6 +50,8 @@
 #define LITTLE_MONSTER_FIRE_TIME        1000 // ms
 #define ZIGZAGER_MONSTER_FIRE_TIME      1000 // ms
 #define FOLLOWER_MONSTER_FIRE_TIME      1000 // ms
+#define BURST_MONSTER_FIRE_TIME         2000 // ms
+#define BURST_FIRE_TIME                 300 // ms
 
 #define MISSILES_MOVE_TIME              10 // ms
 
