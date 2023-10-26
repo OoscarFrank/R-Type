@@ -69,15 +69,22 @@ void MenuManager::disableMenu(ECS::Registry &ecs, MENU_TYPE type)
         ecs.disableEntity(this->_buttons[button]);
 }
 
-void MenuManager::nextButtonInMenu(ECS::Registry &ecs, MENU_TYPE type)
+bool MenuManager::checkLastButtonInput()
 {
     auto now = NOW;
     if (now - this->_lastButtonInput < 150)
-        return;
+        return false;
     this->_lastButtonInput = now;
+    return true;
+}
 
+void MenuManager::nextButtonInMenu(ECS::Registry &ecs, MENU_TYPE type)
+{
+    if (this->checkLastButtonInput() == false)
+        return;
     if (this->_menu.find(type) == this->_menu.end())
         return;
+
     auto &menu = this->_menu[type];
     auto &buttons = menu.second;
     if (buttons.size() == 0)
@@ -92,6 +99,32 @@ void MenuManager::nextButtonInMenu(ECS::Registry &ecs, MENU_TYPE type)
         this->_selectedButton = buttons[0];
     else
         this->_selectedButton = *(it + 1);
+    ecs.modify_component<ECS::components::TextureRectComponent>(this->_buttons[this->_selectedButton], [](ECS::components::TextureRectComponent &comp) {
+        comp.setFrameOnTexture(1);
+    });
+}
+
+void MenuManager::previousButtonInMenu(ECS::Registry &ecs, MENU_TYPE type)
+{
+    if (this->checkLastButtonInput() == false)
+        return;
+    if (this->_menu.find(type) == this->_menu.end())
+        return;
+
+    auto &menu = this->_menu[type];
+    auto &buttons = menu.second;
+    if (buttons.size() == 0)
+        return;
+    auto it = std::find(buttons.begin(), buttons.end(), this->_selectedButton);
+    if (it == buttons.end())
+        return;
+    ecs.modify_component<ECS::components::TextureRectComponent>(this->_buttons[this->_selectedButton], [](ECS::components::TextureRectComponent &comp) {
+        comp.setFrameOnTexture(0);
+    });
+    if (it == buttons.begin())
+        this->_selectedButton = buttons[buttons.size() - 1];
+    else
+        this->_selectedButton = *(it - 1);
     ecs.modify_component<ECS::components::TextureRectComponent>(this->_buttons[this->_selectedButton], [](ECS::components::TextureRectComponent &comp) {
         comp.setFrameOnTexture(1);
     });

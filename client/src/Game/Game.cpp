@@ -210,6 +210,9 @@ void Game::sendMoveToServer()
             if ((*i).getEvent() & DOWN) {
                 this->nextButtonInMenu(this->ecs, MAIN_MENU);
             }
+            if ((*i).getEvent() & UP) {
+                this->previousButtonInMenu(this->ecs, MAIN_MENU);
+            }
             continue;
         }
         if (!this->_gameOver && (*i).getEntity() == this->_playerEntity) {
