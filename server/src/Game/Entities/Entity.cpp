@@ -35,7 +35,10 @@ u_int AEntity::id() const
 
 bool AEntity::isOutOfScreen() const
 {
+    if (IEntity::Type::ZIGZAGER_MONSTER)
+        return _box.x < 0 - _box.width || _box.x > SCREEN_WIDTH || _box.y < -500  - _box.height || _box.y > SCREEN_HEIGHT + 500;
     return _box.x < 0 - _box.width || _box.x > SCREEN_WIDTH || _box.y < 0 - _box.height || _box.y > SCREEN_HEIGHT;
+
 }
 
 bool AEntity::collide(const IEntity &other)
