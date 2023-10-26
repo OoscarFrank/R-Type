@@ -19,7 +19,7 @@ namespace ECS {
 
                         for (const auto &entity : ecs.get_entity_sprite_order()) {
                             auto &sprite = spriteComponents[entity.second];
-                            if (sprite) {
+                            if (sprite && ecs.isEntityEnabled(entity.second) == true) {
                                 try {
                                     if (ecs.hasComponent<components::PositionComponent>(entity.second)) {
                                         auto &position = ecs.getComponent<components::PositionComponent>(entity.second);

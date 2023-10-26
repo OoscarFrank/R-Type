@@ -80,7 +80,6 @@ Game::Game(std::string ip, int port) :
     this->_lastTime = NOW;
     this->eventMemory = 0;
     this->_gameOver = false;
-    this->_menuEntity = -1;
 
     this->_musics.emplace(EntityManager::MUSIC_TYPE::SOUND_OF_SPACE, this->_factory.createMusic(client::getAssetPath("songs/SOUND_OF_SPACE.ogg"), 100, true));
     this->_musics.emplace(EntityManager::MUSIC_TYPE::TURN_ON_THE_LIGHTS, this->_factory.createMusic(client::getAssetPath("songs/TURN_ON_THE_LIGHTS.ogg"), 100, true));
@@ -91,19 +90,40 @@ Game::Game(std::string ip, int port) :
 
     this->_resMult = static_cast<float>(this->_screenSize.x)/ SCREEN_WIDTH;
 
-    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.070f * _resMult), _resMult));
-    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.1f * _resMult), _resMult));
-    this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_parallax[0], ECS::components::ScaleComponent{_resMult, _resMult});
-    this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_parallax[1], ECS::components::ScaleComponent{_resMult, _resMult});
-    this->_menuEntity = this->ecs.spawn_entity();
-    this->ecs.emplace_component<ECS::components::ControllableComponent>(this->_menuEntity, ECS::components::ControllableComponent{sf::Keyboard::Key::Up, sf::Keyboard::Key::Down, sf::Keyboard::Key::Left, sf::Keyboard::Key::Right, sf::Keyboard::Key::Enter});
+    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.070f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
+    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.1f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
 
-    this->_buttons.push_back(this->_factory.createButton(100.0f + this->topLeftOffeset.x, 100.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::CreateRoomButton)));
-    this->_buttons.push_back(this->_factory.createButton(100.0f + this->topLeftOffeset.x, 200.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::JoinRoomButton)));
-    this->_buttons.push_back(this->_factory.createButton(100.0f + this->topLeftOffeset.x, 300.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton)));
-    this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_buttons[0], ECS::components::ScaleComponent{_resMult, _resMult});
-    this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_buttons[1], ECS::components::ScaleComponent{_resMult, _resMult});
-    this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_buttons[2], ECS::components::ScaleComponent{_resMult, _resMult});
+    // create buttons
+    this->_buttons.emplace(EntityManager::BUTTON_TYPE::CREATE_GAME, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 100.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::CreateRoomButton), sf::Vector2f(_resMult, _resMult),
+    [&](void) {
+        this->disableMenu(this->ecs, MAIN_MENU);
+        Stream out;
+        out << 8_uc << 0_uc;
+        this->_net.send(out);
+    }
+    ));
+
+    this->_buttons.emplace(EntityManager::BUTTON_TYPE::JOIN_GAME, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 200.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::JoinRoomButton), sf::Vector2f(_resMult, _resMult),
+    [&](void) {
+        this->disableMenu(this->ecs, MAIN_MENU);
+        Stream out;
+        out << 9_uc;
+        this->_net.send(out);
+
+    }
+    ));
+    this->_buttons.emplace(EntityManager::BUTTON_TYPE::EXIT_SYSTEM, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 300.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton), sf::Vector2f(_resMult, _resMult),
+    [&](void) {
+        this->_window.close();
+    }
+    ));
+
+    // create menus
+    entity_t entity_mainMenu = this->ecs.spawn_entity();
+    this->ecs.emplace_component<ECS::components::ControllableComponent>(entity_mainMenu, ECS::components::ControllableComponent{sf::Keyboard::Key::Up, sf::Keyboard::Key::Down, sf::Keyboard::Key::Left, sf::Keyboard::Key::Right, sf::Keyboard::Key::Enter});
+    this->createMenu(MAIN_MENU, entity_mainMenu, true, std::vector<BUTTON_TYPE>({CREATE_GAME, JOIN_GAME, EXIT_SYSTEM}));
+    this->initFirstButton(this->ecs, CREATE_GAME);
+    this->enableMenu(this->ecs, MAIN_MENU);
 
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::RedPixel), _screenSize.x, _screenSize.y));
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::GreenPixel), _screenSize.x, _screenSize.y));
@@ -212,6 +232,18 @@ void Game::update()
 void Game::sendMoveToServer()
 {
     for (auto i = this->_entityEvents.begin(); i != this->_entityEvents.end(); ++i) {
+        if (this->menuState(MENU_TYPE::MAIN_MENU) == true && (*i).getEntity() == this->getMenuEntity(MENU_TYPE::MAIN_MENU)) {
+            if ((*i).getEvent() & RIGHT) {
+                this->executeButtonInMenu(this->ecs);
+            }
+            if ((*i).getEvent() & DOWN) {
+                this->nextButtonInMenu(this->ecs, MAIN_MENU);
+            }
+            if ((*i).getEvent() & UP) {
+                this->previousButtonInMenu(this->ecs, MAIN_MENU);
+            }
+            continue;
+        }
         if (!this->_gameOver && (*i).getEntity() == this->_playerEntity) {
             char move = (*i).getEvent() & (UP | DOWN | LEFT | RIGHT);
             if ((*i).getEvent() & move) {
@@ -224,15 +256,7 @@ void Game::sendMoveToServer()
                 out << 5_uc;
                 this->_net.send(out);
             }
-        }
-        if (this->_menuEntity != -1 && (*i).getEntity() == this->_menuEntity) {
-            if ((*i).getEvent() & ENTER) {
-                this->ecs.kill_entity(this->_menuEntity);
-                this->_menuEntity = -1;
-                Stream out;
-                out << 9_uc;
-                this->_net.send(out);
-            }
+            continue;
         }
     }
     this->_entityEvents.clear();
@@ -355,9 +379,6 @@ void Game::handleEnnemiPosition(Network::Packet &packet)
 
 void Game::handleRoomJoin(Network::Packet &packet)
 {
-    for (auto &button : this->_buttons) {
-        this->ecs.kill_entity(button);
-    }
     packet >> this->_roomId >> this->_playerId;
 
     std::shared_ptr<sf::Texture> texture = nullptr;
@@ -386,8 +407,6 @@ void Game::handleRoomJoin(Network::Packet &packet)
     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
 
     this->_scoreCoche = this->_factory.createScoreCoche((((this->_window.getSize().x / 2) - ((660.0 * this->_resMult) / 2))), 0.0f, this->_manager.getTexture(Loader::Loader::ScoreCoche), this->_resMult);
-
-    // ECS::systems::ScaleSystem().update(this->ecs);
 }
 
 void Game::handleTimeoutMatchmaking(Network::Packet &packet)

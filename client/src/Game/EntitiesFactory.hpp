@@ -17,7 +17,7 @@ namespace game {
          *
          */
             ~Factory();
-            entity_t createButton(float x, float y, const std::shared_ptr<sf::Texture> &texture);
+            entity_t createButton(float x, float y, const std::shared_ptr<sf::Texture> &texture, const sf::Vector2f &scale, std::function<void()> callback);
             entity_t createLooserScreen(float x, float y, const std::shared_ptr<sf::Texture> &texture);
         /**
          * @brief Create a Player object
@@ -37,7 +37,7 @@ namespace game {
          * @param scrollSpeed
          * @return entity_t
          */
-            entity_t createParallax(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scrollSpeed, float ratio = 1.0f);
+            entity_t createParallax(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scrollSpeed, const sf::Vector2f &scale, float ratio = 1.0f);
         /**
          * @brief Create a Missile object
          *

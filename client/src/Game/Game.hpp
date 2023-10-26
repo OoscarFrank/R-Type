@@ -6,7 +6,7 @@
 #include "../ECS/Registry.hpp"
 #include "../Network/Network.hpp"
 #include "EntitiesFactory.hpp"
-#include "EntityManager.hpp"
+#include "EntityManager/EntityManager.hpp"
 
 #define SERVER_WIDTH        3840
 #define SERVER_HEIGHT       2160
