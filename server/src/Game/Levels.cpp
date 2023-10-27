@@ -241,8 +241,14 @@ Levels::Level::Level(const std::string &path)
     std::string line;
     size_t line_nb = 1;
     while (getline(file, line)) {
-        parsSong(line, path, line_nb);
-        parsEvents(line, path, line_nb);
+        std::string newLine;
+        for (char c : line) {
+            if (c != ' ')
+                newLine += c;
+            
+        }
+        parsSong(newLine, path, line_nb);
+        parsEvents(newLine, path, line_nb);
         line_nb += 1;
     }
     file.close();
