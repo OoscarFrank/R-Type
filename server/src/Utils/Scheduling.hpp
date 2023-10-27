@@ -68,6 +68,10 @@
 #define BURST_MONSTER_FIRE_TIME         2000 // ms
 #define BURST_FIRE_TIME                 300 // ms
 #define BOSS2_MONSTER_FIRE_TIME         1000 // ms
+#define BIG_FIRE_TIME                   8000 // ms
+
+#define CHANGE_HORIZONTAL_DIRECTION     3 // second
+#define CHANGE_VERTICAL_DIRECTION       5 // second
 
 #define MISSILES_MOVE_TIME              10 // ms
 
