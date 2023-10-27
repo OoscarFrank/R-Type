@@ -39,7 +39,6 @@ namespace ECS {
                         auto &textComponents = ecs.get_components<components::TextComponent>();
 
                         for (size_t i = 0; i < textComponents.size() ; ++i) {
-                        // for (const auto &entity : ecs.get_entity_sprite_order()) {
                             auto &text = textComponents[i];
                             if (text) {
                                 try {
@@ -51,6 +50,24 @@ namespace ECS {
                                     std::cerr << e.what() << std::endl;
                                 }
                                 window.draw(text->getText());
+                            }
+                        }
+
+
+                        auto &rectangleShapeComponents = ecs.get_components<components::RectangleShapeComponent>();
+
+                        for (size_t i = 0; i < rectangleShapeComponents.size() ; ++i) {
+                            auto &rectangleShape = rectangleShapeComponents[i];
+                            if (rectangleShape) {
+                                try {
+                                    if (ecs.hasComponent<components::PositionComponent>(i)) {
+                                        auto &position = ecs.getComponent<components::PositionComponent>(i);
+                                        rectangleShape->setPosition({position.getX(), position.getY()});
+                                    }
+                                } catch (std::exception &e) {
+                                    std::cerr << e.what() << std::endl;
+                                }
+                                window.draw(rectangleShape->getRectangleShape());
                             }
                         }
 

@@ -210,10 +210,10 @@ namespace ECS
 
             if (this->hasComponent<components::ButtonComponent>(e))
                 this->remove_component<components::ButtonComponent>(e);
-            
+
             if (this->hasComponent<components::ScaleComponent>(e))
                 this->remove_component<components::ScaleComponent>(e);
-            
+
             if (this->hasComponent<components::TextComponent>(e))
                 this->remove_component<components::TextComponent>(e);
 
@@ -258,7 +258,6 @@ namespace ECS
         {
             if (_entity_to_index.find(to) == _entity_to_index.end())
                 throw std::runtime_error("Entity not found.");
-
             auto &comp_array = get_components<Component>();
             if (std::is_same<Component, components::SpriteComponent>::value) {
                 auto entityIndexIt = _entity_to_index.find(to);

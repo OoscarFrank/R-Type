@@ -18,6 +18,7 @@ Factory::Factory(ECS::Registry &registry): _registry(registry)
     this->_registry.register_component<ECS::components::ScoreComponent>();
     this->_registry.register_component<ECS::components::MusicComponent>();
     this->_registry.register_component<ECS::components::TextComponent>();
+    this->_registry.register_component<ECS::components::RectangleShapeComponent>();
 }
 
 Factory::~Factory()

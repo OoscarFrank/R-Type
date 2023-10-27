@@ -13,3 +13,4 @@
 #include "ScoreComponent.hpp"
 #include "MusicComponent.hpp"
 #include "TextComponent.hpp"
+#include "RectangleShapeComponent.hpp"

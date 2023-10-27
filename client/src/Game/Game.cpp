@@ -135,7 +135,6 @@ Game::Game(std::string ip, int port) :
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::PurplePixel), _screenSize.x, _screenSize.y));
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::CyanPixel), _screenSize.x, _screenSize.y));
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::WhitePixel), _screenSize.x, _screenSize.y));
-
 }
 
 Game::~Game()
