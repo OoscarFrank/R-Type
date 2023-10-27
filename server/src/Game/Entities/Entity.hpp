@@ -98,6 +98,7 @@ class IEntity {
             FOLLOWER_MONSTER,
             BURST_MONSTER,
             BOSS1,
+            BOSS2,
         };
 };
 

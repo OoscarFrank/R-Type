@@ -55,6 +55,11 @@ void Levels::update(Room &room)
         tmp = this->_levels[_currentLvl].getEvents()[Monster::BOSS1 - 2].getSpawns(current);
         for (auto i = tmp.begin(); i != tmp.end(); ++i)
             room.addMonster(IEntity::Type::BOSS1, SCREEN_WIDTH, (*i));
+
+        tmp = this->_levels[_currentLvl].getEvents()[Monster::BOSS2 - 2].getSpawns(current);
+        for (auto i = tmp.begin(); i != tmp.end(); ++i)
+            room.addMonster(IEntity::Type::BOSS2, SCREEN_WIDTH, (*i));
+
         std::vector<std::tuple<size_t, unsigned char, bool>> strobes = this->_levels[_currentLvl].getStrobes().getEvents(current);
         for(auto i = strobes.begin(); i != strobes.end(); ++i) {
             room.sendToAll(StreamFactory::strobe(std::get<1>(*i), std::get<2>(*i)));
@@ -78,7 +83,6 @@ void Levels::update(Room &room)
                 _ended = false;
                 _lvlStart = chronoNow;
             }
-            
         } else {
             std::cout << "NO MORE STAGES !!!" << std::endl;
         }
@@ -161,7 +165,7 @@ void Levels::Level::EntityEvents::setInit(bool init)
 
 Levels::Level::StrobeEvent::StrobeEvent()
 {
-    
+
 }
 
 Levels::Level::StrobeEvent::~StrobeEvent()
@@ -231,6 +235,7 @@ Levels::Level::Level(const std::string &path)
     this->_events.push_back(EntityEvents(Monster::FOLLOWER_MONSTER));
     this->_events.push_back(EntityEvents(Monster::BURST_MONSTER));
     this->_events.push_back(EntityEvents(Monster::BOSS1));
+    this->_events.push_back(EntityEvents(Monster::BOSS2));
 
 
     std::string line;
@@ -244,8 +249,6 @@ Levels::Level::Level(const std::string &path)
 
     for (auto i = this->_events.begin(); i != this->_events.end(); ++i)
         (*i).sort();
-    
-
 }
 
 Levels::Level::~Level()
@@ -296,7 +299,9 @@ void Levels::Level::parsEvents(const std::string &line, const std::string &path,
         this->_parserEntity = Monster::BURST_MONSTER;
     else if (line.find("BOSS1") != std::string::npos)
         this->_parserEntity = Monster::BOSS1;
- 
+    else if (line.find("BOSS2") != std::string::npos)
+        this->_parserEntity = Monster::BOSS2;
+
     if (this->_parserEntity != -1 && this->_parserEntity != 1) {
         size_t timeCode = 0;
         size_t pos;
@@ -314,7 +319,7 @@ void Levels::Level::parsEvents(const std::string &line, const std::string &path,
             throw err;
             return;
         }
-        if ((pipePos = line.find("|", pos + 1)) == std::string::npos) 
+        if ((pipePos = line.find("|", pos + 1)) == std::string::npos)
             pipePos = line.size();
         posesStr = line.substr(pos + 1, pipePos);
         std::stringstream stream(posesStr);

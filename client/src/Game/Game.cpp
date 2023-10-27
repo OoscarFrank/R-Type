@@ -33,6 +33,7 @@ Game::Game(std::string ip, int port) :
         this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob2.png"), Loader::toLoad::Monster3);
         this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob3.png"), Loader::toLoad::Monster4);
         this->_manager.loadTexture(client::getAssetPath("entity/monsters/boss1.png"), Loader::toLoad::Boss1);
+        this->_manager.loadTexture(client::getAssetPath("entity/monsters/boss2.png"), Loader::toLoad::Boss2);
         this->_manager.loadTexture(client::getAssetPath("entity/player/player_move1.png"), Loader::toLoad::Player_move1);
         this->_manager.loadTexture(client::getAssetPath("entity/player/player_move2.png"), Loader::toLoad::Player_move2);
         this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
@@ -380,6 +381,10 @@ void Game::handleEnnemiPosition(Network::Packet &packet)
                 this->_ennemies.push_back(std::make_pair(id, newEntity));
             }
                 break;
+            case 7: {
+                entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss2), this->_resMult);
+                this->_ennemies.push_back(std::make_pair(id, newEntity));
+            }
             default:
                 break;
         }
