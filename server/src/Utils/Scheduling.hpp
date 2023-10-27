@@ -52,6 +52,9 @@
 #define BOSS1_MONSTER_PROGRESS_STEP             5
 #define BOSS1_MONSTER_MISSILE_PROGRESS_STEP     30
 
+#define BOSS2_MONSTER_PROGRESS_STEP             5
+#define BOSS2_MONSTER_MISSILE_PROGRESS_STEP     30
+
 // Times
 #define MAP_REFRESH_TIME                10 // ms
 
@@ -64,6 +67,7 @@
 #define FOLLOWER_MONSTER_FIRE_TIME      1000 // ms
 #define BURST_MONSTER_FIRE_TIME         2000 // ms
 #define BURST_FIRE_TIME                 300 // ms
+#define BOSS2_MONSTER_FIRE_TIME         1000 // ms
 
 #define MISSILES_MOVE_TIME              10 // ms
 
