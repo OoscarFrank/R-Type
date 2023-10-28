@@ -233,6 +233,22 @@ void Game::update()
         out << 12_uc;
         this->_net.send(out);
     }
+
+    if (this->_gameState == gameState::GAME) {
+        float timer = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - this->_startGameTime).count() / 1000.0f;
+
+        int minutes = static_cast<int>(timer) / 60;
+        int seconds = static_cast<int>(timer) % 60;
+
+        std::ostringstream ss;
+        ss << "Timer: " << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) << std::setfill('0') << seconds;
+
+        if (_gameTimeText == 0) {
+            _gameTimeText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2, 10, 20);
+        } else {
+            this->_texts.insert(std::make_pair(_gameTimeText, ss.str()));
+        }
+    }
 }
 
 void Game::sendMoveToServer()
@@ -337,10 +353,15 @@ void Game::handleMissilePosition(Network::Packet &packet)
 
 void Game::handlePlayerScore(Network::Packet &packet)
 {
-    unsigned int score;
+    unsigned int score = 0;
     packet >> score;
-
-    std::cout << "Score: " << score << std::endl;
+    std::ostringstream ss;
+    ss <<  "Score: " << std::fixed << std::setprecision(1) << score;
+    if (_scoreText == 0) {
+        _scoreText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - (250 * this->_resMult), 10, 20);
+    } else {
+        this->_texts.insert(std::make_pair(_scoreText, ss.str()));
+    }
 }
 
 void Game::handleEnnemiPosition(Network::Packet &packet)
@@ -421,6 +442,7 @@ void Game::handleRoomJoin(Network::Packet &packet)
     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
 
     this->_scoreCoche = this->_factory.createScoreCoche((((this->_window.getSize().x / 2) - ((660.0 * this->_resMult) / 2))), 0.0f, this->_manager.getTexture(Loader::Loader::ScoreCoche), this->_resMult);
+    this->_startGameTime = std::chrono::system_clock::now();
 }
 
 void Game::handleTimeoutMatchmaking(Network::Packet &packet)
