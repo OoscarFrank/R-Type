@@ -14,9 +14,10 @@ namespace ECS {
              */
                 void update(Registry &ecs) {
                     try {
-                        auto &spriteComponents = ecs.get_components<components::SpriteComponent>();
                         auto &scaleComponents = ecs.get_components<components::ScaleComponent>();
+                        auto &spriteComponents = ecs.get_components<components::SpriteComponent>();
                         auto &textComponents = ecs.get_components<components::TextComponent>();
+                        auto &rectComponents = ecs.get_components<components::RectangleShapeComponent>();
 
                         for (size_t i = 0; i < spriteComponents.size() && i < scaleComponents.size(); ++i) {
                             auto &scale = scaleComponents[i];
@@ -35,6 +36,16 @@ namespace ECS {
                                 text->setScale(scale->getScaleX(), scale->getScaleY());
                             }
                         }
+
+                        for (size_t i = 0; i < rectComponents.size() && i < scaleComponents.size(); ++i) {
+                            auto &scale = scaleComponents[i];
+                            auto &rect = rectComponents[i];
+
+                            if (rect && scale) {
+                                rect->setScale(scale->getScaleX(), scale->getScaleY());
+                            }
+                        }
+
                     } catch (std::exception &e) {
                         std::cerr << e.what() << std::endl;
                     }

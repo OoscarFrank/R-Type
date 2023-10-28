@@ -38,7 +38,6 @@ Game::Game(std::string ip, int port) :
         this->_manager.loadTexture(client::getAssetPath("entity/player/player_move2.png"), Loader::toLoad::Player_move2);
         this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
         this->_manager.loadTexture(client::getAssetPath("entity/player/player_move4.png"), Loader::toLoad::Player_move4);
-        this->_manager.loadTexture(client::getAssetPath("entity/player/PlayerLife.png"), Loader::toLoad::PlayerLife);
         this->_manager.loadTexture(client::getAssetPath("entity/buttons/ScoreCoche.png"), Loader::toLoad::ScoreCoche);
         this->_manager.loadTexture(client::getAssetPath("entity/Pixels/RedPixel.png"), Loader::toLoad::RedPixel);
         this->_manager.loadTexture(client::getAssetPath("entity/Pixels/GreenPixel.png"), Loader::toLoad::GreenPixel);
@@ -47,13 +46,15 @@ Game::Game(std::string ip, int port) :
         this->_manager.loadTexture(client::getAssetPath("entity/Pixels/PurplePixel.png"), Loader::toLoad::PurplePixel);
         this->_manager.loadTexture(client::getAssetPath("entity/Pixels/YellowPixel.png"), Loader::toLoad::YellowPixel);
         this->_manager.loadTexture(client::getAssetPath("entity/Pixels/WhitePixel.png"), Loader::toLoad::WhitePixel);
+
+        this->_manager.loadTexture(client::getAssetPath("entity/player/PlayerLifeOutline.png"), Loader::toLoad::playerLifeOutline);
+        this->_manager.loadTexture(client::getAssetPath("entity/player/playerLifeContent.png"), Loader::toLoad::playerLifeContent);
+
         this->_manager.loadFont(client::getAssetPath("fonts/arial.ttf"), Loader::toLoad::Arial);
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;
         exit(84);
     }
-    this->_playerLife = 0;
-
     if (mode.isValid()) {
         this->_window.create(mode, "R-TYPE", sf::Style::Fullscreen);
     } else {
@@ -421,6 +422,9 @@ void Game::handleRoomJoin(Network::Packet &packet)
     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
 
     this->_scoreCoche = this->_factory.createScoreCoche((((this->_window.getSize().x / 2) - ((660.0 * this->_resMult) / 2))), 0.0f, this->_manager.getTexture(Loader::Loader::ScoreCoche), this->_resMult);
+
+    entity_t playerLifeBar = this->_factory.createLoadingBar(10.0f, this->_window.getSize().y - (100.0f * this->_resMult), this->_manager.getTexture(Loader::Loader::playerLifeOutline), this->_manager.getTexture(Loader::Loader::playerLifeContent), this->_resMult);
+    this->_loadingBar.insert(std::make_pair(EntityManager::LOADINGBAR_TYPE::PLAYER_LIFE, playerLifeBar));
 }
 
 void Game::handleTimeoutMatchmaking(Network::Packet &packet)
@@ -438,7 +442,6 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
                 comp.setScrollSpeed(comp.getScrollSpeed() * 4.0f);
             });
         }
-        this->_playerLife = this->_factory.createPlayerLife(10.0f, this->_window.getSize().y - (100.0f * this->_resMult), this->_manager.getTexture(Loader::Loader::PlayerLife), this->_resMult);
     } else {
         float timer = this->_startTimeLeft / 1000.0f;
         std::ostringstream ss;
@@ -579,10 +582,21 @@ void Game::handlePlayerLife(Network::Packet &packet)
 {
     int life;
     packet >> life;
-    if (this->_playerLife == 0)
+
+    if (_loadingBar.find(EntityManager::LOADINGBAR_TYPE::PLAYER_LIFE) == _loadingBar.end())
         return;
-    this->ecs.modify_component<ECS::components::TextureRectComponent>(this->_playerLife, [life](ECS::components::TextureRectComponent &comp) {
-        comp.setFrameOnTexture(life / 10);
+    entity_t loadingPlayerlifeBar = _loadingBar[EntityManager::LOADINGBAR_TYPE::PLAYER_LIFE];
+
+    if (this->ecs.hasComponent<ECS::components::LoadingBarComponent>(loadingPlayerlifeBar) == false) {
+        auto &spriteComp = this->ecs.getComponent<ECS::components::SpriteComponent>(loadingPlayerlifeBar);
+        this->ecs.emplace_component<ECS::components::LoadingBarComponent>(loadingPlayerlifeBar, ECS::components::LoadingBarComponent{static_cast<float>(life), static_cast<float>(spriteComp.getTextureRect().getSize().x)});
+    }
+
+    auto &barComp = this->ecs.getComponent<ECS::components::LoadingBarComponent>(loadingPlayerlifeBar);
+    float newWidth = barComp.calculate(life);
+
+    this->ecs.modify_component<ECS::components::RectangleShapeComponent>(this->_loadingBar[EntityManager::LOADINGBAR_TYPE::PLAYER_LIFE], [newWidth](ECS::components::RectangleShapeComponent &comp) {
+        comp.setSize(sf::Vector2f(newWidth, comp.getSize().y));
     });
 }
 

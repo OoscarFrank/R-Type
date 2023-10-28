@@ -35,7 +35,6 @@ namespace game {
                 QuitButton,
                 LooserScreen,
                 BlackPixel,
-                PlayerLife,
                 ScoreCoche,
                 RedPixel,
                 GreenPixel,
@@ -45,6 +44,8 @@ namespace game {
                 PurplePixel,
                 WhitePixel,
                 Arial,
+                playerLifeOutline,
+                playerLifeContent
             };
         /**
          * @brief Load a texture from a path
