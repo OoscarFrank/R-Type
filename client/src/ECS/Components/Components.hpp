@@ -14,3 +14,4 @@
 #include "MusicComponent.hpp"
 #include "TextComponent.hpp"
 #include "RectangleShapeComponent.hpp"
+#include "LoadingBarComponent.hpp"
