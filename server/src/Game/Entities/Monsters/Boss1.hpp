@@ -38,6 +38,10 @@ class Boss1Monster: public Monster {
 
         private:
             int _burstCount;
+            std::chrono::system_clock::time_point _lastPos;
+            std::chrono::system_clock::time_point _lastPos2;
+            std::pair<short, short> moveDirection;
+
 };
 
 #endif

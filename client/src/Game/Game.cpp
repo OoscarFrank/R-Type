@@ -97,8 +97,10 @@ Game::Game(std::string ip, int port) :
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.070f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.1f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
 
+    float tmpSizebutton = (this->_manager.getTexture(Loader::Loader::CreateRoomButton).get()->getSize().x / 2) * _resMult;
+
     // create buttons
-    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::CREATE_GAME, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 100.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::CreateRoomButton), sf::Vector2f(_resMult, _resMult),
+    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::CREATE_GAME, this->_factory.createButton((this->_screenSize.x / 2) - (tmpSizebutton / 2), 600.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::CreateRoomButton), sf::Vector2f(_resMult, _resMult),
     [&](void) {
         this->_menuManager.disableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
         this->_gameState = gameState::MATCHMAKING;
@@ -107,7 +109,7 @@ Game::Game(std::string ip, int port) :
         this->_net.send(out);
     }));
 
-    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::JOIN_GAME, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 200.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::JoinRoomButton), sf::Vector2f(_resMult, _resMult),
+    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::JOIN_GAME, this->_factory.createButton((this->_screenSize.x / 2) - (tmpSizebutton / 2), 700.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::JoinRoomButton), sf::Vector2f(_resMult, _resMult),
     [&](void) {
         this->_menuManager.disableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
         this->_gameState = gameState::MATCHMAKING;
@@ -117,7 +119,7 @@ Game::Game(std::string ip, int port) :
     }
     ));
 
-    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::EXIT_SYSTEM, this->_factory.createButton(100.0f + this->topLeftOffeset.x, 300.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton), sf::Vector2f(_resMult, _resMult),
+    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::EXIT_SYSTEM, this->_factory.createButton((this->_screenSize.x / 2) - (tmpSizebutton / 2), 800.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton), sf::Vector2f(_resMult, _resMult),
     [&](void) {
         this->_window.close();
     }
@@ -234,6 +236,22 @@ void Game::update()
         out << 12_uc;
         this->_net.send(out);
     }
+
+    if (this->_gameState == gameState::GAME) {
+        float timer = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - this->_startGameTime).count() / 1000.0f;
+
+        int minutes = static_cast<int>(timer) / 60;
+        int seconds = static_cast<int>(timer) % 60;
+
+        std::ostringstream ss;
+        ss << "Timer: " << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) << std::setfill('0') << seconds;
+
+        if (_gameTimeText == 0) {
+            _gameTimeText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2, 10, 20);
+        } else {
+            this->_texts.insert(std::make_pair(_gameTimeText, ss.str()));
+        }
+    }
 }
 
 void Game::sendMoveToServer()
@@ -338,10 +356,15 @@ void Game::handleMissilePosition(Network::Packet &packet)
 
 void Game::handlePlayerScore(Network::Packet &packet)
 {
-    unsigned int score;
+    unsigned int score = 0;
     packet >> score;
-
-    std::cout << "Score: " << score << std::endl;
+    std::ostringstream ss;
+    ss <<  "Score: " << std::fixed << std::setprecision(1) << score;
+    if (_scoreText == 0) {
+        _scoreText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - (250 * this->_resMult), 10, 20);
+    } else {
+        this->_texts.insert(std::make_pair(_scoreText, ss.str()));
+    }
 }
 
 void Game::handleEnnemiPosition(Network::Packet &packet)
@@ -425,6 +448,7 @@ void Game::handleRoomJoin(Network::Packet &packet)
 
     entity_t playerLifeBar = this->_factory.createLoadingBar(10.0f, this->_window.getSize().y - (100.0f * this->_resMult), this->_manager.getTexture(Loader::Loader::playerLifeOutline), this->_manager.getTexture(Loader::Loader::playerLifeContent), this->_resMult);
     this->_loadingBar.insert(std::make_pair(EntityManager::LOADINGBAR_TYPE::PLAYER_LIFE, playerLifeBar));
+    this->_startGameTime = std::chrono::system_clock::now();
 }
 
 void Game::handleTimeoutMatchmaking(Network::Packet &packet)
@@ -445,9 +469,9 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
     } else {
         float timer = this->_startTimeLeft / 1000.0f;
         std::ostringstream ss;
-        ss << std::fixed << std::setprecision(1) << timer;
+        ss << "Match making: " << std::fixed << std::setprecision(1) << timer;
         if (_timerText == 0) {
-            _timerText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - 25, 10, 40);
+            _timerText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - 115, 10, 30);
         } else {
             this->_texts.insert(std::make_pair(_timerText, ss.str()));
         }

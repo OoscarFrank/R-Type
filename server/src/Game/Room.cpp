@@ -289,6 +289,7 @@ void Room::checkCollisionMonsters()
                 continue;
             if ((**p).collide(**m)) {
                 (**m).setLife((**m).life() - (**p).getDamage());
+                (**p).setScore((**p).score() + 10);
                 return;
             }
         }

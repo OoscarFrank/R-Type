@@ -75,6 +75,8 @@ namespace game {
 
             std::unordered_map<entity_t, std::string> _texts;
             entity_t _timerText = 0;
+            entity_t _scoreText = 0;
+            entity_t _gameTimeText = 0;
 
             Loader _manager;
             ECS::Registry ecs;
@@ -94,6 +96,7 @@ namespace game {
 
             int eventMemory;
             std::chrono::system_clock::time_point _lastPing;
+            std::chrono::system_clock::time_point _startGameTime;
 
             void refreshScreenSize();
 
