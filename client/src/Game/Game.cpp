@@ -464,9 +464,9 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
     } else {
         float timer = this->_startTimeLeft / 1000.0f;
         std::ostringstream ss;
-        ss << std::fixed << std::setprecision(1) << timer;
+        ss << "Match making: " << std::fixed << std::setprecision(1) << timer;
         if (_timerText == 0) {
-            _timerText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - 25, 10, 40);
+            _timerText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - 115, 10, 30);
         } else {
             this->_texts.insert(std::make_pair(_timerText, ss.str()));
         }
