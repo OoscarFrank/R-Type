@@ -20,6 +20,7 @@ Factory::Factory(ECS::Registry &registry): _registry(registry)
     this->_registry.register_component<ECS::components::TextComponent>();
     this->_registry.register_component<ECS::components::RectangleShapeComponent>();
     this->_registry.register_component<ECS::components::LoadingBarComponent>();
+    this->_registry.register_component<ECS::components::SoundComponent>();
 }
 
 Factory::~Factory()
@@ -153,5 +154,12 @@ entity_t Factory::createLoadingBar(float x, float y, const std::shared_ptr<sf::T
     _registry.emplace_component<ECS::components::RectangleShapeComponent>(newEntity, ECS::components::RectangleShapeComponent{textureRect, sf::IntRect(0, 0, textureRect->getSize().x, textureRect->getSize().y), sf::Vector2f(static_cast<float>(x), static_cast<float>(y))});
     _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{static_cast<float>(scale), static_cast<float>(scale)});
     _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
+    return newEntity;
+}
+
+entity_t Factory::createSound(const std::string &soundPath, float volume)
+{
+    entity_t newEntity = _registry.spawn_entity();
+    _registry.emplace_component<ECS::components::SoundComponent>(newEntity, ECS::components::SoundComponent{soundPath, volume});
     return newEntity;
 }

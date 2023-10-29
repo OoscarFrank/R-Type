@@ -139,6 +139,10 @@ Game::Game(std::string ip, int port) :
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::PurplePixel), _screenSize.x, _screenSize.y));
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::CyanPixel), _screenSize.x, _screenSize.y));
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::WhitePixel), _screenSize.x, _screenSize.y));
+
+    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/piou.ogg"), 1000);
+    this->_sounds.emplace(EntityManager::SOUND_TYPE::TEST, soundEntity);
+
 }
 
 Game::~Game()
@@ -280,6 +284,8 @@ void Game::sendMoveToServer()
                 Stream out;
                 out << 5_uc;
                 this->_net.send(out);
+                auto soundComponent = this->ecs.getComponent<ECS::components::SoundComponent>(this->_sounds[EntityManager::SOUND_TYPE::TEST]);
+                soundComponent.playSound();
             }
             continue;
         }

@@ -15,3 +15,4 @@
 #include "TextComponent.hpp"
 #include "RectangleShapeComponent.hpp"
 #include "LoadingBarComponent.hpp"
+#include "SoundComponent.hpp"
