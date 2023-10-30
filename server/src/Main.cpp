@@ -8,7 +8,7 @@
 #include "Router.hpp"
 
 void exec(int port, std::vector<std::string> stages)
-{   
+{
     std::cout << "starting server..." << std::endl;
     if (stages.empty()) {
         throw std::runtime_error("No stages given");
@@ -51,8 +51,8 @@ int main(int argc, char **argv)
             printHelp();
             return 0;
         }
-
-        exec(args.getFlagValue<int>("-p", 4242), args.getFlagValues<std::string>("-s"));
+        std::vector<std::string> defaultStages = {"./stages/stage3.script", "./stages/stage2.script"};
+        exec(args.getFlagValue<int>("-p", 4242), args.getFlagValues<std::string>("-s", defaultStages));
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
         return 84;
