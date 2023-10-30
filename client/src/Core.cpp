@@ -6,10 +6,10 @@ using namespace game;
 Core::Core()
 {
     this->_port = 4242;
-    this->_ip = "127.0.0.1";
+    this->_ip = "172.20.10.2";
 }
 
-int Core::checkArgs(int ac, char **av)
+int Core::checkArgs(int ac, char *av[])
 {
     if (ac < 2)
         return 0;
@@ -20,7 +20,7 @@ int Core::checkArgs(int ac, char **av)
         return -1;
     }
 
-    for (int i = 0; i < ac; i++) {
+    for (int i = 1; i < ac; i++) {
         if (std::string(av[i]).find("-p") != std::string::npos) {
             if (av[i + 1] == NULL)
                 throw MyError("Core", "You put the -p but no port after.");
