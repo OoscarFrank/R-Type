@@ -72,7 +72,7 @@ void MenuManager::enableMenu(MENU_TYPE type)
     this->_ecs.enableEntity(menu.first.first);
     for (auto &button : menu.second)
         this->_ecs.enableEntity(this->_buttons[button]);
-    this->initFirstButton(menu.second[0]);
+    this->setSelectedButton(menu.second[0]);
 }
 
 void MenuManager::disableMenu(MENU_TYPE type)
