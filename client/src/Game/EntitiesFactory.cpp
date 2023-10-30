@@ -19,6 +19,8 @@ Factory::Factory(ECS::Registry &registry): _registry(registry)
     this->_registry.register_component<ECS::components::MusicComponent>();
     this->_registry.register_component<ECS::components::TextComponent>();
     this->_registry.register_component<ECS::components::RectangleShapeComponent>();
+    this->_registry.register_component<ECS::components::LoadingBarComponent>();
+    this->_registry.register_component<ECS::components::SoundComponent>();
 }
 
 Factory::~Factory()
@@ -109,16 +111,6 @@ entity_t Factory::createBlackband(sf::IntRect rect, const std::shared_ptr<sf::Te
     return newEntity;
 }
 
-entity_t Factory::createPlayerLife(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale)
-{
-    entity_t newEntity = _registry.spawn_entity(90);
-    _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
-    _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{(int)(texture->getSize().x - (texture->getSize().x / 11)), 0, (int)texture->getSize().x, (int)texture->getSize().y, 11, 200.0f});
-    _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
-    _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{static_cast<float>(scale), static_cast<float>(scale)});
-    return newEntity;
-}
-
 entity_t Factory::createScoreCoche(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale)
 {
     entity_t newEntity = _registry.spawn_entity(90);
@@ -151,5 +143,23 @@ entity_t Factory::createText(const std::string &text, const std::shared_ptr<sf::
     entity_t newEntity = _registry.spawn_entity(100);
     _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
     _registry.emplace_component<ECS::components::TextComponent>(newEntity, ECS::components::TextComponent{*font.get(), text, size, color, style});
+    return newEntity;
+}
+
+entity_t Factory::createLoadingBar(float x, float y, const std::shared_ptr<sf::Texture> &texture, const std::shared_ptr<sf::Texture> &textureRect, float scale)
+{
+    entity_t newEntity = _registry.spawn_entity(90);
+    _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
+    _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{(int)(texture->getSize().x - (texture->getSize().x / 1)), 0, (int)texture->getSize().x, (int)texture->getSize().y, 1, 0.0f});
+    _registry.emplace_component<ECS::components::RectangleShapeComponent>(newEntity, ECS::components::RectangleShapeComponent{textureRect, sf::IntRect(0, 0, textureRect->getSize().x, textureRect->getSize().y), sf::Vector2f(static_cast<float>(x), static_cast<float>(y))});
+    _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{static_cast<float>(scale), static_cast<float>(scale)});
+    _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
+    return newEntity;
+}
+
+entity_t Factory::createSound(const std::string &soundPath, float volume)
+{
+    entity_t newEntity = _registry.spawn_entity();
+    _registry.emplace_component<ECS::components::SoundComponent>(newEntity, ECS::components::SoundComponent{soundPath, volume});
     return newEntity;
 }

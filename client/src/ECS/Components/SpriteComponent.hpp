@@ -31,7 +31,7 @@ namespace ECS{
 
                 void setScale(const float &scaleX, const float &scaleY) {
                     if (this->_sprite.getScale().x != scaleX || this->_sprite.getScale().y != scaleY) {
-                        this->_sprite.setScale(scaleX, scaleY); 
+                        this->_sprite.setScale(scaleX, scaleY);
                     }
                 }
 
