@@ -78,7 +78,7 @@ void Room::addPlayer(std::shared_ptr<Client> client)
     for (auto i = _players.begin(); i != _players.end(); i++)
         client->send(StreamFactory::playerJoinedGame((**i).id()));
 
-    _players.push_back(std::make_unique<Player>(*this, client, newId, 0, 0));
+    _players.push_back(std::make_unique<Player>(*this, client, newId, 0, SCREEN_HEIGHT / _maxPlayer * _players.size()));
     _lastJoin = NOW;
 }
 
