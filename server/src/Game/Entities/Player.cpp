@@ -81,7 +81,7 @@ int Player::score() const
 void Player::setScore(int score)
 {
     _score = score;
-    _room.sendToAll(StreamFactory::score(_score));
+    _client->send(StreamFactory::score(_score));
 }
 
 void Player::setLife(int life)

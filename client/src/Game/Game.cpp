@@ -141,7 +141,6 @@ Game::Game(std::string ip, int port) :
 
     entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/piou.ogg"), 1000);
     this->_sounds.emplace(EntityManager::SOUND_TYPE::TEST, soundEntity);
-
 }
 
 Game::~Game()
@@ -463,6 +462,7 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
     if (this->_started == true) {
         this->ecs.kill_entity(_timerText);
         this->_gameState = gameState::GAME;
+        _scoreText = this->_factory.createText("Score: 0", this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - (250 * this->_resMult), 10, 20);
         this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [](ECS::components::MusicComponent &music) {
             music.playMusic();
         });
@@ -672,7 +672,7 @@ void Game::handleChangeLevel(Network::Packet &packet)
     unsigned int timeout = packet.getData().getDataUInt();
     unsigned char song = packet.getData().getDataUChar();
     unsigned char started = packet.getData().getDataUChar();
-    unsigned int fadeOutTime = 5000;
+    unsigned int fadeOutTime = 7000;
 
 
     if (!started) {

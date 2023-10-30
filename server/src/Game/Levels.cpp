@@ -374,8 +374,8 @@ void Levels::Level::parsEvents(const std::string &line, const std::string &path,
             }
 
             size_t it = 0;
-            for (size_t i = 0; i < times + 1; i++) {
-                this->_events[this->_parserEntity - 2 /* +2 parcque enum monstres commence a 2 */] .addSpawn(timeCode + (freq * i), poses[it]);
+            for (size_t i = 0; i < times; i++) {
+                this->_events[this->_parserEntity - 2 /* +2 parcque enum monstres commence a 2 */].addSpawn(timeCode + (freq * i), poses[it]);
                 ++it;
                 if (it == poses.size())
                     it = 0;
