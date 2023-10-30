@@ -249,7 +249,7 @@ void Game::update()
         ss << "Timer: " << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) << std::setfill('0') << seconds;
 
         if (_gameTimeText == 0) {
-            _gameTimeText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2, 10, 20);
+            _gameTimeText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2, this->topLeftOffeset.y + 10, 20);
         } else {
             this->_texts.insert(std::make_pair(_gameTimeText, ss.str()));
         }
@@ -448,11 +448,10 @@ void Game::handleRoomJoin(Network::Packet &packet)
     this->_playerEntity = newEntity;
     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
 
-    this->_scoreCoche = this->_factory.createScoreCoche((((this->_window.getSize().x / 2) - ((660.0 * this->_resMult) / 2))), 0.0f, this->_manager.getTexture(Loader::Loader::ScoreCoche), this->_resMult);
+    this->_scoreCoche = this->_factory.createScoreCoche((((this->_window.getSize().x / 2) - ((660.0 * this->_resMult) / 2))), this->topLeftOffeset.y , this->_manager.getTexture(Loader::Loader::ScoreCoche), this->_resMult);
 
-    entity_t playerLifeBar = this->_factory.createLoadingBar(10.0f, this->_window.getSize().y - (100.0f * this->_resMult), this->_manager.getTexture(Loader::Loader::playerLifeOutline), this->_manager.getTexture(Loader::Loader::playerLifeContent), this->_resMult);
+    entity_t playerLifeBar = this->_factory.createLoadingBar(this->topLeftOffeset.x + 10.0f, this->topLeftOffeset.y + this->_screenSize.y - (100.0f * this->_resMult), this->_manager.getTexture(Loader::Loader::playerLifeOutline), this->_manager.getTexture(Loader::Loader::playerLifeContent), this->_resMult);
     this->_loadingBar.insert(std::make_pair(EntityManager::LOADINGBAR_TYPE::PLAYER_LIFE, playerLifeBar));
-    this->_startGameTime = std::chrono::system_clock::now();
 }
 
 void Game::handleTimeoutMatchmaking(Network::Packet &packet)
@@ -462,7 +461,8 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
     if (this->_started == true) {
         this->ecs.kill_entity(_timerText);
         this->_gameState = gameState::GAME;
-        _scoreText = this->_factory.createText("Score: 0", this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - (250 * this->_resMult), 10, 20);
+        this->_startGameTime = std::chrono::system_clock::now();
+        _scoreText = this->_factory.createText("Score: 0", this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - (250 * this->_resMult), this->topLeftOffeset.y + 10, 20);
         this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [](ECS::components::MusicComponent &music) {
             music.playMusic();
         });
@@ -476,7 +476,7 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
         std::ostringstream ss;
         ss << "Match making: " << std::fixed << std::setprecision(1) << timer;
         if (_timerText == 0) {
-            _timerText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - 115, 10, 30);
+            _timerText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - 115, this->topLeftOffeset.y + 10, 30);
         } else {
             this->_texts.insert(std::make_pair(_timerText, ss.str()));
         }
@@ -591,7 +591,7 @@ void Game::handlePlayerDeath(Network::Packet &packet)
     packet >> id;
     entity_t res = getPlayerEntityFromId(id);
     if (res == this->_playerEntity) {
-        this->_looser.push_back(this->_factory.createLooserScreen(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::LooserScreen)));
+        this->_looser.push_back(this->_factory.createLooserScreen(this->topLeftOffeset.x, this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::LooserScreen)));
         this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_looser[0], ECS::components::ScaleComponent{this->_resMult, this->_resMult});
     }
     if (res != 0) {
@@ -624,6 +624,7 @@ void Game::handlePlayerLife(Network::Packet &packet)
     auto &barComp = this->ecs.getComponent<ECS::components::LoadingBarComponent>(loadingPlayerlifeBar);
     float newWidth = barComp.calculate(life);
 
+
     this->ecs.modify_component<ECS::components::RectangleShapeComponent>(this->_loadingBar[EntityManager::LOADINGBAR_TYPE::PLAYER_LIFE], [newWidth](ECS::components::RectangleShapeComponent &comp) {
         comp.setSize(sf::Vector2f(newWidth, comp.getSize().y));
     });
@@ -646,9 +647,11 @@ void Game::handleStrobes(Network::Packet &packet)
     unsigned char onOff;
     packet >> color >> onOff;
     if (onOff) {
-        this->ecs.modify_component<ECS::components::PositionComponent>(this->_strobes[color - 1], [](ECS::components::PositionComponent &comp) {
-            comp.setX(0.0f);
-            comp.setY(0.0f);
+        float x = this->topLeftOffeset.x;
+        float y = this->topLeftOffeset.y;
+        this->ecs.modify_component<ECS::components::PositionComponent>(this->_strobes[color - 1], [x, y](ECS::components::PositionComponent &comp) {
+            comp.setX(x);
+            comp.setY(y);
         });
     } else {
         float x = this->_screenSize.x;
