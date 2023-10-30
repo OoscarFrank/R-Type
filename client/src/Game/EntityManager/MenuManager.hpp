@@ -28,7 +28,7 @@ namespace game {
             };
 
 
-            void initFirstButton(BUTTON_TYPE type);
+            void setSelectedButton(BUTTON_TYPE type);
             void createMenu(MENU_TYPE type, entity_t entity, bool isDisplay, std::vector<BUTTON_TYPE> buttons);
             void removeMenu(MENU_TYPE type);
 

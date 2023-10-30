@@ -129,7 +129,6 @@ Game::Game(std::string ip, int port) :
     entity_t entity_mainMenu = this->ecs.spawn_entity();
     this->ecs.emplace_component<ECS::components::ControllableComponent>(entity_mainMenu, ECS::components::ControllableComponent{sf::Keyboard::Key::Up, sf::Keyboard::Key::Down, sf::Keyboard::Key::Left, sf::Keyboard::Key::Right, sf::Keyboard::Key::Enter});
     this->_menuManager.createMenu(MenuManager::MENU_TYPE::MAIN_MENU, entity_mainMenu, true, std::vector<MenuManager::BUTTON_TYPE>({MenuManager::BUTTON_TYPE::CREATE_GAME, MenuManager::BUTTON_TYPE::JOIN_GAME, MenuManager::BUTTON_TYPE::EXIT_SYSTEM}));
-    this->_menuManager.initFirstButton(MenuManager::BUTTON_TYPE::CREATE_GAME);
     this->_menuManager.enableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
 
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::RedPixel), _screenSize.x, _screenSize.y));

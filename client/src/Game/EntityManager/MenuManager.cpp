@@ -12,7 +12,7 @@ MenuManager::~MenuManager()
 {
 }
 
-void MenuManager::initFirstButton(BUTTON_TYPE type)
+void MenuManager::setSelectedButton(BUTTON_TYPE type)
 {
     this->_selectedButton = type;
     this->_ecs.modify_component<ECS::components::TextureRectComponent>(this->_buttons[this->_selectedButton], [](ECS::components::TextureRectComponent &comp) {
@@ -72,6 +72,7 @@ void MenuManager::enableMenu(MENU_TYPE type)
     this->_ecs.enableEntity(menu.first.first);
     for (auto &button : menu.second)
         this->_ecs.enableEntity(this->_buttons[button]);
+    this->initFirstButton(menu.second[0]);
 }
 
 void MenuManager::disableMenu(MENU_TYPE type)
