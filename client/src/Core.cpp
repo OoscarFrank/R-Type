@@ -9,18 +9,18 @@ Core::Core()
     this->_ip = "127.0.0.1";
 }
 
-int Core::checkArgs(int ac, char **av)
+int Core::checkArgs(int ac, char *av[])
 {
     if (ac < 2)
         return 0;
     if (ac > 5)
         throw MyError("Core", "Too many arguments.");
-    if (std::string(av[1]).find("-help") != std::string::npos) {
+    if (std::string(av[1]).find("-help") != std::string::npos || ac % 2 == 0) {
         std::cout << "USAGE: ./client -p port -h machine\n\tport\tis the port number; 4242 by default\n\tmachine\tis the name of the machine; localhost by default" << std::endl;
         return -1;
     }
 
-    for (int i = 0; i < ac; i++) {
+    for (int i = 1; i < ac; i++) {
         if (std::string(av[i]).find("-p") != std::string::npos) {
             if (av[i + 1] == NULL)
                 throw MyError("Core", "You put the -p but no port after.");

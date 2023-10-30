@@ -2,9 +2,9 @@
 #define LITTLEMONSTER_HPP
 
 #include "../Entity.hpp"
-#include "../ArmedEntity.hpp"
+#include "Monster.hpp"
 
-class LittleMonster: public ArmedEntity {
+class LittleMonster: public Monster {
     public:
         /**
          * @brief Construct a new Little Monster object
@@ -23,25 +23,18 @@ class LittleMonster: public ArmedEntity {
          * @param pos The position of the monster (x, y)
          */
         LittleMonster(Room &room, u_int id, const std::pair<short, short> &pos);
-        virtual ~LittleMonster();
+        virtual ~LittleMonster() = default;
 
         /**
          * @brief Refresh the entity
          * This method does the following:
          * - Refresh the missiles
-         * - Fire missile every ENEMY_FIRE_TIME
+         * - Fire missile every ENEMY_LITTLE_FIRE_TIME
          * - Move itself every ENEMY_MOVE_TIME and send the new position to all clients
          *
          */
         virtual void refresh();
-        /**
-         * @brief Check if the entity collide with another entity
-         *
-         * @param other The other entity to check collision with
-         * @return true If the entity collide with the other entity
-         * @return false If the entity doesn't collide with the other entity
-         */
-        virtual bool collide(const IEntity &other) override;
+        virtual int getDamage();
 };
 
 #endif

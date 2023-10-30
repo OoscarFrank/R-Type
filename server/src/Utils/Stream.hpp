@@ -1,10 +1,23 @@
-#ifndef STREAM_HPP
-#define STREAM_HPP
+#pragma once
 
 #include <vector>
 #include <iostream>
 #include <string>
 
+#ifdef _WIN32
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+    #include <windows.h>
+#endif
+
+namespace TypesLitterals {
+    constexpr char operator""_c(unsigned long long c) { return static_cast<char>(c); }
+    constexpr short operator""_s(unsigned long long c) { return static_cast<short>(c); }
+    constexpr int operator""_i(unsigned long long c) { return static_cast<int>(c); }
+    constexpr u_char operator""_uc(unsigned long long c) { return static_cast<u_char>(c); }
+    constexpr u_short operator""_us(unsigned long long c) { return static_cast<u_short>(c); }
+    constexpr u_int operator""_ui(unsigned long long c) { return static_cast<u_int>(c); }
+}
 
 class Stream
 {
@@ -39,6 +52,15 @@ public:
     void setDataShort(short data);
     void setDataChar(char data);
 
+    Stream &operator<<(const Stream &stream);
+    Stream &operator<<(u_char data);
+    Stream &operator<<(u_short data);
+    Stream &operator<<(u_int data);
+    Stream &operator<<(char data);
+    Stream &operator<<(short data);
+    Stream &operator<<(int data);
+    Stream &operator<<(bool data);
+
     size_t size() const;
     void clear();
 
@@ -48,6 +70,14 @@ public:
     int getDataInt();
     short getDataShort();
     char getDataChar();
+
+    Stream &operator>>(u_char &data);
+    Stream &operator>>(u_short &data);
+    Stream &operator>>(u_int &data);
+    Stream &operator>>(char &data);
+    Stream &operator>>(short &data);
+    Stream &operator>>(int &data);
+    Stream &operator>>(bool &data);
 
     Stream subStream(size_t pos) const;
     Stream subStream(size_t start, size_t size) const;
@@ -59,9 +89,28 @@ public:
         std::string _message;
         const char *what() const noexcept override { return _message.c_str(); }
     };
-
 };
 
-std::ostream &operator<<(std::ostream &os,const Stream &steam);
+std::ostream &operator<<(std::ostream &os,const Stream &stream);
 
-#endif
+namespace StreamFactory {
+    Stream screenProgress(u_int progress);
+    Stream playerPos(u_int id, short x, short y);
+    Stream missilePos(u_int id, u_char type, short x, short y);
+    Stream score(int score);
+    Stream monsterPos(u_int id, u_char type, short x, short y);
+    Stream joinRoom(u_int roomId, u_int playerId);
+    Stream waitGame(int time, bool start, unsigned char song = 0);
+    Stream playerJoinedGame(u_int playerId);
+    Stream playerLeftGame(u_int playerId);
+    Stream missileDestroyed(u_int id, u_char type, short x, short y);
+    Stream monsterDied(u_int id);
+    Stream gameOver(u_char type);
+    Stream playerDied(u_int id);
+    Stream playerLife(int life);
+    Stream monsterLife(u_int id, int life);
+    Stream askResend(u_short nbr);
+    Stream strobe(u_char color, bool onOff);
+    Stream changeLevel(u_int timout, u_char song, bool started);
+
+}

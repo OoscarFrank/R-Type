@@ -60,6 +60,14 @@ class Player: public ArmedEntity {
          *
          */
         virtual void fireMissile();
+        virtual int getDamage();
+        /**
+         * @brief Set the player's life
+         *
+         * @param life The new life to get
+         */
+        virtual void setLife(int life);
+        virtual void kill() override;
 
         /**
          * @brief Get the last move time
@@ -84,7 +92,7 @@ class Player: public ArmedEntity {
         /**
          * @brief Set the player's score
          *
-         * @param score The new score to set
+         * @param score The new score to get
          */
         void setScore(int score);
         /**

@@ -7,46 +7,50 @@
 #include "Entities/Entity.hpp"
 #include "Entities/Player.hpp"
 #include "Entities/Monsters/Little.hpp"
+#include "Entities/Monsters/Zigzager.hpp"
+#include "Entities/Monsters/Follower.hpp"
+#include "Entities/Monsters/BurstFire.hpp"
+#include "Entities/Monsters/Boss1.hpp"
+#include "Entities/Monsters/Boss2.hpp"
 #include "../Client.hpp"
+#include "Levels.hpp"
 
 class Room
 {
-    private:
+    public:
         enum State {
             WAIT = 0,
             RUN = 1,
             END = 2,
+            STOPPED = 3
         };
 
-        unsigned char _state;
+    private:
+        State _state;
         std::thread _thread;
         std::mutex _playersMutex;
         std::vector<std::unique_ptr<Player>> _players;
-        std::vector<std::unique_ptr<IEntity>> _monsters;
+        std::vector<std::unique_ptr<Monster>> _monsters;
         u_int _id;
         unsigned int _maxPlayer;
         unsigned int _progress;
         u_int _playersIds;
         bool _private;
+        Levels _levels;
 
         u_int _missilesIds;
         u_int _monstersIds;
-
-        Stream _broadcastStream;
-        unsigned char _broadcastInst;
 
         size_t _lastMapRefresh;
         size_t _lastWaitMessage;
         size_t _lastJoin;
         size_t _lastMissileUpdate;
         size_t _lastPlayerUpdate;
-        size_t _lastMonsterSpawn;
         size_t _lastGameOver;
 
         void refresh();
         void update();
         void startGame();
-        void addMonster(IEntity::Type type, int x, int y);
         void checkCollisionPlayer();
         void checkCollisionMonsters();
 
@@ -58,12 +62,19 @@ class Room
          * @param client The client that created the room
          * @param privateRoom If the room is private or not (default: false)
          */
-        Room(u_int id, std::shared_ptr<Client> client, bool privateRoom = false);
+        Room(u_int id, std::shared_ptr<Client> client, Levels &levels, bool privateRoom = false);
         ~Room();
         Room(const Room &room) = delete;
         Room(Room &&room) = delete;
         Room &operator=(const Room &room) = delete;
         Room &operator=(Room &&room) = delete;
+        /**
+         * @brief Get the state of the room (WAIT | RUN | END | STOPPED)
+         *
+         * @return State
+         */
+        State getState() const;
+        size_t getCurrentLevel() const;
         /**
          * @brief Get the id of the room
          *
@@ -124,30 +135,15 @@ class Room
          */
         void sendToAll(const Stream &stream);
         /**
-         * @brief Send the packet stored in the class to all players in the room
-         * This method works with the `getBroadcastStream` and `setInstBroadcast` methods
-         *
-         */
-        void sendBroadcast();
-        /**
-         * @brief Get the broadcast stream to send to all players
-         *
-         * @return Stream&
-         */
-        Stream &getBroadcastStream();
-        /**
-         * @brief Set the broadcast instruction
-         *
-         * @param inst The instruction to send to all players
-         */
-        void setInstBroadcast(unsigned char inst);
-        /**
          * @brief Get the id of the next missile to create
          *
          * @return u_int&
          */
         u_int &getMissilesIds();
-
+        void addMonster(IEntity::Type type, int x, int y);
+        std::pair<short, short> getNearestPlayerPos(const IEntity &entity);
+        bool isPrivate() const;
+        bool isMonster() const;
 };
 
 #endif

@@ -59,29 +59,46 @@ class IEntity {
          */
         virtual const BoundingBox<short> &box() const = 0;
         /**
+         * @brief Get the entities life
+         *
+         * @param life The new life to set
+         */
+        virtual int life() const = 0;
+        /**
+         * @brief Set the entities life
+         *
+         * @param life The new life to get
+         */
+        virtual void setLife(int life) = 0;
+        /**
          * @brief Kill the entity
          *
          */
-        virtual void killEntity() = 0;
+        virtual void kill() = 0;
         /**
          * @brief Check if the entity exist (alive)
          *
          * @return true
          * @return false
          */
-        virtual bool getExist() const = 0;
+        virtual bool exists() const = 0;
         /**
          * @brief Check if the entity is deletable (dead)
          *
          * @return true
          * @return false
          */
-        virtual bool getDeletable() const = 0;
+        virtual bool isDeletable() const = 0;
 
         enum Type {
             MISSILE,
             PLAYER,
             LITTLE_MONSTER,
+            ZIGZAGER_MONSTER,
+            FOLLOWER_MONSTER,
+            BURST_MONSTER,
+            BOSS1,
+            BOSS2,
         };
 };
 
@@ -149,24 +166,36 @@ class AEntity: public IEntity {
          */
         virtual const BoundingBox<short> &box() const;
         /**
+         * @brief Get the entities life
+         *
+         * @param life The new life to set
+         */
+        virtual int life() const;
+        /**
+         * @brief Set the entities life
+         *
+         * @param life The new life to get
+         */
+        virtual void setLife(int life);
+        /**
          * @brief Kill the entity
          *
          */
-        virtual void killEntity();
+        virtual void kill();
         /**
          * @brief Check if the entity exist (alive)
          *
          * @return true
          * @return false
          */
-        virtual bool getExist() const;
+        virtual bool exists() const;
         /**
          * @brief Check if the entity is deletable (dead)
          *
          * @return true
          * @return false
          */
-        virtual bool getDeletable() const;
+        virtual bool isDeletable() const;
 
     protected:
         /**
@@ -177,6 +206,7 @@ class AEntity: public IEntity {
          */
         virtual void move(short dx, short dy);
 
+        int _life;
         Room &_room;
         u_int _id;
         BoundingBox<short> _box;

@@ -23,6 +23,13 @@ public:
     public:
         Packet(std::shared_ptr<Client> client, const Stream &data, int instruction);
         ~Packet();
+        Packet &operator>>(u_char &data);
+        Packet &operator>>(u_short &data);
+        Packet &operator>>(u_int &data);
+        Packet &operator>>(char &data);
+        Packet &operator>>(short &data);
+        Packet &operator>>(int &data);
+        Packet &operator>>(bool &data);
         std::shared_ptr<Client> getClient() const;
         int getInstruction() const;
         Stream &getData();

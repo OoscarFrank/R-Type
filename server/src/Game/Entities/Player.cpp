@@ -6,10 +6,7 @@ Player::Player(Room &room, std::shared_ptr<Client> client, u_int id, short x, sh
     _score(0),
     _client(client)
 {
-    Stream out;
-    out.setDataUChar(13);
-    out.setDataUInt(_id);
-    _room.sendToAll(out);
+    _room.sendToAll(StreamFactory::playerJoinedGame(_id));
     sendPos();
 }
 
@@ -18,16 +15,13 @@ Player::Player(Room &room, std::shared_ptr<Client> client, u_int id, const std::
     _score(0),
     _client(client)
 {
-    Stream out;
-    out.setDataUChar(13);
-    out.setDataUInt(_id);
-    _room.sendToAll(out);
+    _room.sendToAll(StreamFactory::playerJoinedGame(_id));
     sendPos();
 }
 
 Player::~Player()
 {
-    
+
 }
 
 void Player::refresh()
@@ -51,23 +45,22 @@ void Player::move(short dx, short dy)
 
 void Player::sendPos()
 {
-    Stream out;
-    out.setDataUChar(3);
-    out.setDataUInt(_id);
-    out.setDataShort(_box.x);
-    out.setDataShort(_box.y);
-    _room.sendToAll(out);
+    _room.sendToAll(StreamFactory::playerPos(_id, _box.x, _box.y));
 }
 
 void Player::fireMissile()
 {
     auto now = std::chrono::system_clock::now();
 
-
     if (_exist && std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= PLAYER_FIRE_TIME) {
-        ArmedEntity::fireMissile(Missile::Type::PLAYER);
+        ArmedEntity::fireMissile(Missile::Type::PLAYER, PLAYER_MISSILE_PROGRESS_STEP, 0);
         _lastFire = now;
     }
+}
+
+int Player::getDamage()
+{
+    return 50 * _room.getCurrentLevel();
 }
 
 const std::chrono::system_clock::time_point &Player::lastMoveTime() const
@@ -88,10 +81,22 @@ int Player::score() const
 void Player::setScore(int score)
 {
     _score = score;
-    Stream out;
-    out.setDataUChar(6);
-    out.setDataInt(_score);
-    _room.sendToAll(out);
+    _client->send(StreamFactory::score(_score));
+}
+
+void Player::setLife(int life)
+{
+    AEntity::setLife(life);
+    _client->send(StreamFactory::playerLife(_life));
+    if (_life <= 0)
+        kill();
+}
+
+void Player::kill()
+{
+    AEntity::kill();
+    _room.sendToAll(StreamFactory::playerDied(_id));
+    std::cout << "Player " << _id << " died in room " << _room.getId() << std::endl;
 }
 
 std::shared_ptr<Client> Player::client() const

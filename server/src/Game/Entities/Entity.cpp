@@ -9,6 +9,7 @@ AEntity::AEntity(Room &room, u_int id, short x, short y, short w, short h):
 {
     _exist = true;
     _deletable = false;
+    _life = 100;
 }
 
 AEntity::AEntity(Room &room, u_int id, const std::pair<short, short> &pos, const std::pair<short, short> &size):
@@ -19,6 +20,7 @@ AEntity::AEntity(Room &room, u_int id, const std::pair<short, short> &pos, const
 {
     _exist = true;
     _deletable = false;
+    _life = 100;
 }
 
 std::pair<short, short> AEntity::position() const
@@ -33,12 +35,15 @@ u_int AEntity::id() const
 
 bool AEntity::isOutOfScreen() const
 {
+    if (IEntity::Type::ZIGZAGER_MONSTER)
+        return _box.x < 0 - _box.width || _box.x > SCREEN_WIDTH || _box.y < -500  - _box.height || _box.y > SCREEN_HEIGHT + 500;
     return _box.x < 0 - _box.width || _box.x > SCREEN_WIDTH || _box.y < 0 - _box.height || _box.y > SCREEN_HEIGHT;
+
 }
 
 bool AEntity::collide(const IEntity &other)
 {
-    if (_exist && other.getExist())
+    if (_exist && other.exists())
         return _box.collide(other.box());
     return false;
 }
@@ -56,21 +61,27 @@ void AEntity::move(short dx, short dy)
     }
 }
 
-void AEntity::killEntity()
+int AEntity::life() const
 {
-    // Stream out;
-    // out.setDataUChar(16);
-    // out.setDataUInt(_id);
-    // _room.sendToAll(out);
+    return _life;
+}
+
+void AEntity::setLife(int life)
+{
+    _life = life;
+}
+
+void AEntity::kill()
+{
     _exist = false;
 }
 
-bool AEntity::getExist() const
+bool AEntity::exists() const
 {
     return _exist;
 }
 
-bool AEntity::getDeletable() const
+bool AEntity::isDeletable() const
 {
     return _deletable;
 }

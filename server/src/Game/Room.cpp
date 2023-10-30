@@ -1,8 +1,10 @@
 #include "Room.hpp"
 #include "../Utils/Scheduling.hpp"
 #include <bitset>
+#include <cmath>
 
-Room::Room(u_int id, std::shared_ptr<Client> client, bool privateRoom)
+Room::Room(u_int id, std::shared_ptr<Client> client, Levels &levels, bool privateRoom):
+    _levels(levels)
 {
     _id = id;
     _playersIds = 0;
@@ -10,7 +12,6 @@ Room::Room(u_int id, std::shared_ptr<Client> client, bool privateRoom)
     _progress = 0;
     _lastMapRefresh = 0;
     _state = WAIT;
-    _broadcastInst = 0;
 
     _missilesIds = 0;
     _monstersIds = 0;
@@ -20,13 +21,22 @@ Room::Room(u_int id, std::shared_ptr<Client> client, bool privateRoom)
     _private = privateRoom;
     _lastWaitMessage = NOW;
     _thread = std::thread(&Room::refresh, this);
-
 }
 
 Room::~Room()
 {
     if (_thread.joinable())
         _thread.join();
+}
+
+Room::State Room::getState() const
+{
+    return _state;
+}
+
+size_t Room::getCurrentLevel() const
+{
+    return _levels.lvl();
 }
 
 u_int Room::getId() const
@@ -63,16 +73,10 @@ void Room::addPlayer(std::shared_ptr<Client> client)
 
     u_int newId = ++_playersIds;
 
-    client->setInst(10);
-    client->getStreamOut().setDataUInt(_id);
-    client->getStreamOut().setDataUInt(newId);
-    client->send();
+    client->send(StreamFactory::joinRoom(_id, newId));
 
-    for (auto i = _players.begin(); i != _players.end(); i++) {
-        client->setInst(13);
-        client->getStreamOut().setDataUInt((**i).id());
-        client->send();
-    }
+    for (auto i = _players.begin(); i != _players.end(); i++)
+        client->send(StreamFactory::playerJoinedGame((**i).id()));
 
     _players.push_back(std::make_unique<Player>(*this, client, newId, 0, 0));
     _lastJoin = NOW;
@@ -134,16 +138,6 @@ void Room::sendToAll(const Stream &stream)
     }
 }
 
-void Room::sendBroadcast()
-{
-    Stream out;
-    out += _broadcastInst;
-    out += _broadcastStream;
-    sendToAll(out);
-    _broadcastStream.clear();
-    _broadcastInst = 0;
-}
-
 void Room::refresh()
 {
     while (true) {
@@ -151,16 +145,17 @@ void Room::refresh()
         for (auto i = _players.begin(); i != _players.end(); i++) {
             if (!(**i).client()->isAlive()) {
                 std::cout << "Player " << (**i).id() << " disconnected in room " << _id << std::endl;
-                this->setInstBroadcast(14);
-                this->_broadcastStream.setDataUInt((**i).id());
-                this->sendBroadcast();
+                sendToAll(StreamFactory::playerLeftGame((**i).id()));
                 _players.erase(i);
                 break;
             }
         }
         _playersMutex.unlock();
         update();
-        // std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        if (_players.size() == 0) {
+            _state = STOPPED;
+            break;
+        }
     }
 }
 
@@ -171,9 +166,7 @@ void Room::update()
         if (now - _lastMapRefresh >= MAP_REFRESH_TIME) {
             _lastMapRefresh = now;
             _progress += MAP_PROGRESS_STEP;
-            this->setInstBroadcast(0x01);
-            this->_broadcastStream.setDataUInt(_progress);
-            this->sendBroadcast();
+            sendToAll(StreamFactory::screenProgress(_progress));
             now = NOW;
         }
         _playersMutex.lock();
@@ -187,27 +180,20 @@ void Room::update()
         }
         for (auto i = _monsters.begin(); i != _monsters.end();) {
             (**i).refresh();
-            if ((**i).getDeletable()) {
+            if ((**i).isDeletable()) {
                 _monsters.erase(i);
                 continue;
             }
-            if ((**i).getExist() && (**i).isOutOfScreen()) {
-                (**i).killEntity();
-                this->setInstBroadcast(16);
-                this->_broadcastStream.setDataUInt((**i).id());
-                this->sendBroadcast();
-            } else
+            if ((**i).exists() && (**i).isOutOfScreen())
+                (**i).kill();
+            else
                 i++;
         }
 
         checkCollisionPlayer();
         checkCollisionMonsters();
 
-        if (now - _lastMonsterSpawn >= ENEMY_SPAWN_TIME) {
-            _lastMonsterSpawn = now;
-            this->addMonster(IEntity::Type::LITTLE_MONSTER, SCREEN_WIDTH, std::rand() % SCREEN_HEIGHT);
-            now = NOW;
-        }
+        _levels.update(*this);
         _playersMutex.unlock();
     }
     if (_state == WAIT) {
@@ -217,10 +203,7 @@ void Room::update()
         } else  {
             if (now - _lastWaitMessage >= SEND_WAIT_MESSAGE_TIME) {
                 _lastWaitMessage = now;
-                this->setInstBroadcast(11);
-                this->_broadcastStream.setDataInt(TIMEOUT_START_GAME - (now - _lastJoin));
-                this->_broadcastStream.setDataUChar(0);
-                this->sendBroadcast();
+                sendToAll(StreamFactory::waitGame(TIMEOUT_START_GAME - (now - _lastJoin), false));
                 now = NOW;
             }
         }
@@ -230,9 +213,7 @@ void Room::update()
     if (_state == END) {
         if (now - _lastGameOver >= GAME_OVER_REFRESH) {
             _lastGameOver = now;
-            this->setInstBroadcast(17);
-            this->_broadcastStream.setDataChar(0);
-            this->sendBroadcast();
+            sendToAll(StreamFactory::gameOver(0));
             now = NOW;
         }
     }
@@ -244,27 +225,12 @@ void Room::startGame()
     _lastMapRefresh = NOW;
     _lastPlayerUpdate = NOW;
     _lastMissileUpdate = NOW;
-    _lastMonsterSpawn = NOW;
-    this->setInstBroadcast(11);
-    this->_broadcastStream.setDataInt(0);
-    this->_broadcastStream.setDataUChar(1);
-    this->sendBroadcast();
 
-    for (auto i = _players.begin(); i != _players.end(); i++) {
+    sendToAll(StreamFactory::waitGame(0, true, _levels.getLevel().getSong()));
+    _levels.start();
 
+    for (auto i = _players.begin(); i != _players.end(); i++)
         (**i).sendPos();
-    }
-}
-
-Stream &Room::getBroadcastStream()
-{
-    return _broadcastStream;
-}
-
-
-void Room::setInstBroadcast(unsigned char inst)
-{
-    _broadcastInst = inst;
 }
 
 void Room::addMonster(IEntity::Type type, int x, int y)
@@ -276,6 +242,21 @@ void Room::addMonster(IEntity::Type type, int x, int y)
         case IEntity::Type::LITTLE_MONSTER:
             _monsters.push_back(std::make_unique<LittleMonster>(*this, ++_monstersIds, x, y));
             break;
+        case IEntity::Type::ZIGZAGER_MONSTER:
+            _monsters.push_back(std::make_unique<ZigzagerMonster>(*this, ++_monstersIds, x, y));
+            break;
+        case IEntity::Type::FOLLOWER_MONSTER:
+            _monsters.push_back(std::make_unique<FollowerMonster>(*this, ++_monstersIds, x, y));
+            break;
+        case IEntity::Type::BURST_MONSTER:
+            _monsters.push_back(std::make_unique<BurstMonster>(*this, ++_monstersIds, x, y));
+            break;
+        case IEntity::Type::BOSS1:
+            _monsters.push_back(std::make_unique<Boss1Monster>(*this, ++_monstersIds, x, y));
+            break;
+        case IEntity::Type::BOSS2:
+            _monsters.push_back(std::make_unique<Boss2Monster>(*this, ++_monstersIds, x, y));
+            break;
         default:
             return;
     }
@@ -284,14 +265,14 @@ void Room::addMonster(IEntity::Type type, int x, int y)
 
 void Room::checkCollisionPlayer()
 {
-    for (auto i = _players.begin(); i != _players.end(); i++) {
-        for (auto j = _monsters.begin(); j != _monsters.end(); j++) {
-            if ((**j).collide(**i)) {
-                std::cout << "Player " << (**i).id() << " died in room " << _id << std::endl;
-                (**i).killEntity();
-                this->setInstBroadcast(18);
-                this->_broadcastStream.setDataUInt((**i).id());
-                this->sendBroadcast();
+    for (auto p = _players.begin(); p != _players.end(); p++) {
+        if (!(**p).exists())
+            continue;
+        for (auto m = _monsters.begin(); m != _monsters.end(); m++) {
+            if (!(**m).exists())
+                continue;
+            if ((**m).collide(**p)) {
+                (**p).setLife((**p).life() - (**m).getDamage());
                 return;
             }
         }
@@ -300,20 +281,46 @@ void Room::checkCollisionPlayer()
 
 void Room::checkCollisionMonsters()
 {
-    for (auto i = _players.begin(); i != _players.end(); i++) {
-        if (!(**i).getExist())
+    for (auto p = _players.begin(); p != _players.end(); p++) {
+        if (!(**p).exists())
             continue;
-        for (auto j = _monsters.begin(); j != _monsters.end(); j++) {
-            if (!(**j).getExist())
+        for (auto m = _monsters.begin(); m != _monsters.end(); m++) {
+            if (!(**m).exists())
                 continue;
-            if ((**i).collide(**j)) {
-                (**j).killEntity();
-                this->setInstBroadcast(16);
-                this->_broadcastStream.setDataUInt((**j).id());
-                this->sendBroadcast();
-                // _monsters.erase(j);
+            if ((**p).collide(**m)) {
+                (**m).setLife((**m).life() - (**p).getDamage());
+                (**p).setScore((**p).score() + 10);
                 return;
             }
         }
     }
+}
+
+std::pair<short, short> Room::getNearestPlayerPos(const IEntity &entity)
+{
+    std::pair<short, short> nearest = {0, SCREEN_HEIGHT / 2};
+    double distance = std::numeric_limits<double>::max();
+
+    for (auto p = _players.begin(); p != _players.end(); p++) {
+        if (!(**p).exists())
+            continue;
+        double deltaX = (**p).position().first - entity.position().first;
+        double deltaY = (**p).position().second - entity.position().second;
+        double tmp = std::sqrt(deltaX * deltaX + deltaY * deltaY);
+        if (tmp < distance) {
+            distance = tmp;
+            nearest = (**p).position();
+        }
+    }
+    return nearest;
+}
+
+bool Room::isPrivate() const
+{
+    return _private;
+}
+
+bool Room::isMonster() const
+{
+    return !this->_monsters.empty();
 }
