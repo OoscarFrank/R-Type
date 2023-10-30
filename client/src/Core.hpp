@@ -12,7 +12,7 @@ namespace client {
             Core();
             ~Core(){};
 
-            int checkArgs(int ac, char **av);
+            int checkArgs(int ac, char *av[]);
             void run();
 
         private:

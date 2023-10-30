@@ -6,7 +6,6 @@ using namespace client;
 
 int main(int ac, char **av)
 {
-    // signal(SIGPIPE, SIG_IGN);
     Core core;
     try {
         if (core.checkArgs(ac, av) == 0) {
