@@ -4,6 +4,12 @@
 #include <iostream>
 #include <string>
 
+#ifdef _WIN32
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+    #include <windows.h>
+#endif
+
 namespace TypesLitterals {
     constexpr char operator""_c(unsigned long long c) { return static_cast<char>(c); }
     constexpr short operator""_s(unsigned long long c) { return static_cast<short>(c); }
