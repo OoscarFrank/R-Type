@@ -6,7 +6,7 @@ using namespace game;
 Core::Core()
 {
     this->_port = 4242;
-    this->_ip = "172.20.10.2";
+    this->_ip = "127.0.0.1";
 }
 
 int Core::checkArgs(int ac, char *av[])
