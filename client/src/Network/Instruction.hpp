@@ -37,6 +37,7 @@ struct Commands {
  * 12 gui - ping (current time)
  * 24 gui - quitter la room
  * 25 gui - join d'une room (room id)
+ * 26 gui - ask to list rooms
  *
  */
 #define OUT_COMMANDS { \
@@ -47,6 +48,7 @@ struct Commands {
     {12, {LONG}, 8, true}, \
     {24, {}, 0, true}, \
     {25, {UINT}, 4, true}, \
+    {26, {}, 0, true}, \
     {255, {USHORT}, 2, true} \
 }
 
@@ -70,6 +72,7 @@ struct Commands {
  * 21 serv - strobes (color, on/off)
  * 22 serv - next level starting (time)
  * 23 serv - latency (time)
+ * 27 serv - room list (room id, number players, max number players)
  *
  */
 #define IN_COMMANDS { \
@@ -91,5 +94,6 @@ struct Commands {
     {21, {UCHAR, UCHAR}, 2, true}, \
     {22, {UINT, UCHAR, UCHAR}, 6, true}, \
     {23, {USHORT}, 2, false}, \
+    {27, {UINT, UCHAR, UCHAR}, 6, true}, \
     {255, {USHORT}, 2, true} \
 }

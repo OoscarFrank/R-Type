@@ -11,7 +11,8 @@ Router::Router(RoomManager &rm):
     _functions[9] = &Router::_searchRoom;
     _functions[12] = &Router::_ping;
     _functions[24] = &Router::_leaveRoom;
-    _functions[25] = &Router::joinRoom;
+    _functions[25] = &Router::_joinRoom;
+    _functions[26] = &Router::_listRooms;
     _functions[255] = &Router::_cmdNotRecieved;
 }
 
@@ -70,11 +71,23 @@ void Router::_leaveRoom(Reader::Packet &packet, Levels &levels)
     _rm.getRoom(client).removePlayer(client);
 }
 
-void Router::joinRoom(Reader::Packet &packet, Levels &levels)
+void Router::_joinRoom(Reader::Packet &packet, Levels &levels)
 {
     u_int roomId;
     packet >> roomId;
     _rm.getRoom(roomId).addPlayer(packet.getClient());
+}
+
+void Router::_listRooms(Reader::Packet &packet, Levels &levels)
+{
+    const auto &rooms = _rm.getRooms();
+    for (auto i = rooms.begin(); i != rooms.end(); i++) {
+        if ((*i)->isPrivate() || (*i)->getState() != Room::WAIT)
+            continue;
+        Stream out;
+        out << 27_uc << (*i)->getId() << static_cast<u_char>((*i)->getNbPlayer()) << static_cast<u_char>((*i)->getMaxPlayer());
+        packet.getClient()->send(out);
+    }
 }
 
 void Router::_cmdNotRecieved(Reader::Packet &packet, Levels &levels)
