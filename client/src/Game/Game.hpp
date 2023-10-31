@@ -97,6 +97,7 @@ namespace game {
             int eventMemory;
             std::chrono::system_clock::time_point _lastPing;
             std::chrono::system_clock::time_point _startGameTime;
+            std::chrono::system_clock::time_point _lastPlayerFireTime;
 
             void refreshScreenSize();
 

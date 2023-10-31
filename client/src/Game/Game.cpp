@@ -16,7 +16,8 @@ Game::Game(std::string ip, int port) :
     _playerId(0),
     _startTimeLeft(0),
     _started(0),
-    _lastPing(std::chrono::system_clock::now())
+    _lastPing(std::chrono::system_clock::now()),
+    _lastPlayerFireTime(std::chrono::system_clock::now())
 {
     sf::VideoMode mode = sf::VideoMode::getDesktopMode();
     try {
@@ -278,7 +279,8 @@ void Game::sendMoveToServer()
                 out << 2_uc << static_cast<u_char>((*i).getEvent() & move) << 1_uc;
                 _net.send(out);
             }
-            if ((*i).getEvent() & SPACE) {
+            if ((*i).getEvent() & SPACE && std::chrono::system_clock::now() - this->_lastPlayerFireTime > std::chrono::milliseconds(160)) {
+                this->_lastPlayerFireTime = std::chrono::system_clock::now();
                 Stream out;
                 out << 5_uc;
                 this->_net.send(out);
@@ -638,7 +640,7 @@ void Game::handleMonsterLife(Network::Packet &packet)
     entity_t res = getEnnemiEntityFromId(id);
     if (res == 0)
         return;
-    std::cout << "Monster " << id << " life: " << life << std::endl;
+    // std::cout << "Monster " << id << " life: " << life << std::endl;
 }
 
 void Game::handleStrobes(Network::Packet &packet)
