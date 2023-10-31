@@ -92,45 +92,13 @@ Game::Game(std::string ip, int port) :
     this->_musics.emplace(EntityManager::MUSIC_TYPE::VOIS_SUR_TON_CHEMIN, this->_factory.createMusic(client::getAssetPath("songs/VOIS_SUR_TON_CHEMIN.ogg"), 100, true));
 
 
-
     this->_resMult = static_cast<float>(this->_screenSize.x)/ SCREEN_WIDTH;
 
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.070f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.1f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
 
-    float tmpSizebutton = (this->_manager.getTexture(Loader::Loader::CreateRoomButton).get()->getSize().x / 2) * _resMult;
-
-    // create buttons
-    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::CREATE_GAME, this->_factory.createButton((this->_screenSize.x / 2) - (tmpSizebutton / 2), 600.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::CreateRoomButton), sf::Vector2f(_resMult, _resMult),
-    [&](void) {
-        this->_menuManager.disableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
-        this->_gameState = gameState::MATCHMAKING;
-        Stream out;
-        out << 8_uc << 0_uc;
-        this->_net.send(out);
-    }));
-
-    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::JOIN_GAME, this->_factory.createButton((this->_screenSize.x / 2) - (tmpSizebutton / 2), 700.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::JoinRoomButton), sf::Vector2f(_resMult, _resMult),
-    [&](void) {
-        this->_menuManager.disableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
-        this->_gameState = gameState::MATCHMAKING;
-        Stream out;
-        out << 9_uc;
-        this->_net.send(out);
-    }
-    ));
-
-    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::EXIT_SYSTEM, this->_factory.createButton((this->_screenSize.x / 2) - (tmpSizebutton / 2), 800.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton), sf::Vector2f(_resMult, _resMult),
-    [&](void) {
-        this->_window.close();
-    }
-    ));
-
-    // create menus
-    entity_t entity_mainMenu = this->ecs.spawn_entity();
-    this->ecs.emplace_component<ECS::components::ControllableComponent>(entity_mainMenu, ECS::components::ControllableComponent{sf::Keyboard::Key::Up, sf::Keyboard::Key::Down, sf::Keyboard::Key::Left, sf::Keyboard::Key::Right, sf::Keyboard::Key::Enter});
-    this->_menuManager.createMenu(MenuManager::MENU_TYPE::MAIN_MENU, entity_mainMenu, true, std::vector<MenuManager::BUTTON_TYPE>({MenuManager::BUTTON_TYPE::CREATE_GAME, MenuManager::BUTTON_TYPE::JOIN_GAME, MenuManager::BUTTON_TYPE::EXIT_SYSTEM}));
-    this->_menuManager.enableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
+    this->initButtons();
+    this->initMenus();
 
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::RedPixel), _screenSize.x, _screenSize.y));
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::GreenPixel), _screenSize.x, _screenSize.y));
@@ -170,6 +138,46 @@ void Game::refreshScreenSize()
             _blackBandBottomRight = this->_factory.createBlackband(sf::IntRect(this->_realScreenSize.x - difWidth, 0, difWidth, this->_realScreenSize.y), this->_manager.getTexture(Loader::Loader::BlackPixel));
         }
     }
+}
+
+void Game::initButtons()
+{
+    float tmpSizebutton = (this->_manager.getTexture(Loader::Loader::CreateRoomButton).get()->getSize().x / 2) * _resMult;
+
+    // create buttons
+    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::CREATE_GAME, this->_factory.createButton((this->_screenSize.x / 2) - (tmpSizebutton / 2), 600.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::CreateRoomButton), sf::Vector2f(_resMult, _resMult),
+    [&](void) {
+        this->_menuManager.disableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
+        this->_gameState = gameState::MATCHMAKING;
+        Stream out;
+        out << 8_uc << 0_uc;
+        this->_net.send(out);
+    }));
+
+    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::JOIN_GAME, this->_factory.createButton((this->_screenSize.x / 2) - (tmpSizebutton / 2), 700.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::JoinRoomButton), sf::Vector2f(_resMult, _resMult),
+    [&](void) {
+        this->_menuManager.disableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
+        this->_gameState = gameState::MATCHMAKING;
+        Stream out;
+        out << 9_uc;
+        this->_net.send(out);
+    }
+    ));
+
+    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::EXIT_SYSTEM, this->_factory.createButton((this->_screenSize.x / 2) - (tmpSizebutton / 2), 800.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton), sf::Vector2f(_resMult, _resMult),
+    [&](void) {
+        this->_window.close();
+    }
+    ));
+}
+
+void Game::initMenus()
+{
+    // create menus
+    entity_t entity_mainMenu = this->ecs.spawn_entity();
+    this->ecs.emplace_component<ECS::components::ControllableComponent>(entity_mainMenu, ECS::components::ControllableComponent{sf::Keyboard::Key::Up, sf::Keyboard::Key::Down, sf::Keyboard::Key::Left, sf::Keyboard::Key::Right, sf::Keyboard::Key::Enter});
+    this->_menuManager.createMenu(MenuManager::MENU_TYPE::MAIN_MENU, entity_mainMenu, true, std::vector<MenuManager::BUTTON_TYPE>({MenuManager::BUTTON_TYPE::CREATE_GAME, MenuManager::BUTTON_TYPE::JOIN_GAME, MenuManager::BUTTON_TYPE::EXIT_SYSTEM}));
+    this->_menuManager.enableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
 }
 
 void Game::update()
