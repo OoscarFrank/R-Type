@@ -158,7 +158,9 @@ void Room::refresh()
         _playersMutex.lock();
         for (auto i = _players.begin(); i != _players.end(); i++) {
             if (!(**i).client()->isAlive()) {
+                _playersMutex.unlock();
                 removePlayer((**i).client());
+                _playersMutex.lock();
                 break;
             }
         }
