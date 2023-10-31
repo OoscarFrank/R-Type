@@ -24,7 +24,8 @@ namespace game {
             enum MENU_TYPE {
                 MAIN_MENU,
                 PAUSE_MENU,
-                LOOSER_MENU
+                LOOSER_MENU,
+                COUNT
             };
 
 
@@ -39,6 +40,7 @@ namespace game {
             bool menuState(MENU_TYPE type);
             void enableMenu(MENU_TYPE type);
             void disableMenu(MENU_TYPE type);
+            void disableAllmenu();
 
             void nextButtonInMenu(MENU_TYPE type);
             void previousButtonInMenu(MENU_TYPE type);
