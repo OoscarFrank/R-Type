@@ -70,8 +70,12 @@ void MenuManager::enableMenu(MENU_TYPE type)
     auto &menu = this->_menu[type];
     menu.first.second = true;
     this->_ecs.enableEntity(menu.first.first);
-    for (auto &button : menu.second)
+    for (auto &button : menu.second) {
         this->_ecs.enableEntity(this->_buttons[button]);
+        this->_ecs.modify_component<ECS::components::TextureRectComponent>(this->_buttons[button], [](ECS::components::TextureRectComponent &comp) {
+            comp.setFrameOnTexture(0);
+        });
+    }
     this->setSelectedButton(menu.second[0]);
 }
 
@@ -84,6 +88,13 @@ void MenuManager::disableMenu(MENU_TYPE type)
     this->_ecs.disableEntity(menu.first.first);
     for (auto &button : menu.second)
         this->_ecs.disableEntity(this->_buttons[button]);
+}
+
+void MenuManager::disableAllmenu()
+{
+    for (int i = 0; i < static_cast<int>(MENU_TYPE::COUNT); i++) {
+        this->disableMenu(static_cast<MENU_TYPE>(i));
+    }
 }
 
 bool MenuManager::checkLastButtonInput()

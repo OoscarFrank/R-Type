@@ -72,6 +72,32 @@ const std::vector<unsigned char> &Stream::getBuffer() const
     return this->_buffer;
 }
 
+unsigned long Stream::getDataULong()
+{
+    unsigned long out = 0;
+
+    out += this->_buffer[0];
+    out <<= 8;
+    out += this->_buffer[1];
+    out <<= 8;
+    out += this->_buffer[2];
+    out <<= 8;
+    out += this->_buffer[3];
+    out <<= 8;
+    out += this->_buffer[4];
+    out <<= 8;
+    out += this->_buffer[5];
+    out <<= 8;
+    out += this->_buffer[6];
+    out <<= 8;
+    out += this->_buffer[7];
+
+    for (int i = 0; i < 8; i++)
+        this->_buffer.erase(this->_buffer.begin());
+
+    return out;
+}
+
 unsigned int Stream::getDataUInt()
 {
     unsigned int out = 0;
@@ -112,6 +138,31 @@ unsigned char Stream::getDataUChar()
     return out;
 }
 
+long Stream::getDataLong()
+{
+    long out = 0;
+
+    out += this->_buffer[0];
+    out <<= 8;
+    out += this->_buffer[1];
+    out <<= 8;
+    out += this->_buffer[2];
+    out <<= 8;
+    out += this->_buffer[3];
+    out <<= 8;
+    out += this->_buffer[4];
+    out <<= 8;
+    out += this->_buffer[5];
+    out <<= 8;
+    out += this->_buffer[6];
+    out <<= 8;
+    out += this->_buffer[7];
+
+    for (int i = 0; i < 8; i++)
+        this->_buffer.erase(this->_buffer.begin());
+
+    return out;
+}
 
 int Stream::getDataInt()
 {
@@ -171,6 +222,12 @@ Stream &Stream::operator>>(u_int &data)
     return *this;
 }
 
+Stream &Stream::operator>>(u_long &data)
+{
+    data = this->getDataULong();
+    return *this;
+}
+
 Stream &Stream::operator>>(char &data)
 {
     data = this->getDataChar();
@@ -189,10 +246,36 @@ Stream &Stream::operator>>(int &data)
     return *this;
 }
 
+Stream &Stream::operator>>(long &data)
+{
+    data = this->getDataLong();
+    return *this;
+}
+
 Stream &Stream::operator>>(bool &data)
 {
     data = this->getDataUChar();
     return *this;
+}
+
+void Stream::setDataULong(unsigned long data)
+{
+    unsigned char tmp = data >> 56;
+    this->_buffer.push_back(tmp);
+    tmp = data >> 48;
+    this->_buffer.push_back(tmp);
+    tmp = data >> 40;
+    this->_buffer.push_back(tmp);
+    tmp = data >> 32;
+    this->_buffer.push_back(tmp);
+    tmp = data >> 24;
+    this->_buffer.push_back(tmp);
+    tmp = data >> 16;
+    this->_buffer.push_back(tmp);
+    tmp = data >> 8;
+    this->_buffer.push_back(tmp);
+    tmp = data;
+    this->_buffer.push_back(tmp);
 }
 
 void Stream::setDataUInt(unsigned int data)
@@ -218,6 +301,26 @@ void Stream::setDataUShort(unsigned short data)
 void Stream::setDataUChar(unsigned char data)
 {
     this->_buffer.push_back(data);
+}
+
+void Stream::setDataLong(long data)
+{
+    unsigned char tmp = data >> 56;
+    this->_buffer.push_back(tmp);
+    tmp = data >> 48;
+    this->_buffer.push_back(tmp);
+    tmp = data >> 40;
+    this->_buffer.push_back(tmp);
+    tmp = data >> 32;
+    this->_buffer.push_back(tmp);
+    tmp = data >> 24;
+    this->_buffer.push_back(tmp);
+    tmp = data >> 16;
+    this->_buffer.push_back(tmp);
+    tmp = data >> 8;
+    this->_buffer.push_back(tmp);
+    tmp = data;
+    this->_buffer.push_back(tmp);
 }
 
 void Stream::setDataInt(int data)
@@ -270,6 +373,12 @@ Stream &Stream::operator<<(u_int data)
     return *this;
 }
 
+Stream &Stream::operator<<(u_long data)
+{
+    this->setDataULong(data);
+    return *this;
+}
+
 Stream &Stream::operator<<(char data)
 {
     this->setDataChar(data);
@@ -285,6 +394,12 @@ Stream &Stream::operator<<(short data)
 Stream &Stream::operator<<(int data)
 {
     this->setDataInt(data);
+    return *this;
+}
+
+Stream &Stream::operator<<(long data)
+{
+    this->setDataLong(data);
     return *this;
 }
 

@@ -52,6 +52,7 @@ class RoomManager
          * @return Room&
          */
         Room &getRoom(std::shared_ptr<Client> client);
+        const std::vector<std::unique_ptr<Room>> &getRooms();
 };
 
 #endif

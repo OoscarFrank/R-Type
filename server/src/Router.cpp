@@ -1,5 +1,7 @@
 #include "Router.hpp"
 
+using namespace TypesLitterals;
+
 Router::Router(RoomManager &rm):
     _rm(rm)
 {
@@ -8,6 +10,9 @@ Router::Router(RoomManager &rm):
     _functions[8] = &Router::_createRoom;
     _functions[9] = &Router::_searchRoom;
     _functions[12] = &Router::_ping;
+    _functions[24] = &Router::_leaveRoom;
+    _functions[25] = &Router::_joinRoom;
+    _functions[26] = &Router::_listRooms;
     _functions[255] = &Router::_cmdNotRecieved;
 }
 
@@ -48,7 +53,42 @@ void Router::_searchRoom(Reader::Packet &packet, Levels &levels)
 }
 
 void Router::_ping(Reader::Packet &packet, Levels &levels)
-{}
+{
+    long timeMS;
+    packet >> timeMS;
+
+    std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point then = std::chrono::system_clock::time_point(std::chrono::milliseconds(timeMS));
+
+    Stream out;
+    out << 23_uc << static_cast<u_short>(std::chrono::duration_cast<std::chrono::milliseconds>(now - then).count());
+    packet.getClient()->send(out);
+}
+
+void Router::_leaveRoom(Reader::Packet &packet, Levels &levels)
+{
+    auto client = packet.getClient();
+    _rm.getRoom(client).removePlayer(client);
+}
+
+void Router::_joinRoom(Reader::Packet &packet, Levels &levels)
+{
+    u_int roomId;
+    packet >> roomId;
+    _rm.getRoom(roomId).addPlayer(packet.getClient());
+}
+
+void Router::_listRooms(Reader::Packet &packet, Levels &levels)
+{
+    const auto &rooms = _rm.getRooms();
+    for (auto i = rooms.begin(); i != rooms.end(); i++) {
+        if ((*i)->isPrivate() || (*i)->getState() != Room::WAIT)
+            continue;
+        Stream out;
+        out << 27_uc << (*i)->getId() << static_cast<u_char>((*i)->getNbPlayer()) << static_cast<u_char>((*i)->getMaxPlayer());
+        packet.getClient()->send(out);
+    }
+}
 
 void Router::_cmdNotRecieved(Reader::Packet &packet, Levels &levels)
 {

@@ -78,3 +78,9 @@ Room &RoomManager::getRoom(std::shared_ptr<Client> client)
     }
     throw std::runtime_error("Room not found");
 }
+
+const std::vector<std::unique_ptr<Room>> &RoomManager::getRooms()
+{
+    _clearRooms();
+    return _rooms;
+}

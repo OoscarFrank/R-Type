@@ -112,6 +112,7 @@ class Room
          * @param move The move to make (PLAYER_MOVE_UP | PLAYER_MOVE_DOWN | PLAYER_MOVE_LEFT | PLAYER_MOVE_RIGHT) you can combine them with the | binary operator
          * @param nbr The number of move to make (default: 1)
          */
+        void removePlayer(std::shared_ptr<Client> client);
         void movePlayer(std::shared_ptr<Client> client, char move, char nbr = 1);
         /**
          * @brief Checks if a client is in the room

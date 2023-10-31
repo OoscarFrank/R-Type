@@ -82,6 +82,12 @@ Reader::Packet &Reader::Packet::operator>>(u_int &data)
     return *this;
 }
 
+Reader::Packet &Reader::Packet::operator>>(u_long &data)
+{
+    _data >> data;
+    return *this;
+}
+
 Reader::Packet &Reader::Packet::operator>>(char &data)
 {
     _data >> data;
@@ -95,6 +101,12 @@ Reader::Packet &Reader::Packet::operator>>(short &data)
 }
 
 Reader::Packet &Reader::Packet::operator>>(int &data)
+{
+    _data >> data;
+    return *this;
+}
+
+Reader::Packet &Reader::Packet::operator>>(long &data)
 {
     _data >> data;
     return *this;
