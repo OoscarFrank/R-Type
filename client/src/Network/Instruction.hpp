@@ -35,7 +35,7 @@ struct Commands {
  * 8 gui - creation d'une room (booleen pour savoir si la room est privee)
  * 9 gui - match making
  * 12 gui - ping (current time)
- * 13 gui - quitter la room
+ * 24 gui - quitter la room
  *
  */
 #define OUT_COMMANDS { \
@@ -44,7 +44,7 @@ struct Commands {
     {8, {UCHAR}, 1, true}, \
     {9, {}, 0, true}, \
     {12, {LONG}, 8, true}, \
-    {13, {}, 0, true}, \
+    {24, {}, 0, true}, \
     {255, {USHORT}, 2, true} \
 }
 

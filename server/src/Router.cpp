@@ -10,7 +10,7 @@ Router::Router(RoomManager &rm):
     _functions[8] = &Router::_createRoom;
     _functions[9] = &Router::_searchRoom;
     _functions[12] = &Router::_ping;
-    _functions[13] = &Router::_leaveRoom;
+    _functions[24] = &Router::_leaveRoom;
     _functions[255] = &Router::_cmdNotRecieved;
 }
 
