@@ -147,7 +147,6 @@ void Game::initButtons()
 {
     float tmpSizebutton = (this->_manager.getTexture(Loader::Loader::CreateRoomButton).get()->getSize().x / 2) * _resMult;
 
-    // create buttons
     this->_menuManager.createButton(MenuManager::BUTTON_TYPE::CREATE_GAME, this->_factory.createButton((this->_screenSize.x / 2) - (tmpSizebutton / 2), 600.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::CreateRoomButton), sf::Vector2f(_resMult, _resMult),
     [&](void) {
         this->_menuManager.disableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
@@ -228,7 +227,6 @@ void Game::initButtons()
 
 void Game::initMenus()
 {
-    // create menus
     entity_t entity_mainMenu = this->ecs.spawn_entity();
     this->ecs.emplace_component<ECS::components::ControllableComponent>(entity_mainMenu, ECS::components::ControllableComponent{sf::Keyboard::Key::Up, sf::Keyboard::Key::Down, sf::Keyboard::Key::Left, sf::Keyboard::Key::Right, sf::Keyboard::Key::Enter});
     this->_menuManager.createMenu(MenuManager::MENU_TYPE::MAIN_MENU, entity_mainMenu, true, std::vector<MenuManager::BUTTON_TYPE>({MenuManager::BUTTON_TYPE::CREATE_GAME, MenuManager::BUTTON_TYPE::JOIN_GAME, MenuManager::BUTTON_TYPE::EXIT_SYSTEM}));
@@ -243,8 +241,15 @@ void Game::update()
     Network::Packet packet;
 
     while (this->_net.getQueueIn().tryPop(packet)) {
-        // if (this->_gameState == gameState::ENDGAME || this->_gameState == gameState::MENU)
-        //     continue;
+        switch (packet.getInstruction()) {
+            case 23:
+                this->handleLatency(packet);
+                break;
+            default:
+                break;
+        }
+        if (this->_gameState == gameState::MENU)
+            continue;
         switch (packet.getInstruction()) {
             case 3:
                 this->handlePlayerPosition(packet);
@@ -293,9 +298,6 @@ void Game::update()
                 break;
             case 22:
                 this->handleChangeLevel(packet);
-                break;
-            case 23:
-                this->handleLatency(packet);
                 break;
             case 255:
                 this->handleResend(packet);
