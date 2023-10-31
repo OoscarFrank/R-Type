@@ -82,6 +82,20 @@ void Room::addPlayer(std::shared_ptr<Client> client)
     _lastJoin = NOW;
 }
 
+void Room::removePlayer(std::shared_ptr<Client> client)
+{
+    std::unique_lock<std::mutex> lock(_playersMutex);
+
+    for (auto i = _players.begin(); i != _players.end(); i++) {
+        if ((**i).client() == client) {
+            std::cout << "Player " << (**i).id() << " disconnected in room " << _id << std::endl;
+            sendToAll(StreamFactory::playerLeftGame((**i).id()));
+            _players.erase(i);
+            break;
+        }
+    }
+}
+
 void Room::movePlayer(std::shared_ptr<Client> client, char move, char nbr)
 {
     auto now = std::chrono::system_clock::now();
@@ -144,9 +158,7 @@ void Room::refresh()
         _playersMutex.lock();
         for (auto i = _players.begin(); i != _players.end(); i++) {
             if (!(**i).client()->isAlive()) {
-                std::cout << "Player " << (**i).id() << " disconnected in room " << _id << std::endl;
-                sendToAll(StreamFactory::playerLeftGame((**i).id()));
-                _players.erase(i);
+                removePlayer((**i).client());
                 break;
             }
         }

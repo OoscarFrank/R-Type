@@ -175,6 +175,10 @@ void Game::initButtons()
 
     this->_menuManager.createButton(MenuManager::BUTTON_TYPE::LEAVE_GAME, this->_factory.createButton((this->_screenSize.x / 2) - (tmpSizebutton / 2), 800.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton), sf::Vector2f(_resMult, _resMult),
     [&](void) {
+        Stream out;
+        out << 13_uc;
+        this->_net.send(out);
+
         this->_gameState = gameState::MENU;
         this->_menuManager.disableAllmenu();
         this->_menuManager.enableMenu(MenuManager::MENU_TYPE::MAIN_MENU);

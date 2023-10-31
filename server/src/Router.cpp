@@ -10,6 +10,7 @@ Router::Router(RoomManager &rm):
     _functions[8] = &Router::_createRoom;
     _functions[9] = &Router::_searchRoom;
     _functions[12] = &Router::_ping;
+    _functions[13] = &Router::_leaveRoom;
     _functions[255] = &Router::_cmdNotRecieved;
 }
 
@@ -60,6 +61,12 @@ void Router::_ping(Reader::Packet &packet, Levels &levels)
     Stream out;
     out << 23_uc << static_cast<u_short>(std::chrono::duration_cast<std::chrono::milliseconds>(now - then).count());
     packet.getClient()->send(out);
+}
+
+void Router::_leaveRoom(Reader::Packet &packet, Levels &levels)
+{
+    auto client = packet.getClient();
+    _rm.getRoom(client).removePlayer(client);
 }
 
 void Router::_cmdNotRecieved(Reader::Packet &packet, Levels &levels)
