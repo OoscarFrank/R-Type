@@ -32,6 +32,7 @@ struct Commands {
  * 9 gui - match making
  * 12 gui - ping (current time)
  * 24 gui - quitter la room
+ * 25 gui - join d'une room (room id)
  *
  */
 #define IN_COMMANDS { \
@@ -41,6 +42,7 @@ struct Commands {
     {9, {}, 0, true}, \
     {12, {LONG}, 8, true}, \
     {24, {}, 0, true}, \
+    {25, {UINT}, 4, true}, \
     {255, {USHORT}, 2, true} \
 }
 

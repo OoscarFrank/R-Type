@@ -21,6 +21,7 @@ class Router {
         void _searchRoom(Reader::Packet &packet, Levels &levels);
         void _ping(Reader::Packet &packet, Levels &levels);
         void _leaveRoom(Reader::Packet &packet, Levels &levels);
+        void joinRoom(Reader::Packet &packet, Levels &levels);
 
         void _cmdNotRecieved(Reader::Packet &packet, Levels &levels);
 };

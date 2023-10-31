@@ -11,6 +11,7 @@ Router::Router(RoomManager &rm):
     _functions[9] = &Router::_searchRoom;
     _functions[12] = &Router::_ping;
     _functions[24] = &Router::_leaveRoom;
+    _functions[25] = &Router::joinRoom;
     _functions[255] = &Router::_cmdNotRecieved;
 }
 
@@ -67,6 +68,13 @@ void Router::_leaveRoom(Reader::Packet &packet, Levels &levels)
 {
     auto client = packet.getClient();
     _rm.getRoom(client).removePlayer(client);
+}
+
+void Router::joinRoom(Reader::Packet &packet, Levels &levels)
+{
+    u_int roomId;
+    packet >> roomId;
+    _rm.getRoom(roomId).addPlayer(packet.getClient());
 }
 
 void Router::_cmdNotRecieved(Reader::Packet &packet, Levels &levels)
