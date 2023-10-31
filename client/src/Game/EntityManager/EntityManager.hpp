@@ -41,7 +41,7 @@ namespace game {
             std::vector<ECS::systems::MovableSystem::EntityPos> _entityPositions;
             std::vector<ECS::systems::ControllableSystem::EntityEvent> _entityEvents;
             std::vector<entity_t> _parallax;
-            std::vector<entity_t> _looser;
+            entity_t _looser;
             entity_t _playerEntity;
             entity_t _scoreCoche;
     };

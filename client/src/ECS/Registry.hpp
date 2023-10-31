@@ -170,6 +170,11 @@ namespace ECS
                 throw std::runtime_error("Entity index out of range.");
             return _entities[idx];
         }
+
+        bool isEntityExist(entity_t entity)
+        {
+            return _entity_to_index.find(entity) != _entity_to_index.end();
+        }
         /**
          * @brief Destroy an entity
          *
@@ -179,8 +184,7 @@ namespace ECS
         void kill_entity(entity_t const &e)
         {
             auto it = _entity_to_index.find(e);
-            if (it == _entity_to_index.end())
-            {
+            if (it == _entity_to_index.end()) {
                 throw std::runtime_error("Entity not found.");
             }
 
@@ -216,6 +220,18 @@ namespace ECS
 
             if (this->hasComponent<components::TextComponent>(e))
                 this->remove_component<components::TextComponent>(e);
+
+            if (this->hasComponent<components::MusicComponent>(e))
+                this->remove_component<components::MusicComponent>(e);
+
+            if (this->hasComponent<components::SoundComponent>(e))
+                this->remove_component<components::SoundComponent>(e);
+
+            if (this->hasComponent<components::LoadingBarComponent>(e))
+                this->remove_component<components::LoadingBarComponent>(e);
+
+            if (this->hasComponent<components::ScoreComponent>(e))
+                this->remove_component<components::ScoreComponent>(e);
 
             _entity_to_index.erase(it);
             if (_entity_sprite_order.count(e) > 0) {

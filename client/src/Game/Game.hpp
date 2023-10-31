@@ -102,6 +102,9 @@ namespace game {
 
             void refreshScreenSize();
 
+            void initButtons();
+            void initMenus();
+
             void handleTimeoutMatchmaking(Network::Packet &packet);
             void handlePlayerScore(Network::Packet &packet);
             void handleGameEnd(Network::Packet &packet);
