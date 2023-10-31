@@ -18,12 +18,12 @@ namespace game {
                 NO_BUTTON = -1,
                 CREATE_GAME,
                 JOIN_GAME,
-                EXIT_SYSTEM
+                EXIT_SYSTEM,
+                LEAVE_GAME
             };
 
             enum MENU_TYPE {
                 MAIN_MENU,
-                PAUSE_MENU,
                 LOOSER_MENU,
                 COUNT
             };

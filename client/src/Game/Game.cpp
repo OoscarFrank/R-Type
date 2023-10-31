@@ -99,6 +99,7 @@ Game::Game(std::string ip, int port) :
 
     this->initButtons();
     this->initMenus();
+    this->_menuManager.enableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
 
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::RedPixel), _screenSize.x, _screenSize.y));
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::GreenPixel), _screenSize.x, _screenSize.y));
@@ -169,6 +170,54 @@ void Game::initButtons()
         this->_window.close();
     }
     ));
+
+    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::LEAVE_GAME, this->_factory.createButton((this->_screenSize.x / 2) - (tmpSizebutton / 2), 800.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton), sf::Vector2f(_resMult, _resMult),
+    [&](void) {
+        this->_gameState = gameState::MENU;
+        this->_menuManager.disableAllmenu();
+        this->_menuManager.enableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
+
+        for (auto &e : this->_missiles) {
+            this->ecs.kill_entity(e.second);
+        }
+        this->_missiles.clear();
+        for (auto &e : this->_ennemies) {
+            this->ecs.kill_entity(e.second);
+        }
+        this->_ennemies.clear();
+        for (auto &e : this->_players) {
+            this->ecs.kill_entity(e.second);
+        }
+        this->_players.clear();
+
+        // this->ecs.kill_entity(this->_playerEntity);
+        // this->_playerEntity = 0;
+
+        this->ecs.kill_entity(this->_scoreCoche);
+        this->_scoreCoche = 0;
+
+        for (auto &e : _loadingBar) {
+            this->ecs.kill_entity(e.second);
+        }
+        this->_loadingBar.clear();
+
+        // this->ecs.kill_entity(this->_timerText);
+        // this->_timerText = 0;
+
+        this->ecs.kill_entity(this->_scoreText);
+        this->_scoreText = 0;
+
+        this->ecs.kill_entity(this->_gameTimeText);
+        this->_gameTimeText = 0;
+
+        this->ecs.kill_entity(this->_looser);
+        this->_looser = 0;
+
+        for (auto &e : this->_strobes) {
+            this->ecs.disableEntity(e);
+        }
+    }
+    ));
 }
 
 void Game::initMenus()
@@ -177,7 +226,10 @@ void Game::initMenus()
     entity_t entity_mainMenu = this->ecs.spawn_entity();
     this->ecs.emplace_component<ECS::components::ControllableComponent>(entity_mainMenu, ECS::components::ControllableComponent{sf::Keyboard::Key::Up, sf::Keyboard::Key::Down, sf::Keyboard::Key::Left, sf::Keyboard::Key::Right, sf::Keyboard::Key::Enter});
     this->_menuManager.createMenu(MenuManager::MENU_TYPE::MAIN_MENU, entity_mainMenu, true, std::vector<MenuManager::BUTTON_TYPE>({MenuManager::BUTTON_TYPE::CREATE_GAME, MenuManager::BUTTON_TYPE::JOIN_GAME, MenuManager::BUTTON_TYPE::EXIT_SYSTEM}));
-    this->_menuManager.enableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
+
+    entity_t entity_looseMenu = this->ecs.spawn_entity();
+    this->ecs.emplace_component<ECS::components::ControllableComponent>(entity_looseMenu, ECS::components::ControllableComponent{ sf::Keyboard::Key::Enter, sf::Keyboard::Key::Right});
+    this->_menuManager.createMenu(MenuManager::MENU_TYPE::LOOSER_MENU, entity_looseMenu, false, std::vector<MenuManager::BUTTON_TYPE>({MenuManager::BUTTON_TYPE::LEAVE_GAME}));
 }
 
 void Game::update()
@@ -185,6 +237,8 @@ void Game::update()
     Network::Packet packet;
 
     while (this->_net.getQueueIn().tryPop(packet)) {
+        // if (this->_gameState == gameState::ENDGAME || this->_gameState == gameState::MENU)
+        //     continue;
         switch (packet.getInstruction()) {
             case 3:
                 this->handlePlayerPosition(packet);
@@ -268,7 +322,8 @@ void Game::update()
 void Game::sendMoveToServer()
 {
     for (auto i = this->_entityEvents.begin(); i != this->_entityEvents.end(); ++i) {
-        if (this->_gameState == gameState::MENU && (*i).getEntity() == this->_menuManager.getMenuEntity(MenuManager::MENU_TYPE::MAIN_MENU)) {
+        if ((this->_gameState == gameState::MENU || this->_gameState == gameState::ENDGAME)
+            && (*i).getEntity() == this->_menuManager.getMenuEntity(MenuManager::MENU_TYPE::MAIN_MENU)) {
             if (((*i).getEvent() & RIGHT) || ((*i).getEvent() & ENTER)) {
                 this->_menuManager.executeButtonInMenu(this->ecs);
             }
@@ -601,8 +656,10 @@ void Game::handlePlayerDeath(Network::Packet &packet)
     packet >> id;
     entity_t res = getPlayerEntityFromId(id);
     if (res == this->_playerEntity) {
-        this->_looser.push_back(this->_factory.createLooserScreen(this->topLeftOffeset.x, this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::LooserScreen)));
-        this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_looser[0], ECS::components::ScaleComponent{this->_resMult, this->_resMult});
+        this->_looser = this->_factory.createLooserScreen(this->topLeftOffeset.x, this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::LooserScreen));
+        this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_looser, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
+        this->_menuManager.enableMenu(MenuManager::MENU_TYPE::LOOSER_MENU);
+        this->_gameState = gameState::ENDGAME;
     }
     if (res != 0) {
         this->ecs.kill_entity(res);
@@ -659,6 +716,7 @@ void Game::handleStrobes(Network::Packet &packet)
     if (onOff) {
         float x = this->topLeftOffeset.x;
         float y = this->topLeftOffeset.y;
+        this->ecs.enableEntity(this->_strobes[color - 1]);
         this->ecs.modify_component<ECS::components::PositionComponent>(this->_strobes[color - 1], [x, y](ECS::components::PositionComponent &comp) {
             comp.setX(x);
             comp.setY(y);
@@ -666,10 +724,7 @@ void Game::handleStrobes(Network::Packet &packet)
     } else {
         float x = this->_screenSize.x;
         float y = this->_screenSize.y;
-        this->ecs.modify_component<ECS::components::PositionComponent>(this->_strobes[color - 1], [x, y](ECS::components::PositionComponent &comp) {
-            comp.setX(x);
-            comp.setY(y);
-        });
+        this->ecs.disableEntity(this->_strobes[color - 1]);
     }
 }
 
