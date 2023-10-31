@@ -9,6 +9,8 @@
 #define USHORT  SHORT
 #define INT     4
 #define UINT    INT
+#define LONG    8
+#define ULONG   LONG
 
 struct Commands {
     unsigned char _inst;
@@ -28,7 +30,7 @@ struct Commands {
  * 5 gui - spawn d'un missile par le player
  * 8 gui - creation d'une room (booleen pour savoir si la room est privee)
  * 9 gui - match making
- * 12 gui - ping
+ * 12 gui - ping (current time)
  *
  */
 #define IN_COMMANDS { \
@@ -36,7 +38,7 @@ struct Commands {
     {5, {}, 0, false}, \
     {8, {UCHAR}, 1, true}, \
     {9, {}, 0, true}, \
-    {12, {}, 0, true}, \
+    {12, {LONG}, 8, true}, \
     {255, {USHORT}, 2, true} \
 }
 
@@ -59,6 +61,8 @@ struct Commands {
  * 20 serv - vie de l'ennemie (id)
  * 21 serv - strobes (color, on / off)
  * 22 serv - next level starting (time)
+ * 23 serv - latency (time)
+ *
  */
 #define OUT_COMMANDS { \
     {1, {UINT}, 4, false}, \
@@ -78,6 +82,7 @@ struct Commands {
     {20, {UINT, INT}, 8, true}, \
     {21, {UCHAR, UCHAR}, 2, true}, \
     {22, {UINT, UCHAR, UCHAR}, 6, true}, \
+    {23, {USHORT}, 2, false}, \
     {255, {USHORT}, 2, true} \
 }
 

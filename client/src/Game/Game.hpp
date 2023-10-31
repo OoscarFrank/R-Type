@@ -77,6 +77,7 @@ namespace game {
             entity_t _timerText = 0;
             entity_t _scoreText = 0;
             entity_t _gameTimeText = 0;
+            entity_t _pingText = 0;
 
             Loader _manager;
             ECS::Registry ecs;
@@ -118,5 +119,6 @@ namespace game {
             void handleStrobes(Network::Packet &packet);
             void handleResend(Network::Packet &packet);
             void handleChangeLevel(Network::Packet &packet);
+            void handleLatency(Network::Packet &packet);
     };
 }

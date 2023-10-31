@@ -165,6 +165,12 @@ Network::Packet &Network::Packet::operator>>(u_int &data)
     return *this;
 }
 
+Network::Packet &Network::Packet::operator>>(u_long &data)
+{
+    _data >> data;
+    return *this;
+}
+
 Network::Packet &Network::Packet::operator>>(char &data)
 {
     _data >> data;
@@ -178,6 +184,12 @@ Network::Packet &Network::Packet::operator>>(short &data)
 }
 
 Network::Packet &Network::Packet::operator>>(int &data)
+{
+    _data >> data;
+    return *this;
+}
+
+Network::Packet &Network::Packet::operator>>(long &data)
 {
     _data >> data;
     return *this;

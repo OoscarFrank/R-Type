@@ -14,9 +14,11 @@ namespace TypesLitterals {
     constexpr char operator""_c(unsigned long long c) { return static_cast<char>(c); }
     constexpr short operator""_s(unsigned long long c) { return static_cast<short>(c); }
     constexpr int operator""_i(unsigned long long c) { return static_cast<int>(c); }
+    constexpr long operator""_l(unsigned long long c) { return static_cast<long>(c); }
     constexpr u_char operator""_uc(unsigned long long c) { return static_cast<u_char>(c); }
     constexpr u_short operator""_us(unsigned long long c) { return static_cast<u_short>(c); }
     constexpr u_int operator""_ui(unsigned long long c) { return static_cast<u_int>(c); }
+    constexpr u_long operator""_ul(unsigned long long c) { return static_cast<u_long>(c); }
 }
 
 class Stream
@@ -45,9 +47,11 @@ public:
 
     void setDataCharArray(const char *data, size_t size);
 
+    void setDataULong(unsigned long data);
     void setDataUInt(unsigned int data);
     void setDataUShort(unsigned short data);
     void setDataUChar(unsigned char data);
+    void setDataLong(long data);
     void setDataInt(int data);
     void setDataShort(short data);
     void setDataChar(char data);
@@ -56,17 +60,21 @@ public:
     Stream &operator<<(u_char data);
     Stream &operator<<(u_short data);
     Stream &operator<<(u_int data);
+    Stream &operator<<(u_long data);
     Stream &operator<<(char data);
     Stream &operator<<(short data);
     Stream &operator<<(int data);
+    Stream &operator<<(long data);
     Stream &operator<<(bool data);
 
     size_t size() const;
     void clear();
 
+    unsigned long getDataULong();
     unsigned int getDataUInt();
     unsigned short getDataUShort();
     unsigned char getDataUChar();
+    long getDataLong();
     int getDataInt();
     short getDataShort();
     char getDataChar();
@@ -74,9 +82,11 @@ public:
     Stream &operator>>(u_char &data);
     Stream &operator>>(u_short &data);
     Stream &operator>>(u_int &data);
+    Stream &operator>>(u_long &data);
     Stream &operator>>(char &data);
     Stream &operator>>(short &data);
     Stream &operator>>(int &data);
+    Stream &operator>>(long &data);
     Stream &operator>>(bool &data);
 
     Stream subStream(size_t pos) const;

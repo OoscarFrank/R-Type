@@ -142,6 +142,8 @@ Game::Game(std::string ip, int port) :
 
     entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/piou.ogg"), 1000);
     this->_sounds.emplace(EntityManager::SOUND_TYPE::TEST, soundEntity);
+
+    _pingText = this->_factory.createText("Ping: 0", this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x - 100, 10, 15);
 }
 
 Game::~Game()
@@ -226,6 +228,9 @@ void Game::update()
             case 22:
                 this->handleChangeLevel(packet);
                 break;
+            case 23:
+                this->handleLatency(packet);
+                break;
             case 255:
                 this->handleResend(packet);
                 break;
@@ -236,7 +241,7 @@ void Game::update()
     if (std::chrono::system_clock::now() - this->_lastPing > std::chrono::seconds(1)) {
         this->_lastPing = std::chrono::system_clock::now();
         Stream out;
-        out << 12_uc;
+        out << 12_uc << std::chrono::duration_cast<std::chrono::milliseconds>(_lastPing.time_since_epoch()).count();
         this->_net.send(out);
     }
 
@@ -701,5 +706,18 @@ void Game::handleChangeLevel(Network::Packet &packet)
             music.playMusic();
         });
 
+    }
+}
+
+void Game::handleLatency(Network::Packet &packet)
+{
+    u_short timeMS;
+    packet >> timeMS;
+    std::ostringstream ss;
+    ss <<  "Ping: " << std::fixed << std::setprecision(1) << timeMS;
+    if (_pingText == 0) {
+        _pingText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x - 100, 10, 15);
+    } else {
+        this->_texts.insert(std::make_pair(_pingText, ss.str()));
     }
 }

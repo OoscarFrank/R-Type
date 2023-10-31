@@ -1,5 +1,7 @@
 #include "Router.hpp"
 
+using namespace TypesLitterals;
+
 Router::Router(RoomManager &rm):
     _rm(rm)
 {
@@ -48,7 +50,17 @@ void Router::_searchRoom(Reader::Packet &packet, Levels &levels)
 }
 
 void Router::_ping(Reader::Packet &packet, Levels &levels)
-{}
+{
+    long timeMS;
+    packet >> timeMS;
+
+    std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point then = std::chrono::system_clock::time_point(std::chrono::milliseconds(timeMS));
+
+    Stream out;
+    out << 23_uc << static_cast<u_short>(std::chrono::duration_cast<std::chrono::milliseconds>(now - then).count());
+    packet.getClient()->send(out);
+}
 
 void Router::_cmdNotRecieved(Reader::Packet &packet, Levels &levels)
 {
