@@ -75,7 +75,8 @@ public:
                 SOUND_OF_SPACE = 1,
                 TURN_ON_THE_LIGHTS,
                 PUSH_UP,
-                VOIS_SUR_TON_CHEMIN
+                VOIS_SUR_TON_CHEMIN,
+                HEUTE_NACHT
             };
 
             Level(const std::string &path);

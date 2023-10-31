@@ -280,6 +280,8 @@ void Levels::Level::parsSong(const std::string &line, const std::string &path, s
                 this->_song = Levels::Level::PUSH_UP;
             else if (song.find("VOIS_SUR_TON_CHEMIN") != std::string::npos)
                 this->_song = Levels::Level::VOIS_SUR_TON_CHEMIN;
+            else if (song.find("HEUTE_NACHT") != std::string::npos)
+                this->_song = Levels::Level::HEUTE_NACHT;
             else {
                 Levels::Level::ParsError err;
                 err._msg =  "Error while reading file : " + path + "\nInvalid song : " + song + "\nLine : " + std::to_string(line_nb) + ". Errur";
