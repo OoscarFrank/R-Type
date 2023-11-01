@@ -2,8 +2,9 @@
 
 using namespace TypesLitterals;
 
-Router::Router(RoomManager &rm):
-    _rm(rm)
+Router::Router(RoomManager &rm, const std::vector<std::shared_ptr<Client>> &allClients):
+    _rm(rm),
+    _allClients(allClients)
 {
     _functions[2] = &Router::_movePlayer;
     _functions[5] = &Router::_fireMissile;
@@ -44,12 +45,12 @@ void Router::_createRoom(Reader::Packet &packet, Levels &levels)
 {
     bool isPrivate;
     packet >> isPrivate;
-    _rm.createRoom(packet, levels, isPrivate);
+    _rm.createRoom(packet, levels, _allClients, isPrivate);
 }
 
 void Router::_searchRoom(Reader::Packet &packet, Levels &levels)
 {
-    _rm.searchRoom(packet, levels);
+    _rm.searchRoom(packet, levels, _allClients);
 }
 
 void Router::_ping(Reader::Packet &packet, Levels &levels)
@@ -85,7 +86,7 @@ void Router::_listRooms(Reader::Packet &packet, Levels &levels)
         if ((*i)->isPrivate() || (*i)->getState() != Room::WAIT)
             continue;
         Stream out;
-        out << 27_uc << (*i)->getId() << static_cast<u_char>((*i)->getNbPlayer()) << static_cast<u_char>((*i)->getMaxPlayer());
+        out << 27_uc << (*i)->getId() << static_cast<u_char>((*i)->getNbPlayer()) << static_cast<u_char>((*i)->getMaxPlayer()) << 1_uc;
         packet.getClient()->send(out);
     }
 }

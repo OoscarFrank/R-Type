@@ -846,11 +846,10 @@ void Game::handleLatency(Network::Packet &packet)
 void Game::handleListRooms(Network::Packet &packet)
 {
     u_int roomId;
-    packet >> roomId;
     u_char nbrPlayers;
-    packet >> nbrPlayers;
     u_char maxPlayers;
-    packet >> maxPlayers;
+    bool joinable;
+    packet >> roomId >> nbrPlayers >> maxPlayers >> joinable;
 
     // std::cout << "RoomId: " << roomId << " nbrPlayers: " << static_cast<int>(nbrPlayers) << " maxPlayers: " << static_cast<int>(maxPlayers) << std::endl;
     auto it = _roomsList.find(roomId);
