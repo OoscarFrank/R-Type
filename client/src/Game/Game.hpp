@@ -73,6 +73,7 @@ namespace game {
             entity_t _blackBandBottomRight;
 
 
+            std::map<int, std::pair<int, int>> _roomsList;
             std::unordered_map<entity_t, std::string> _texts;
             entity_t _timerText = 0;
             entity_t _scoreText = 0;
@@ -123,5 +124,6 @@ namespace game {
             void handleResend(Network::Packet &packet);
             void handleChangeLevel(Network::Packet &packet);
             void handleLatency(Network::Packet &packet);
+            void handleListRooms(Network::Packet &packet);
     };
 }

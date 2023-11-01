@@ -242,9 +242,26 @@ void Game::update()
 
     while (this->_net.getQueueIn().tryPop(packet)) {
         switch (packet.getInstruction()) {
+            case 10:
+                this->handleRoomJoin(packet);
+                break;
+            case 11:
+                this->handleTimeoutMatchmaking(packet);
+                break;
+            case 13:
+                this->handlePlayerJoinGame(packet);
+                break;
+            case 14:
+                this->handlePlayerDisconnected(packet);
+                break;
+            case 17:
+                this->handleGameEnd(packet);
+                break;
             case 23:
                 this->handleLatency(packet);
                 break;
+            case 27:
+                this->handleListRooms(packet);
             default:
                 break;
         }
@@ -263,26 +280,11 @@ void Game::update()
             case 7:
                 this->handleEnnemiPosition(packet);
                 break;
-            case 10:
-                this->handleRoomJoin(packet);
-                break;
-            case 11:
-                this->handleTimeoutMatchmaking(packet);
-                break;
-            case 13:
-                this->handlePlayerJoinGame(packet);
-                break;
-            case 14:
-                this->handlePlayerDisconnected(packet);
-                break;
             case 15:
                 this->handleMissileDeath(packet);
                 break;
             case 16:
                 this->handleEnnemiDeath(packet);
-                break;
-            case 17:
-                this->handleGameEnd(packet);
                 break;
             case 18:
                 this->handlePlayerDeath(packet);
@@ -309,7 +311,10 @@ void Game::update()
     if (std::chrono::system_clock::now() - this->_lastPing > std::chrono::seconds(1)) {
         this->_lastPing = std::chrono::system_clock::now();
         Stream out;
-        out << 12_uc << std::chrono::duration_cast<std::chrono::milliseconds>(_lastPing.time_since_epoch()).count();
+        if (this->_gameState == gameState::MENU)
+            out << 26_uc;
+        else
+            out << 12_uc << std::chrono::duration_cast<std::chrono::milliseconds>(_lastPing.time_since_epoch()).count();
         this->_net.send(out);
     }
 
@@ -716,7 +721,7 @@ void Game::handleMonsterLife(Network::Packet &packet)
     entity_t res = getEnnemiEntityFromId(id);
     if (res == 0)
         return;
-    // std::cout << "Monster " << id << " life: " << life << std::endl;
+
 }
 
 void Game::handleStrobes(Network::Packet &packet)
@@ -788,5 +793,24 @@ void Game::handleLatency(Network::Packet &packet)
         _pingText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x - 100, 10, 15);
     } else {
         this->_texts.insert(std::make_pair(_pingText, ss.str()));
+    }
+}
+
+void Game::handleListRooms(Network::Packet &packet)
+{
+    u_int roomId;
+    packet >> roomId;
+    u_char nbrPlayers;
+    packet >> nbrPlayers;
+    u_char maxPlayers;
+    packet >> maxPlayers;
+
+    // std::cout << "RoomId: " << roomId << " nbrPlayers: " << static_cast<int>(nbrPlayers) << " maxPlayers: " << static_cast<int>(maxPlayers) << std::endl;
+    auto it = _roomsList.find(roomId);
+    if (it != _roomsList.end()) {
+        it->second.first = static_cast<int>(nbrPlayers);
+        it->second.second = static_cast<int>(maxPlayers);
+    } else {
+        _roomsList[roomId] = std::make_pair(static_cast<int>(nbrPlayers), static_cast<int>(maxPlayers));
     }
 }
