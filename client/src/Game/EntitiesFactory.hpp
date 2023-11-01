@@ -46,7 +46,7 @@ namespace game {
          * @param texture
          * @return entity_t
          */
-            entity_t createMissile(float x, float y, const std::shared_ptr<sf::Texture> &texture);
+            entity_t createMissile(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale);
         /**
          * @brief Create a Ennemi object
          *

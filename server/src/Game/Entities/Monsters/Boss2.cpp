@@ -35,8 +35,8 @@ void Boss2Monster::refresh()
         return;
     }
     if (now - _lastFire >= std::chrono::milliseconds(BOSS2_MONSTER_FIRE_TIME)) {
-        fireMissile(Missile::Type::LITTLE_MONSTER, -BOSS2_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + _box.height / 3);
-        fireMissile(Missile::Type::LITTLE_MONSTER, -BOSS2_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + (_box.height / 3 * 2));
+        fireMissile(Missile::Type::GREEN_MISSILE, -BOSS2_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + _box.height / 3);
+        fireMissile(Missile::Type::GREEN_MISSILE, -BOSS2_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + (_box.height / 3 * 2));
         _lastFire = now;
     }
     if (_box.x < 0)

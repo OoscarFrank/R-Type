@@ -33,10 +33,10 @@ void Boss1Monster::refresh()
     }
     if (_burstCount <= 3) {
         if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= _burstCount * BURST_FIRE_TIME) {
-            fireMissile(Missile::Type::LITTLE_MONSTER, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + _box.height / 3);
-            fireMissile(Missile::Type::LITTLE_MONSTER, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + _box.height / 1.5);
-            fireMissile(Missile::Type::LITTLE_MONSTER, -BOSS2_MONSTER_MISSILE_PROGRESS_STEP, BOSS2_MONSTER_MISSILE_PROGRESS_STEP);
-            fireMissile(Missile::Type::LITTLE_MONSTER, -BOSS2_MONSTER_MISSILE_PROGRESS_STEP, -BOSS2_MONSTER_MISSILE_PROGRESS_STEP);
+            fireMissile(Missile::Type::PURPLE_MISSILE, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + _box.height / 3);
+            fireMissile(Missile::Type::PURPLE_MISSILE, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + _box.height / 1.5);
+            fireMissile(Missile::Type::PURPLE_MISSILE, -BOSS2_MONSTER_MISSILE_PROGRESS_STEP, BOSS2_MONSTER_MISSILE_PROGRESS_STEP);
+            fireMissile(Missile::Type::PURPLE_MISSILE, -BOSS2_MONSTER_MISSILE_PROGRESS_STEP, -BOSS2_MONSTER_MISSILE_PROGRESS_STEP);
             _burstCount++;
         }
     }
@@ -64,7 +64,6 @@ void Boss1Monster::refresh()
         _room.sendToAll(StreamFactory::monsterPos(_id, IEntity::Type::BOSS1, _box.x, _box.y));
         _lastMove = now;
     }
-
 }
 
 int Boss1Monster::getDamage()

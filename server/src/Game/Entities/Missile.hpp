@@ -8,6 +8,9 @@ class Missile: public AEntity {
         enum Type {
             PLAYER = 1,
             LITTLE_MONSTER = 2,
+            ORANGE_MISSILE = 3,
+            PURPLE_MISSILE = 4,
+            GREEN_MISSILE = 5,
         };
 
         /**

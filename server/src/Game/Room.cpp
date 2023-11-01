@@ -271,6 +271,12 @@ void Room::addMonster(IEntity::Type type, int x, int y)
         case IEntity::Type::BOSS2:
             _monsters.push_back(std::make_unique<Boss2Monster>(*this, ++_monstersIds, x, y));
             break;
+        case IEntity::Type::BOSS3:
+            _monsters.push_back(std::make_unique<Boss3Monster>(*this, ++_monstersIds, x, y));
+            break;
+        case IEntity::Type::BOSS4:
+            _monsters.push_back(std::make_unique<Boss4Monster>(*this, ++_monstersIds, x, y));
+            break;
         default:
             return;
     }

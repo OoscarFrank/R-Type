@@ -12,6 +12,8 @@
 #include "Entities/Monsters/BurstFire.hpp"
 #include "Entities/Monsters/Boss1.hpp"
 #include "Entities/Monsters/Boss2.hpp"
+#include "Entities/Monsters/Boss3.hpp"
+#include "Entities/Monsters/Boss4.hpp"
 #include "../Client.hpp"
 #include "Levels.hpp"
 

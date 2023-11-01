@@ -99,6 +99,8 @@ class IEntity {
             BURST_MONSTER,
             BOSS1,
             BOSS2,
+            BOSS3,
+            BOSS4,
         };
 };
 
@@ -197,6 +199,7 @@ class AEntity: public IEntity {
          */
         virtual bool isDeletable() const;
 
+        virtual void move(short dx, short dy);
     protected:
         /**
          * @brief Move the entity
@@ -204,7 +207,6 @@ class AEntity: public IEntity {
          * @param dx The x offset
          * @param dy The y offset
          */
-        virtual void move(short dx, short dy);
 
         int _life;
         Room &_room;
