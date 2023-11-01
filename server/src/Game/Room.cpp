@@ -30,6 +30,11 @@ Room::~Room()
 {
     if (_thread.joinable())
         _thread.join();
+    Stream out;
+    out << 27_uc << this->getId() << static_cast<u_char>(this->getNbPlayer()) << static_cast<u_char>(this->getMaxPlayer()) << 0_uc;
+    for (auto i = _allClients.begin(); i != _allClients.end(); i++) {
+        (*i)->send(out);
+    }
 }
 
 Room::State Room::getState() const
@@ -252,8 +257,7 @@ void Room::startGame()
     Stream out;
     out << 27_uc << this->getId() << static_cast<u_char>(this->getNbPlayer()) << static_cast<u_char>(this->getMaxPlayer()) << 0_uc;
     for (auto i = _allClients.begin(); i != _allClients.end(); i++) {
-        if (!this->isClientInRoom(*i))
-            (*i)->send(out);
+        (*i)->send(out);
     }
 }
 
