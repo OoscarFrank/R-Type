@@ -76,7 +76,8 @@ public:
                 TURN_ON_THE_LIGHTS,
                 PUSH_UP,
                 VOIS_SUR_TON_CHEMIN,
-                HEUTE_NACHT
+                HEUTE_NACHT,
+                CLEON
             };
 
             Level(const std::string &path);
