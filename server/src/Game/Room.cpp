@@ -3,7 +3,10 @@
 #include <bitset>
 #include <cmath>
 
-Room::Room(u_int id, std::shared_ptr<Client> client, Levels &levels, bool privateRoom):
+using namespace TypesLitterals;
+
+Room::Room(u_int id, std::shared_ptr<Client> client, Levels &levels, const std::vector<std::shared_ptr<Client>> &allClients, bool privateRoom):
+    _allClients(allClients),
     _levels(levels)
 {
     _id = id;
@@ -245,6 +248,13 @@ void Room::startGame()
 
     for (auto i = _players.begin(); i != _players.end(); i++)
         (**i).sendPos();
+
+    Stream out;
+    out << 27_uc << this->getId() << static_cast<u_char>(this->getNbPlayer()) << static_cast<u_char>(this->getMaxPlayer()) << 0_uc;
+    for (auto i = _allClients.begin(); i != _allClients.end(); i++) {
+        if (!this->isClientInRoom(*i))
+            (*i)->send(out);
+    }
 }
 
 void Room::addMonster(IEntity::Type type, int x, int y)

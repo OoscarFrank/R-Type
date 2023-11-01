@@ -20,7 +20,7 @@ void exec(int port, std::vector<std::string> stages)
     std::vector<std::shared_ptr<Client>> clients;
     Reader reader(socket, queueIn, clients);
     RoomManager rm;
-    Router router(rm);
+    Router router(rm, clients);
     Levels levels(stages);
 
     std::cout << "Server listening on port " << port << std::endl;

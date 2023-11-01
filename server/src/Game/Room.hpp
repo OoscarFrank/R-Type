@@ -33,6 +33,7 @@ class Room
         std::mutex _playersMutex;
         std::vector<std::unique_ptr<Player>> _players;
         std::vector<std::unique_ptr<Monster>> _monsters;
+        const std::vector<std::shared_ptr<Client>> &_allClients;
         u_int _id;
         unsigned int _maxPlayer;
         unsigned int _progress;
@@ -64,7 +65,7 @@ class Room
          * @param client The client that created the room
          * @param privateRoom If the room is private or not (default: false)
          */
-        Room(u_int id, std::shared_ptr<Client> client, Levels &levels, bool privateRoom = false);
+        Room(u_int id, std::shared_ptr<Client> client, Levels &levels, const std::vector<std::shared_ptr<Client>> &allClients, bool privateRoom = false);
         ~Room();
         Room(const Room &room) = delete;
         Room(Room &&room) = delete;

@@ -72,7 +72,7 @@ struct Commands {
  * 21 serv - strobes (color, on/off)
  * 22 serv - next level starting (time)
  * 23 serv - latency (time)
- * 27 serv - room list (room id, number players, max number players)
+ * 27 serv - room list (room id, number players, max number players, bool is joinable)
  *
  */
 #define IN_COMMANDS { \
@@ -94,6 +94,6 @@ struct Commands {
     {21, {UCHAR, UCHAR}, 2, true}, \
     {22, {UINT, UCHAR, UCHAR}, 6, true}, \
     {23, {USHORT}, 2, false}, \
-    {27, {UINT, UCHAR, UCHAR}, 6, true}, \
+    {27, {UINT, UCHAR, UCHAR, UCHAR}, 7, true}, \
     {255, {USHORT}, 2, true} \
 }

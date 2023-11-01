@@ -22,23 +22,23 @@ void RoomManager::_clearRooms()
     }
 }
 
-void RoomManager:: createRoom(Reader::Packet &packet, Levels &levels, bool privateRoom)
+void RoomManager:: createRoom(Reader::Packet &packet, Levels &levels, const std::vector<std::shared_ptr<Client>> &allClients, bool privateRoom)
 {
     _clearRooms();
-    std::unique_ptr<Room> newRoom = std::make_unique<Room>(_roomIds++, packet.getClient(), levels, privateRoom);
+    std::unique_ptr<Room> newRoom = std::make_unique<Room>(_roomIds++, packet.getClient(), levels, allClients, privateRoom);
     std::cout << "New room: " << newRoom->getId() << std::endl;
     _roomsMutex.lock();
     _rooms.push_back(std::move(newRoom));
     _roomsMutex.unlock();
 }
 
-void RoomManager::searchRoom(Reader::Packet &packet, Levels &levels)
+void RoomManager::searchRoom(Reader::Packet &packet, Levels &levels, const std::vector<std::shared_ptr<Client>> &allClients)
 {
     _clearRooms();
     _roomsMutex.lock();
     if (_rooms.size() == 0) {
         _roomsMutex.unlock();
-        this->createRoom(packet, levels);
+        this->createRoom(packet, levels, allClients);
         return;
     }
 
@@ -50,7 +50,7 @@ void RoomManager::searchRoom(Reader::Packet &packet, Levels &levels)
         }
     }
     _roomsMutex.unlock();
-    this->createRoom(packet, levels);
+    this->createRoom(packet, levels, allClients);
 }
 
 Room &RoomManager::getRoom(u_int id)
