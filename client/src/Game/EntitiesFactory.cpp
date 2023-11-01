@@ -70,7 +70,28 @@ entity_t Factory::createParallax(float x, float y, const std::shared_ptr<sf::Tex
     return newEntity;
 }
 
-entity_t Factory::createMissile(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale)
+// entity_t Factory::createMissile(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale)
+// {
+//     entity_t newEntity = _registry.spawn_entity(59);
+//     _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
+//     _registry.emplace_component<ECS::components::MovableComponent>(newEntity, ECS::components::MovableComponent{});
+//     // _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{0, 0, (int)texture->getSize().x, (int)texture->getSize().y, 1, 100.0f});
+//     _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
+//     _registry.emplace_component<ECS::components::AnimationComponent>(newEntity, ECS::components::AnimationComponent{});
+//     // _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{static_cast<float>(scale), static_cast<float>(scale)});
+//     return newEntity;
+// }
+
+entity_t Factory::createMissile(float x, float y, const std::shared_ptr<sf::Texture> &texture)
+{
+    entity_t newEntity = _registry.spawn_entity(59);
+    _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
+    _registry.emplace_component<ECS::components::MovableComponent>(newEntity, ECS::components::MovableComponent{});
+    _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
+    return newEntity;
+}
+
+entity_t Factory::createMissileAnnimated(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale)
 {
     entity_t newEntity = _registry.spawn_entity(59);
     _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
@@ -164,5 +185,17 @@ entity_t Factory::createSound(const std::string &soundPath, float volume)
 {
     entity_t newEntity = _registry.spawn_entity();
     _registry.emplace_component<ECS::components::SoundComponent>(newEntity, ECS::components::SoundComponent{soundPath, volume});
+    return newEntity;
+}
+
+entity_t Factory::createBonus(const std::shared_ptr<sf::Texture> &texture, float x, float y, float scale)
+{
+    entity_t newEntity = _registry.spawn_entity(59);
+    _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
+    _registry.emplace_component<ECS::components::MovableComponent>(newEntity, ECS::components::MovableComponent{});
+    _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{0, 0, (int)texture->getSize().x, 75, 11, 50.0f});
+    _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
+    _registry.emplace_component<ECS::components::AnimationComponent>(newEntity, ECS::components::AnimationComponent{});
+    _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{scale, scale});
     return newEntity;
 }

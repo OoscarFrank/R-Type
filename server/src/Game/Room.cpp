@@ -42,10 +42,7 @@ Room::State Room::getState() const
     return _state;
 }
 
-size_t Room::getCurrentLevel() const
-{
-    return _levels.lvl();
-}
+
 
 u_int Room::getId() const
 {
@@ -191,6 +188,7 @@ void Room::update()
             sendToAll(StreamFactory::screenProgress(_progress));
             now = NOW;
         }
+        handleBonus();
         _playersMutex.lock();
         // if (_players.size() == 0) {
         //     _state = END;
@@ -214,6 +212,7 @@ void Room::update()
 
         checkCollisionPlayer();
         checkCollisionMonsters();
+        checkCollisionBonus();
 
         _levels.update(*this);
         _playersMutex.unlock();
@@ -357,4 +356,32 @@ bool Room::isPrivate() const
 bool Room::isMonster() const
 {
     return !this->_monsters.empty();
+}
+
+void Room::handleBonus()
+{
+    if (this->_missileBonus.get() != nullptr) {
+        this->_missileBonus->refresh();
+        return;
+    }
+    if (NOW - this->_lastMissileBonusSpawn < BONUS_SPAWN_TIME)
+        return;
+    this->_lastMissileBonusSpawn = NOW;
+    this->_missileBonus = std::make_unique<MissileBonus>(*this, ++_bonusIds);
+}
+
+void Room::checkCollisionBonus()
+{
+    for (auto p = _players.begin(); p != _players.end(); p++) {
+        if (!(**p).exists())
+            continue;
+        if (this->_missileBonus != nullptr && (**p).collide((*this->_missileBonus))) {
+            if ((*p)->podMissileLvl() < 3)
+                (*p)->setPodMissileLvl((*p)->podMissileLvl() + 1);
+            this->sendToAll(StreamFactory::bonusDestroyed(this->_missileBonus->id()));
+            this->_missileBonus.release();
+            this->_missileBonus = nullptr;
+            return;
+        }
+    }
 }

@@ -49,3 +49,13 @@ void EntityManager::handleMusic(ECS::Registry &ecs, MUSIC_TYPE type, std::functi
         ecs.modify_component<ECS::components::MusicComponent>(it->second, callback);
     }
 }
+
+entity_t EntityManager::getBonusEntityFromId(unsigned int id)
+{
+    for (auto &bonus : this->_bonuses)
+    {
+        if (bonus.first == id)
+            return bonus.second;
+    }
+    return 0;
+}

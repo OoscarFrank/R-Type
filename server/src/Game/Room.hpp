@@ -16,6 +16,7 @@
 #include "Entities/Monsters/Boss4.hpp"
 #include "../Client.hpp"
 #include "Levels.hpp"
+#include "Entities/Bonus/Bonus.hpp"
 
 class Room
 {
@@ -51,6 +52,11 @@ class Room
         size_t _lastPlayerUpdate;
         size_t _lastGameOver;
 
+        std::unique_ptr<MissileBonus> _missileBonus;
+        size_t _lastMissileBonusSpawn;
+        size_t _bonusIds = 0;
+
+
         void refresh();
         void update();
         void startGame();
@@ -77,7 +83,6 @@ class Room
          * @return State
          */
         State getState() const;
-        size_t getCurrentLevel() const;
         /**
          * @brief Get the id of the room
          *
@@ -148,6 +153,8 @@ class Room
         std::pair<short, short> getNearestPlayerPos(const IEntity &entity);
         bool isPrivate() const;
         bool isMonster() const;
+        void handleBonus();
+        void checkCollisionBonus();
 };
 
 #endif

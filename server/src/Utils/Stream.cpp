@@ -611,3 +611,22 @@ Stream StreamFactory::changeLevel(u_int timout, u_char song, bool started)
     out.setDataUChar(static_cast<u_char>(started));
     return out;
 }
+
+Stream StreamFactory::bonusPos(u_int id, u_char type, short x, short y)
+{
+    Stream out;
+    out.setDataUChar(28);
+    out.setDataUInt(id);
+    out.setDataUChar(type);
+    out.setDataUShort(x);
+    out.setDataUShort(y);
+    return out;
+}
+
+Stream StreamFactory::bonusDestroyed(u_int id)
+{
+    Stream out;
+    out.setDataUChar(29);
+    out.setDataUInt(id);
+    return out;
+}

@@ -122,5 +122,6 @@ namespace StreamFactory {
     Stream askResend(u_short nbr);
     Stream strobe(u_char color, bool onOff);
     Stream changeLevel(u_int timout, u_char song, bool started);
-
+    Stream bonusPos(u_int id,u_char type, short x, short y);
+    Stream bonusDestroyed(u_int id);
 }

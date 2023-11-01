@@ -6,11 +6,13 @@
 class Missile: public AEntity {
     public:
         enum Type {
-            PLAYER = 1,
-            LITTLE_MONSTER = 2,
-            ORANGE_MISSILE = 3,
-            PURPLE_MISSILE = 4,
-            GREEN_MISSILE = 5,
+            PLAYER_ONE = 1,
+            LITTLE_MONSTER,
+            ORANGE_MISSILE,
+            PURPLE_MISSILE,
+            GREEN_MISSILE,
+            PLAYER_TWO,
+            PLAYER_THREE,
         };
 
         /**

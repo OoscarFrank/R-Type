@@ -125,5 +125,7 @@ namespace game {
             void handleChangeLevel(Network::Packet &packet);
             void handleLatency(Network::Packet &packet);
             void handleListRooms(Network::Packet &packet);
+            void handleBonusPosition(Network::Packet &packet);
+            void handleBonusDestroyed(Network::Packet &packet);
     };
 }
