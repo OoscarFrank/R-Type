@@ -97,7 +97,7 @@ void Router::_sendChat(Reader::Packet &packet, Levels &levels)
     std::string msg;
     char tmp;
 
-    for (int i = 0; i < (((1000))); ++i) {
+    for (int i = 0; i < 1000; ++i) {
         packet >> tmp;
         if (tmp == 0)
             break;

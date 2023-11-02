@@ -986,11 +986,24 @@ void Game::handleChatMessage(Network::Packet &packet)
     std::string msg;
     char tmp;
     packet >> playerId;
-    for (int i = 0; i < (((1000))); ++i) {
+    for (int i = 0; i < 1000; ++i) {
         packet >> tmp;
         if (tmp == 0)
             break;
         msg += tmp;
     }
     std::cout << "Chat from " << playerId << ": " << msg << std::endl;
+}
+
+void Game::sendChat(std::string const &msg)
+{
+    Stream out;
+    out << 30_uc;
+    for (auto i = msg.begin(); i != msg.end(); i++) {
+        out << *i;
+    }
+    for (std::size_t i = msg.size(); i < 1000; i++) {
+        out << 0_c;
+    }
+    this->_net.send(out);
 }

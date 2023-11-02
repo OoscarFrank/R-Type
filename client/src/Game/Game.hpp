@@ -104,6 +104,7 @@ namespace game {
 
             void initButtons();
             void initMenus();
+            void sendChat(const std::string &msg);
 
             void handleTimeoutMatchmaking(Network::Packet &packet);
             void handlePlayerScore(Network::Packet &packet);

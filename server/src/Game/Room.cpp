@@ -411,7 +411,7 @@ Room::ChatMessage::ChatMessage(Room &room, u_int playerId, const std::string &me
     for (auto i = message.begin(); i != message.end(); i++) {
         out << *i;
     }
-    for (std::size_t i = message.size(); i < (((1000))); i++) {
+    for (std::size_t i = message.size(); i < 1000; i++) {
         out << 0_c;
     }
     room.sendToAll(out);

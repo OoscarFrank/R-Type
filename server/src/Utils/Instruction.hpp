@@ -46,7 +46,7 @@ struct Commands {
     {24, {}, 0, true}, \
     {25, {UINT}, 4, true}, \
     {26, {}, 0, true}, \
-    {30, {(((1000)))}, (((1000))), true}, \
+    {30, {1000}, 1000, true}, \
     {255, {USHORT}, 2, true} \
 }
 
@@ -98,7 +98,7 @@ struct Commands {
     {27, {UINT, UCHAR, UCHAR, UCHAR}, 7, true}, \
     {28, {UINT, UCHAR, USHORT, USHORT}, 9, false}, \
     {29, {UINT}, 4, true}, \
-    {31, {UINT, (((1000)))}, (((1004))), true}, \
+    {31, {UINT, 1000}, 1004, true}, \
     {255, {USHORT}, 2, true} \
 }
 
