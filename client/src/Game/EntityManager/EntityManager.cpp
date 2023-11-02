@@ -40,6 +40,15 @@ entity_t EntityManager::getEnnemiEntityFromId(unsigned int id)
     return 0;
 }
 
+entity_t EntityManager::getTextByType(TEXT_TYPE type)
+{
+    for (auto &text : this->_textsEntity) {
+        if (text.first == type)
+            return text.second;
+    }
+    return 0;
+}
+
 void EntityManager::handleMusic(ECS::Registry &ecs, MUSIC_TYPE type, std::function<void(ECS::components::MusicComponent&)> callback)
 {
     auto it = std::find_if(this->_musics.begin(), this->_musics.end(), [type](const auto& pair) {

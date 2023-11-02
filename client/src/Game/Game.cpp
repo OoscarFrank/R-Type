@@ -69,6 +69,7 @@ Game::Game(std::string ip, int port) :
         std::cerr << e.what() << std::endl;
         exit(84);
     }
+
     if (mode.isValid()) {
         this->_window.create(mode, "R-TYPE", sf::Style::Fullscreen);
     } else {
@@ -134,7 +135,10 @@ Game::Game(std::string ip, int port) :
     entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/piou.ogg"), 1000);
     this->_sounds.emplace(EntityManager::SOUND_TYPE::TEST, soundEntity);
 
-    _pingText = this->_factory.createText("Ping: 0", this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x - 300, 10, 15);
+    if (this->getTextByType(game::EntityManager::TEXT_TYPE::PING)) {
+        entity_t newEntity = this->_factory.createText("Ping: 0", this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x - 300, 10, 15);
+        this->_textsEntity.insert({game::EntityManager::TEXT_TYPE::PING, newEntity});
+    }
 
     this->_screens.emplace(EntityManager::SCREEN_TYPE::MAIN_MENU, this->_factory.createScreen(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::MenuScreen)));
 }
@@ -268,15 +272,6 @@ void Game::initButtons()
             this->ecs.kill_entity(e.second);
         }
         this->_loadingBar.clear();
-
-        // this->ecs.kill_entity(this->_timerText);
-        // this->_timerText = 0;
-
-        this->ecs.kill_entity(this->_scoreText);
-        this->_scoreText = 0;
-
-        this->ecs.kill_entity(this->_gameTimeText);
-        this->_gameTimeText = 0;
 
         this->ecs.kill_entity(this->_looser);
         this->_looser = 0;
@@ -417,10 +412,12 @@ void Game::update()
         std::ostringstream ss;
         ss << "Timer: " << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) << std::setfill('0') << seconds;
 
-        if (_gameTimeText == 0) {
-            _gameTimeText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2, this->topLeftOffeset.y + 10, 20);
+        entity_t gameTimeText = this->getTextByType(game::EntityManager::TEXT_TYPE::GAME_TIME);
+        if (gameTimeText == 0) {
+            entity_t newEntity = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2, this->topLeftOffeset.y + 10, 20);
+            this->_textsEntity.insert({game::EntityManager::TEXT_TYPE::GAME_TIME, newEntity});
         } else {
-            this->_texts.insert(std::make_pair(_gameTimeText, ss.str()));
+            this->_textsUpdate.insert(std::make_pair(gameTimeText, ss.str()));
         }
     }
 }
@@ -484,7 +481,7 @@ int Game::MainLoop()
         ECS::systems::ParallaxSystem().update(this->ecs, deltaTime, this->topLeftOffeset);
         ECS::systems::MovableSystem().update(this->ecs, this->_entityPositions, this->topLeftOffeset);
         ECS::systems::ScaleSystem().update(this->ecs);
-        ECS::systems::TextSystem().update(this->ecs, this->_texts);
+        ECS::systems::TextSystem().update(this->ecs, this->_textsUpdate);
         this->_window.clear();
 
         // DRAW SYSTEM CALL HERE
@@ -580,10 +577,13 @@ void Game::handlePlayerScore(Network::Packet &packet)
     packet >> score;
     std::ostringstream ss;
     ss <<  "Score: " << std::fixed << std::setprecision(1) << score;
-    if (_scoreText == 0) {
-        _scoreText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - (250 * this->_resMult), 10, 20);
+    entity_t scoreText = this->getTextByType(EntityManager::TEXT_TYPE::SCORE);
+
+    if (scoreText == 0) {
+        entity_t newEntity = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - (250 * this->_resMult), 10, 20);
+        this->_textsEntity.insert({EntityManager::TEXT_TYPE::SCORE, newEntity});
     } else {
-        this->_texts.insert(std::make_pair(_scoreText, ss.str()));
+        this->_textsUpdate.insert(std::make_pair(scoreText, ss.str()));
     }
 }
 
@@ -690,11 +690,14 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
 {
     packet >> this->_startTimeLeft >> this->_started >> this->currentSong;
 
+    entity_t timerText = this->getTextByType(game::EntityManager::TEXT_TYPE::TIMER);
     if (this->_started == true) {
-        this->ecs.kill_entity(_timerText);
+        if (timerText != 0)
+            this->ecs.kill_entity(timerText);
         this->_gameState = gameState::GAME;
         this->_startGameTime = std::chrono::system_clock::now();
-        _scoreText = this->_factory.createText("Score: 0", this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - (250 * this->_resMult), this->topLeftOffeset.y + 10, 20);
+        entity_t newEntity = this->_factory.createText("Score: 0", this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - (250 * this->_resMult), this->topLeftOffeset.y + 10, 20);
+        this->_textsEntity.insert({EntityManager::TEXT_TYPE::SCORE, newEntity});
         this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [](ECS::components::MusicComponent &music) {
             music.playMusic();
         });
@@ -707,10 +710,11 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
         float timer = this->_startTimeLeft / 1000.0f;
         std::ostringstream ss;
         ss << "Match making: " << std::fixed << std::setprecision(1) << timer;
-        if (_timerText == 0) {
-            _timerText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - 115, this->topLeftOffeset.y + 10, 30);
+        if (timerText == 0) {
+            entity_t newEntity = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - 115, this->topLeftOffeset.y + 10, 30);
+            this->_textsEntity.insert({game::EntityManager::TEXT_TYPE::TIMER, newEntity});
         } else {
-            this->_texts.insert(std::make_pair(_timerText, ss.str()));
+            this->_textsUpdate.insert(std::make_pair(timerText, ss.str()));
         }
     }
 }
@@ -940,10 +944,12 @@ void Game::handleLatency(Network::Packet &packet)
     packet >> timeMS;
     std::ostringstream ss;
     ss <<  "Ping: " << std::fixed << std::setprecision(1) << timeMS;
-    if (_pingText == 0) {
-        _pingText = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x - 100, 10, 15);
+    entity_t pingText = this->getTextByType(game::EntityManager::TEXT_TYPE::PING);
+    if (pingText == 0) {
+        entity_t newEntity = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x - 100, 10, 15);
+        this->_textsEntity.insert({game::EntityManager::TEXT_TYPE::PING, newEntity});
     } else {
-        this->_texts.insert(std::make_pair(_pingText, ss.str()));
+        this->_textsUpdate.insert(std::make_pair(pingText, ss.str()));
     }
 }
 

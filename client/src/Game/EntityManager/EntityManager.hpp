@@ -33,12 +33,21 @@ namespace game {
             MAIN_MENU
         };
 
+        enum TEXT_TYPE {
+            TIMER,
+            SCORE,
+            GAME_TIME,
+            PING
+        };
+
         protected:
             entity_t getPlayerEntityFromId(unsigned int id);
             entity_t getMissileEntityFromId(unsigned int id);
             entity_t getEnnemiEntityFromId(unsigned int id);
             entity_t getBonusEntityFromId(unsigned int id);
             entity_t getBombEntityFromId(unsigned int id);
+            entity_t getTextByType(TEXT_TYPE type);
+
             void handleMusic(ECS::Registry &ecs, MUSIC_TYPE type, std::function<void(ECS::components::MusicComponent&)> callback);
 
             std::unordered_map<LOADINGBAR_TYPE, entity_t> _loadingBar;
@@ -49,13 +58,15 @@ namespace game {
             std::vector<std::pair<size_t, entity_t>> _ennemies;
             std::vector<std::pair<size_t, entity_t>> _bonuses;
             std::vector<std::pair<size_t, entity_t>> _bombs;
-            
-            std::vector<ECS::systems::MovableSystem::EntityPos> _entityPositions;
-            std::vector<ECS::systems::ControllableSystem::EntityEvent> _entityEvents;
             std::vector<entity_t> _parallax;
-
             std::vector<std::tuple<int, entity_t, entity_t>> _roomsData; // roomId, text1, text2
             std::map<SCREEN_TYPE, entity_t> _screens;
+            std::unordered_map<entity_t, std::string> _textsUpdate;
+            std::unordered_map<TEXT_TYPE, entity_t> _textsEntity;
+
+            std::vector<ECS::systems::MovableSystem::EntityPos> _entityPositions;
+            std::vector<ECS::systems::ControllableSystem::EntityEvent> _entityEvents;
+
             entity_t _looser;
             entity_t _playerEntity;
             entity_t _scoreCoche;

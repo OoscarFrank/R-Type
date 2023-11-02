@@ -9,8 +9,8 @@ namespace ECS {
             public:
             /**
              * @brief Update the position of each entity with a position and a velocity component
-             * 
-             * @param ecs 
+             *
+             * @param ecs
              */
                 void update(Registry &ecs, sf::Vector2u offset = {0, 0}) {
                     try {
