@@ -26,6 +26,7 @@ aux_source_directory(./src/Game/Entities/Monsters/ dir_monsters)
 aux_source_directory(./src/Pool/ dir_pool)
 aux_source_directory(./src/Reader/ dir_reader)
 aux_source_directory(./src/Utils/ dir_utils)
+aux_source_directory(./src/Game/Entities/Bonus/ dir_bonuses)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
@@ -39,6 +40,7 @@ add_executable(
   ${dir_pool}
   ${dir_reader}
   ${dir_utils}
+  ${dir_bonuses}
 )
 
 file(COPY ${CMAKE_SOURCE_DIR}/stages/ DESTINATION ${CMAKE_BINARY_DIR}/Release/stages/)

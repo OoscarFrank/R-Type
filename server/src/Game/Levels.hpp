@@ -111,7 +111,6 @@ public:
 
     void start();
     void update(Room &room);
-    size_t lvl() const { return 1;}
     const Level &getLevel() const;
 
 private:

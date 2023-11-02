@@ -16,6 +16,7 @@
 #include "Entities/Monsters/Boss4.hpp"
 #include "../Client.hpp"
 #include "Levels.hpp"
+#include "Entities/Bonus/Bonus.hpp"
 
 class Room
 {
@@ -33,6 +34,7 @@ class Room
         std::mutex _playersMutex;
         std::vector<std::unique_ptr<Player>> _players;
         std::vector<std::unique_ptr<Monster>> _monsters;
+        const std::vector<std::shared_ptr<Client>> &_allClients;
         u_int _id;
         unsigned int _maxPlayer;
         unsigned int _progress;
@@ -50,6 +52,11 @@ class Room
         size_t _lastPlayerUpdate;
         size_t _lastGameOver;
 
+        std::unique_ptr<MissileBonus> _missileBonus;
+        size_t _lastMissileBonusSpawn;
+        size_t _bonusIds = 0;
+
+
         void refresh();
         void update();
         void startGame();
@@ -64,7 +71,7 @@ class Room
          * @param client The client that created the room
          * @param privateRoom If the room is private or not (default: false)
          */
-        Room(u_int id, std::shared_ptr<Client> client, Levels &levels, bool privateRoom = false);
+        Room(u_int id, std::shared_ptr<Client> client, Levels &levels, const std::vector<std::shared_ptr<Client>> &allClients, bool privateRoom = false);
         ~Room();
         Room(const Room &room) = delete;
         Room(Room &&room) = delete;
@@ -76,7 +83,6 @@ class Room
          * @return State
          */
         State getState() const;
-        size_t getCurrentLevel() const;
         /**
          * @brief Get the id of the room
          *
@@ -147,6 +153,8 @@ class Room
         std::pair<short, short> getNearestPlayerPos(const IEntity &entity);
         bool isPrivate() const;
         bool isMonster() const;
+        void handleBonus();
+        void checkCollisionBonus();
 };
 
 #endif

@@ -24,6 +24,7 @@ namespace game {
                 ParallaxSecondbkg,
                 Player_move1, Player_move2, Player_move3, Player_move4,
                 Missile,
+                MissileRed,
                 OrangeMissile,
                 PurpleMissile,
                 GreenMissile,
@@ -53,7 +54,8 @@ namespace game {
                 WhitePixel,
                 Arial,
                 playerLifeOutline,
-                playerLifeContent
+                playerLifeContent,
+                Bonus
             };
         /**
          * @brief Load a texture from a path

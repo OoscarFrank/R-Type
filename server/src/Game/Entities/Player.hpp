@@ -102,7 +102,22 @@ class Player: public ArmedEntity {
          */
         std::shared_ptr<Client> client() const;
 
+        /**
+         * @brief Get the pod missile level
+         *
+         * @return unsigned char
+         */
+        unsigned char podMissileLvl() const;
+
+        /**
+         * @brief Set the pod missile level
+         *
+         * @param podMissileLvl The new pod missile level to set
+         */
+        void setPodMissileLvl(unsigned char podMissileLvl);
+
     private:
+        unsigned char _podMissileLvl = 1;
         int _score;
         std::shared_ptr<Client> _client;
 };

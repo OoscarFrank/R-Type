@@ -33,6 +33,7 @@ Game::Game(std::string ip, int port) :
         this->_manager.loadTexture(client::getAssetPath("screens/menuScreen.png"), Loader::toLoad::MenuScreen);
 
         this->_manager.loadTexture(client::getAssetPath("entity/missile/missile.png"), Loader::toLoad::Missile);
+        this->_manager.loadTexture(client::getAssetPath("entity/missile/missileRed.png"), Loader::toLoad::MissileRed);
         this->_manager.loadTexture(client::getAssetPath("entity/missile/orange_missile.png"), Loader::toLoad::OrangeMissile);
         this->_manager.loadTexture(client::getAssetPath("entity/missile/purple_missile.png"), Loader::toLoad::PurpleMissile);
         this->_manager.loadTexture(client::getAssetPath("entity/missile/green_missile.png"), Loader::toLoad::GreenMissile);
@@ -56,6 +57,7 @@ Game::Game(std::string ip, int port) :
         this->_manager.loadTexture(client::getAssetPath("entity/Pixels/PurplePixel.png"), Loader::toLoad::PurplePixel);
         this->_manager.loadTexture(client::getAssetPath("entity/Pixels/YellowPixel.png"), Loader::toLoad::YellowPixel);
         this->_manager.loadTexture(client::getAssetPath("entity/Pixels/WhitePixel.png"), Loader::toLoad::WhitePixel);
+        this->_manager.loadTexture(client::getAssetPath("entity/bonus/bonus.png"), Loader::toLoad::Bonus);
 
         this->_manager.loadTexture(client::getAssetPath("entity/player/PlayerLifeOutline.png"), Loader::toLoad::playerLifeOutline);
         this->_manager.loadTexture(client::getAssetPath("entity/player/playerLifeContent.png"), Loader::toLoad::playerLifeContent);
@@ -339,6 +341,12 @@ void Game::update()
             case 22:
                 this->handleChangeLevel(packet);
                 break;
+            case 28:
+                this->handleBonusPosition(packet);
+                break;
+            case 29:
+                this->handleBonusDestroyed(packet);
+                break;
             case 255:
                 this->handleResend(packet);
                 break;
@@ -470,31 +478,43 @@ void Game::handleMissilePosition(Network::Packet &packet)
     if (res == 0) {
         switch ((int)type) {
             case 1: {
-                entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Missile), this->_resMult);
+                entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Missile));
                 this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                 this->_missiles.push_back(std::make_pair(id, newEntity));
             }
                 break;
             case 2: {
-                entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Missile), this->_resMult);
+                entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Missile));
                 this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                 this->_missiles.push_back(std::make_pair(id, newEntity));
             }
                 break;
             case 3: {
-                entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::OrangeMissile), this->_resMult);
+                entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::OrangeMissile), this->_resMult);
                 this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                 this->_missiles.push_back(std::make_pair(id, newEntity));
             }
                 break;
             case 4: {
-                entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::PurpleMissile), this->_resMult);
+                entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::PurpleMissile), this->_resMult);
                 this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                 this->_missiles.push_back(std::make_pair(id, newEntity));
             }
                 break;
             case 5: {
-                entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::GreenMissile), this->_resMult);
+                entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::GreenMissile), this->_resMult);
+                this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
+                this->_missiles.push_back(std::make_pair(id, newEntity));
+            }
+                break;
+            case 6: {
+                entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::MissileRed));
+                this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
+                this->_missiles.push_back(std::make_pair(id, newEntity));
+            }
+                break;
+            case 7: {
+                entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::MissileRed));
                 this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                 this->_missiles.push_back(std::make_pair(id, newEntity));
             }
@@ -883,11 +903,10 @@ void Game::handleLatency(Network::Packet &packet)
 void Game::handleListRooms(Network::Packet &packet)
 {
     u_int roomId;
-    packet >> roomId;
     u_char nbrPlayers;
-    packet >> nbrPlayers;
     u_char maxPlayers;
-    packet >> maxPlayers;
+    bool joinable;
+    packet >> roomId >> nbrPlayers >> maxPlayers >> joinable;
 
     // chercher si la room existe deja dans _roomsData
     // si non:
@@ -919,4 +938,40 @@ void Game::handleListRooms(Network::Packet &packet)
     // }
 
 
+}
+
+
+void Game::handleBonusPosition(Network::Packet &packet)
+{
+    unsigned int id = packet.getData().getDataUInt();
+    unsigned char type = packet.getData().getDataUChar();
+    unsigned short x = packet.getData().getDataUShort();
+    unsigned short y = packet.getData().getDataUShort();
+
+    entity_t bonus = getBonusEntityFromId(id);
+    if (bonus == 0) {
+        bonus = this->_factory.createBonus(this->_manager.getTexture(Loader::Loader::Bonus), x * this->_resMult, y * this->_resMult, this->_resMult);
+        this->_bonuses.push_back(std::make_pair(id, bonus));
+    } else {
+        this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(bonus, x * this->_resMult, y * this->_resMult));
+    }
+}
+
+void Game::handleBonusDestroyed(Network::Packet &packet)
+{
+    unsigned int id = packet.getData().getDataUInt();
+
+    entity_t entity = getBonusEntityFromId(id);
+
+    if (entity != 0) {
+        this->ecs.kill_entity(entity);
+
+        this->_entityPositions.erase(std::remove_if(this->_entityPositions.begin(), this->_entityPositions.end(), [id](ECS::systems::MovableSystem::EntityPos const &pair) {
+            return pair.getEntity() == id;
+        }), this->_entityPositions.end());
+
+        this->_bonuses.erase(std::remove_if(this->_bonuses.begin(), this->_bonuses.end(), [id](std::pair<unsigned int, entity_t> const &pair) {
+            return pair.first == id;
+        }), this->_bonuses.end());
+    }
 }

@@ -31,6 +31,9 @@
 #define MISSILE_HEIGHT      1
 #define MISSILE_WIDTH       1
 
+#define BONUS_WIDTH   75
+#define BONUS_HEIGHT  75
+
 // Progress steps
 #define MAP_PROGRESS_STEP                       7
 
@@ -70,10 +73,13 @@
 #define BOSS2_MONSTER_FIRE_TIME         1000 // ms
 #define BIG_FIRE_TIME                   8000 // ms
 
+#define BONUS_SPAWN_TIME                45000 // ms
+
 #define CHANGE_HORIZONTAL_DIRECTION     3 // second
 #define CHANGE_VERTICAL_DIRECTION       5 // second
 
 #define MISSILES_MOVE_TIME              10 // ms
+#define BONUS_MOVE_TIME                 10 // ms
 
 #define SEND_WAIT_MESSAGE_TIME          200 // ms
 #define PLAYER_ALIVE_MAX_TIME           10 // seconds

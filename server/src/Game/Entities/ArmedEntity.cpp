@@ -45,7 +45,12 @@ bool ArmedEntity::missilesCollide(const IEntity &other)
 void ArmedEntity::fireMissile(Missile::Type type, short vx, short vy)
 {
     std::unique_lock<std::mutex> lock(_missilesMutex);
-    _missiles.push_back(std::make_unique<Missile>(_room, type, ++_room.getMissilesIds(), _box.x + _box.width / 2, _box.y + _box.height / 2, vx, vy));
+    if (type == Missile::Type::PLAYER_ONE || type == Missile::Type::PLAYER_TWO || type == Missile::Type::LITTLE_MONSTER)
+        _missiles.push_back(std::make_unique<Missile>(_room, type, ++_room.getMissilesIds(), _box.x + _box.width / 2, _box.y + _box.height / 2, vx, vy));
+    else if (type == Missile::Type::PLAYER_THREE) {
+        _missiles.push_back(std::make_unique<Missile>(_room, type, ++_room.getMissilesIds(), _box.x + _box.width / 2, (_box.y + _box.height / 2) - 20, vx, vy));
+        _missiles.push_back(std::make_unique<Missile>(_room, type, ++_room.getMissilesIds(), _box.x + _box.width / 2, _box.y + _box.height / 2 + 20, vx, vy));
+    }
 }
 
 void ArmedEntity::fireMissile(Missile::Type type, short vx, short vy, short posX, short posY)

@@ -36,6 +36,7 @@ file(COPY ${CMAKE_SOURCE_DIR}/assets/screens/ DESTINATION ${CMAKE_BINARY_DIR}/Re
 file(COPY ${CMAKE_SOURCE_DIR}/assets/entity/buttons DESTINATION ${CMAKE_BINARY_DIR}/Release/assets/entity/buttons)
 file(COPY ${CMAKE_SOURCE_DIR}/assets/fonts/ DESTINATION ${CMAKE_BINARY_DIR}/Release/assets/fonts)
 file(COPY ${CMAKE_SOURCE_DIR}/assets/songs/ DESTINATION ${CMAKE_BINARY_DIR}/Release/assets/songs/)
+file(COPY ${CMAKE_SOURCE_DIR}/assets/entity/bonus DESTINATION ${CMAKE_BINARY_DIR}/Release/assets/entity/bonus)
 
 if(WIN32)
   file(COPY ${CMAKE_SOURCE_DIR}/../extern/dll/ DESTINATION ${CMAKE_BINARY_DIR}/Release/)

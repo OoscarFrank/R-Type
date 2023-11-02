@@ -35,6 +35,7 @@ namespace game {
             entity_t getPlayerEntityFromId(unsigned int id);
             entity_t getMissileEntityFromId(unsigned int id);
             entity_t getEnnemiEntityFromId(unsigned int id);
+            entity_t getBonusEntityFromId(unsigned int id);
             void handleMusic(ECS::Registry &ecs, MUSIC_TYPE type, std::function<void(ECS::components::MusicComponent&)> callback);
 
             std::unordered_map<LOADINGBAR_TYPE, entity_t> _loadingBar;
@@ -43,6 +44,7 @@ namespace game {
             std::vector<std::pair<size_t, entity_t>> _players;
             std::vector<std::pair<size_t, entity_t>> _missiles;
             std::vector<std::pair<size_t, entity_t>> _ennemies;
+            std::vector<std::pair<size_t, entity_t>> _bonuses;
             std::vector<ECS::systems::MovableSystem::EntityPos> _entityPositions;
             std::vector<ECS::systems::ControllableSystem::EntityEvent> _entityEvents;
             std::vector<entity_t> _parallax;

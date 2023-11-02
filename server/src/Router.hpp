@@ -6,13 +6,14 @@
 
 class Router {
     public:
-        Router(RoomManager &rm);
+        Router(RoomManager &rm, const std::vector<std::shared_ptr<Client>> &allClients);
         ~Router() = default;
 
         void route(Reader::Packet packet, Levels &levels);
 
     private:
         RoomManager &_rm;
+        const std::vector<std::shared_ptr<Client>> &_allClients;
         std::map<int, void (Router::*)(Reader::Packet &packet, Levels &levels)> _functions;
 
         void _movePlayer(Reader::Packet &packet, Levels &levels);
