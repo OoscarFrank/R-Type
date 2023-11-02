@@ -109,6 +109,7 @@ Game::Game(std::string ip, int port) :
     this->_musics.emplace(EntityManager::MUSIC_TYPE::VOIS_SUR_TON_CHEMIN, this->_factory.createMusic(client::getAssetPath("songs/VOIS_SUR_TON_CHEMIN.ogg"), 100, true));
     this->_musics.emplace(EntityManager::MUSIC_TYPE::HEUTE_NACHT, this->_factory.createMusic(client::getAssetPath("songs/HEUTE_NACHT.ogg"), 100, true));
     this->_musics.emplace(EntityManager::MUSIC_TYPE::CLEON, this->_factory.createMusic(client::getAssetPath("songs/CLEON.ogg"), 100, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::AMNESIA, this->_factory.createMusic(client::getAssetPath("songs/AMNESIA.ogg"), 100, true));
 
     this->_resMult = static_cast<float>(this->_screenSize.x)/ SCREEN_WIDTH;
 
@@ -376,6 +377,9 @@ void Game::update()
             case 29:
                 this->handleBonusDestroyed(packet);
                 break;
+            case 31:
+                this->handleChatMessage(packet);
+                break;
             case 255:
                 this->handleResend(packet);
                 break;
@@ -386,10 +390,10 @@ void Game::update()
     if (std::chrono::system_clock::now() - this->_lastPing > std::chrono::seconds(1)) {
         this->_lastPing = std::chrono::system_clock::now();
         Stream out;
-        if (this->_gameState == gameState::MENU)
-            out << 26_uc;
-        else
-            out << 12_uc << static_cast<long>(std::chrono::duration_cast<std::chrono::milliseconds>(_lastPing.time_since_epoch()).count());
+        out << 26_uc;
+        this->_net.send(out);
+        out.clear();
+        out << 12_uc << static_cast<long>(std::chrono::duration_cast<std::chrono::milliseconds>(_lastPing.time_since_epoch()).count());
         this->_net.send(out);
     }
 
@@ -1044,4 +1048,32 @@ void Game::handleBonusDestroyed(Network::Packet &packet)
             return pair.first == id;
         }), this->_bonuses.end());
     }
+}
+
+void Game::handleChatMessage(Network::Packet &packet)
+{
+    u_int playerId;
+    std::string msg;
+    char tmp;
+    packet >> playerId;
+    for (int i = 0; i < 1000; ++i) {
+        packet >> tmp;
+        if (tmp == 0)
+            break;
+        msg += tmp;
+    }
+    std::cout << "Chat from " << playerId << ": " << msg << std::endl;
+}
+
+void Game::sendChat(std::string const &msg)
+{
+    Stream out;
+    out << 30_uc;
+    for (auto i = msg.begin(); i != msg.end(); i++) {
+        out << *i;
+    }
+    for (std::size_t i = msg.size(); i < 1000; i++) {
+        out << 0_c;
+    }
+    this->_net.send(out);
 }
