@@ -386,7 +386,7 @@ void Game::sendMoveToServer()
     for (auto i = this->_entityEvents.begin(); i != this->_entityEvents.end(); ++i) {
         if ((this->_gameState == gameState::MENU || this->_gameState == gameState::ENDGAME)
             && (*i).getEntity() == this->_menuManager.getMenuEntity(MenuManager::MENU_TYPE::MAIN_MENU)) {
-            if (((*i).getEvent() & RIGHT) || ((*i).getEvent() & ENTER)) {
+            if (((*i).getEvent() & ENTER)) {
                 this->_menuManager.executeButtonInMenu(this->ecs);
             }
             if ((*i).getEvent() & DOWN) {
