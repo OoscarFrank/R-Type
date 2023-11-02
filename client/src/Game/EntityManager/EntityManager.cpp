@@ -59,3 +59,15 @@ entity_t EntityManager::getBonusEntityFromId(unsigned int id)
     }
     return 0;
 }
+
+entity_t EntityManager::getBombEntityFromId(unsigned int id)
+{
+    for (auto &bomb : this->_bombs)
+    {
+        if (bomb.first == id)
+            return bomb.second;
+    }
+    return 0;
+}
+
+

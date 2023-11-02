@@ -58,6 +58,8 @@ Game::Game(std::string ip, int port) :
         this->_manager.loadTexture(client::getAssetPath("entity/Pixels/YellowPixel.png"), Loader::toLoad::YellowPixel);
         this->_manager.loadTexture(client::getAssetPath("entity/Pixels/WhitePixel.png"), Loader::toLoad::WhitePixel);
         this->_manager.loadTexture(client::getAssetPath("entity/bonus/bonus.png"), Loader::toLoad::Bonus);
+        this->_manager.loadTexture(client::getAssetPath("entity/missile/bomb.png"), Loader::toLoad::Bomb);
+        this->_manager.loadTexture(client::getAssetPath("entity/missile/laser.png"), Loader::toLoad::Laser);
 
         this->_manager.loadTexture(client::getAssetPath("entity/player/PlayerLifeOutline.png"), Loader::toLoad::playerLifeOutline);
         this->_manager.loadTexture(client::getAssetPath("entity/player/playerLifeContent.png"), Loader::toLoad::playerLifeContent);
@@ -347,6 +349,12 @@ void Game::update()
             case 29:
                 this->handleBonusDestroyed(packet);
                 break;
+            case 31:
+                this->handleBombPosition(packet);
+                break;
+            case 32:
+                this->handleBombDestroyed(packet);
+                break;
             case 255:
                 this->handleResend(packet);
                 break;
@@ -412,12 +420,17 @@ void Game::sendMoveToServer()
                 auto soundComponent = this->ecs.getComponent<ECS::components::SoundComponent>(this->_sounds[EntityManager::SOUND_TYPE::TEST]);
                 soundComponent.playSound();
             }
+            if ((*i).getEvent() & BOMB && std::chrono::system_clock::now() - this->_lastPlayerBombFireTime > std::chrono::milliseconds(160)) {
+                this->_lastPlayerBombFireTime = std::chrono::system_clock::now();
+                Stream out;
+                out << 30_uc;
+                this->_net.send(out);
+            }
             continue;
         }
     }
     this->_entityEvents.clear();
 }
-
 
 int Game::MainLoop()
 {
@@ -446,8 +459,6 @@ int Game::MainLoop()
     this->_net.setClosed(true);
     return 0;
 }
-
-
 
 // UPDATE HANDLE FUNCTIONS
 
@@ -940,7 +951,6 @@ void Game::handleListRooms(Network::Packet &packet)
 
 }
 
-
 void Game::handleBonusPosition(Network::Packet &packet)
 {
     unsigned int id = packet.getData().getDataUInt();
@@ -973,5 +983,39 @@ void Game::handleBonusDestroyed(Network::Packet &packet)
         this->_bonuses.erase(std::remove_if(this->_bonuses.begin(), this->_bonuses.end(), [id](std::pair<unsigned int, entity_t> const &pair) {
             return pair.first == id;
         }), this->_bonuses.end());
+    }
+}
+
+void Game::handleBombPosition(Network::Packet &packet)
+
+{
+    unsigned int id = packet.getData().getDataUInt();
+    unsigned short x = packet.getData().getDataUShort();
+    unsigned short y = packet.getData().getDataUShort();
+
+    entity_t bomb = getBombEntityFromId(id);
+    if (bomb == 0) {
+        bomb = this->_factory.createBomb(this->_manager.getTexture(Loader::Loader::Bomb), x * this->_resMult, y * this->_resMult, this->_resMult);
+        this->_bombs.push_back(std::make_pair(id, bomb));
+    } else {
+        this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(bomb, x * this->_resMult, y * this->_resMult));
+    }
+}
+
+void Game::handleBombDestroyed(Network::Packet &packet)
+{
+    unsigned int id = packet.getData().getDataUInt();
+    entity_t entity = getBombEntityFromId(id);
+
+    if (entity != 0) {
+        this->ecs.kill_entity(entity);
+
+        this->_entityPositions.erase(std::remove_if(this->_entityPositions.begin(), this->_entityPositions.end(), [id](ECS::systems::MovableSystem::EntityPos const &pair) {
+            return pair.getEntity() == id;
+        }), this->_entityPositions.end());
+
+        this->_bombs.erase(std::remove_if(this->_bombs.begin(), this->_bombs.end(), [id](std::pair<unsigned int, entity_t> const &pair) {
+            return pair.first == id;
+        }), this->_bombs.end());
     }
 }

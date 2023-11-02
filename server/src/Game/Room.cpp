@@ -141,12 +141,16 @@ Player &Room::getPlayer(std::shared_ptr<Client> client)
 {
     std::unique_lock<std::mutex> lock(_playersMutex);
 
+    std::cout << "in player" << std::endl;
     for (auto i = _players.begin(); i != _players.end(); i++) {
+        std::cout << (*i)->life() << std::endl;
         if ((**i).client() == client) {
             return **i;
         }
     }
+    // std::cout << "out player" << std::endl;
     throw std::runtime_error("Player not found");
+    return **_players.begin();
 }
 
 void Room::sendToAll(const Stream &stream)
@@ -214,6 +218,7 @@ void Room::update()
         checkCollisionMonsters();
         checkCollisionBonus();
 
+        handleForcePod();
         _levels.update(*this);
         _playersMutex.unlock();
     }
@@ -246,7 +251,7 @@ void Room::startGame()
     _lastMapRefresh = NOW;
     _lastPlayerUpdate = NOW;
     _lastMissileUpdate = NOW;
-
+    _lastBonusBoxSpawn = NOW;
     sendToAll(StreamFactory::waitGame(0, true, _levels.getLevel().getSong()));
     _levels.start();
 
@@ -360,14 +365,21 @@ bool Room::isMonster() const
 
 void Room::handleBonus()
 {
-    if (this->_missileBonus.get() != nullptr) {
-        this->_missileBonus->refresh();
+
+    if (this->_bonusBox.get() != nullptr) {
+        if (!this->_bonusBox->exists()) {
+            this->sendToAll(StreamFactory::bonusDestroyed(this->_bonusBox->id()));
+            this->_bonusBox.release();
+            this->_bonusBox = nullptr;
+            return;
+        }
+        this->_bonusBox->refresh();
         return;
     }
-    if (NOW - this->_lastMissileBonusSpawn < BONUS_SPAWN_TIME)
+    if (NOW - this->_lastBonusBoxSpawn < BONUS_SPAWN_TIME)
         return;
-    this->_lastMissileBonusSpawn = NOW;
-    this->_missileBonus = std::make_unique<MissileBonus>(*this, ++_bonusIds);
+    this->_lastBonusBoxSpawn = NOW;
+    this->_bonusBox = std::make_unique<BonusBox>(*this, ++_bonusIds);
 }
 
 void Room::checkCollisionBonus()
@@ -375,13 +387,28 @@ void Room::checkCollisionBonus()
     for (auto p = _players.begin(); p != _players.end(); p++) {
         if (!(**p).exists())
             continue;
-        if (this->_missileBonus != nullptr && (**p).collide((*this->_missileBonus))) {
+        if (this->_bonusBox != nullptr && (**p).collide((*this->_bonusBox))) {
             if ((*p)->podMissileLvl() < 3)
                 (*p)->setPodMissileLvl((*p)->podMissileLvl() + 1);
-            this->sendToAll(StreamFactory::bonusDestroyed(this->_missileBonus->id()));
-            this->_missileBonus.release();
-            this->_missileBonus = nullptr;
+            this->sendToAll(StreamFactory::bonusDestroyed(this->_bonusBox->id()));
+            this->_bonusBox.release();
+            this->_bonusBox = nullptr;
             return;
         }
     }
 }
+
+size_t &Room::getBombIds()
+{
+    return _bombIds;
+}
+
+void Room::handleForcePod()
+{
+    for(auto p = _players.begin(); p != _players.end(); ++p) {
+        (*p)->forcePod().refresh();
+        for (auto m = _monsters.begin(); m != _monsters.end(); m++)
+            (*p)->forcePod().bombCollide(**m);
+    }
+}
+

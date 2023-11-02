@@ -99,6 +99,7 @@ namespace game {
             std::chrono::system_clock::time_point _lastPing;
             std::chrono::system_clock::time_point _startGameTime;
             std::chrono::system_clock::time_point _lastPlayerFireTime;
+            std::chrono::system_clock::time_point _lastPlayerBombFireTime;
 
             void refreshScreenSize();
 
@@ -126,5 +127,7 @@ namespace game {
             void handleListRooms(Network::Packet &packet);
             void handleBonusPosition(Network::Packet &packet);
             void handleBonusDestroyed(Network::Packet &packet);
+            void handleBombPosition(Network::Packet &packet);
+            void handleBombDestroyed(Network::Packet &packet);
     };
 }

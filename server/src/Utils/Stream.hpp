@@ -124,4 +124,6 @@ namespace StreamFactory {
     Stream changeLevel(u_int timout, u_char song, bool started);
     Stream bonusPos(u_int id,u_char type, short x, short y);
     Stream bonusDestroyed(u_int id);
+    Stream bombPos(u_int id, u_short x, u_short y);
+    Stream bombDestroyed(u_int id);
 }

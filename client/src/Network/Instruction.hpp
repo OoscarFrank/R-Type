@@ -38,7 +38,8 @@ struct Commands {
  * 24 gui - quitter la room
  * 25 gui - join d'une room (room id)
  * 26 gui - ask to list rooms
- *
+ * 30 gui -fire Bomb
+ * 
  */
 #define OUT_COMMANDS { \
     {2, {UCHAR, UCHAR}, 2, false}, \
@@ -49,6 +50,7 @@ struct Commands {
     {24, {}, 0, true}, \
     {25, {UINT}, 4, true}, \
     {26, {}, 0, true}, \
+    {30, {}, 0, true},  \
     {255, {USHORT}, 2, true} \
 }
 
@@ -75,6 +77,8 @@ struct Commands {
  * 27 serv - room list (room id, number players, max number players, bool is joinable)
  * 28 serv - bonus position (id,type,  x, y)
  * 29 serv - bonus destroyed (id)
+ * 31 serv - bomb position (id, x, y)
+ * 32 serv - bomb destroyed (id)
  */
 #define IN_COMMANDS { \
     {1, {UINT}, 4, false}, \
@@ -98,5 +102,7 @@ struct Commands {
     {27, {UINT, UCHAR, UCHAR, UCHAR}, 7, true}, \
     {28, {UINT, UCHAR, USHORT, USHORT}, 9, false}, \
     {29, {UINT}, 4, true}, \
+    {31, {UINT, SHORT, SHORT}, 8, false}, \
+    {32, {UINT}, 4, true}, \
     {255, {USHORT}, 2, true} \
 }

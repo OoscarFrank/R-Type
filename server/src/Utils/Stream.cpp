@@ -630,3 +630,21 @@ Stream StreamFactory::bonusDestroyed(u_int id)
     out.setDataUInt(id);
     return out;
 }
+
+Stream StreamFactory::bombPos(u_int id, u_short x, u_short y)
+{
+    Stream out;
+    out.setDataUChar(31);
+    out.setDataUInt(id);
+    out.setDataUShort(x);
+    out.setDataUShort(y);
+    return out;
+}
+
+Stream StreamFactory::bombDestroyed(u_int id)
+{
+    Stream out;
+    out.setDataUChar(32);
+    out.setDataUInt(id);
+    return out;
+}
