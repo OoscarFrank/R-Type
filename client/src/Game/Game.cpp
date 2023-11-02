@@ -299,87 +299,51 @@ void Game::update()
 {
     Network::Packet packet;
 
+    static const std::unordered_map<int, std::function<void(Network::Packet &)>> instructionsAllTime = {
+        {10, [&](Network::Packet &packet) { Game::handleRoomJoin(packet);} },
+        {11, [&](Network::Packet &packet) { Game::handleTimeoutMatchmaking(packet);} },
+        {13, [&](Network::Packet &packet) { Game::handlePlayerJoinGame(packet);} },
+        {14, [&](Network::Packet &packet) { Game::handlePlayerDisconnected(packet);} },
+        {17, [&](Network::Packet &packet) { Game::handleGameEnd(packet);} },
+        {23, [&](Network::Packet &packet) { Game::handleLatency(packet);} },
+        {27, [&](Network::Packet &packet) { Game::handleListRooms(packet);} },
+        {255, [&](Network::Packet &packet) { this->handleResend(packet); }},
+    };
+
+    static const std::unordered_map<int, std::function<void(Network::Packet &)>> instructionsWhenPlay = {
+        {3, [&](Network::Packet &packet) { Game::handlePlayerPosition(packet);} },
+        {4, [&](Network::Packet &packet) { this->handleMissilePosition(packet); }},
+        {6, [&](Network::Packet &packet) { this->handlePlayerScore(packet); }},
+        {7, [&](Network::Packet &packet) { this->handleEnnemiPosition(packet); }},
+        {15, [&](Network::Packet &packet) { this->handleMissileDeath(packet); }},
+        {16, [&](Network::Packet &packet) { this->handleEnnemiDeath(packet); }},
+        {18, [&](Network::Packet &packet) { this->handlePlayerDeath(packet); }},
+        {19, [&](Network::Packet &packet) { this->handlePlayerLife(packet); }},
+        {20, [&](Network::Packet &packet) { this->handleMonsterLife(packet); }},
+        {21, [&](Network::Packet &packet) { this->handleStrobes(packet); }},
+        {22, [&](Network::Packet &packet) { this->handleChangeLevel(packet); }},
+        {28, [&](Network::Packet &packet) { this->handleBonusPosition(packet); }},
+        {29, [&](Network::Packet &packet) { this->handleBonusDestroyed(packet); }},
+        {31, [&](Network::Packet &packet) { this->handleBombPosition(packet); }},
+        {32, [&](Network::Packet &packet) { this->handleBombDestroyed(packet); }},
+        {33, [&](Network::Packet &packet) { this->handleChatMessage(packet); }},
+    };
+
     while (this->_net.getQueueIn().tryPop(packet)) {
-        switch (packet.getInstruction()) {
-            case 10:
-                this->handleRoomJoin(packet);
-                break;
-            case 11:
-                this->handleTimeoutMatchmaking(packet);
-                break;
-            case 13:
-                this->handlePlayerJoinGame(packet);
-                break;
-            case 14:
-                this->handlePlayerDisconnected(packet);
-                break;
-            case 17:
-                this->handleGameEnd(packet);
-                break;
-            case 23:
-                this->handleLatency(packet);
-                break;
-            case 27:
-                this->handleListRooms(packet);
-            default:
-                break;
+
+        auto it = instructionsAllTime.find(packet.getInstruction());
+        if (it != instructionsAllTime.end()) {
+            it->second(packet);
+            continue;
         }
+
         if (this->_gameState == gameState::MENU)
             continue;
-        switch (packet.getInstruction()) {
-            case 3:
-                this->handlePlayerPosition(packet);
-                break;
-            case 4:
-                this->handleMissilePosition(packet);
-                break;
-            case 6:
-                this->handlePlayerScore(packet);
-                break;
-            case 7:
-                this->handleEnnemiPosition(packet);
-                break;
-            case 15:
-                this->handleMissileDeath(packet);
-                break;
-            case 16:
-                this->handleEnnemiDeath(packet);
-                break;
-            case 18:
-                this->handlePlayerDeath(packet);
-                break;
-            case 19:
-                this->handlePlayerLife(packet);
-                break;
-            case 20:
-                this->handleMonsterLife(packet);
-                break;
-            case 21:
-                this->handleStrobes(packet);
-                break;
-            case 22:
-                this->handleChangeLevel(packet);
-                break;
-            case 28:
-                this->handleBonusPosition(packet);
-                break;
-            case 29:
-                this->handleBonusDestroyed(packet);
-                break;
-            case 31:
-                this->handleBombPosition(packet);
-                break;
-            case 32:
-                this->handleBombDestroyed(packet);
-                break;
-            case 33:
-                this->handleChatMessage(packet);
-                break;
-            case 255:
-                this->handleResend(packet);
-                break;
-            default:
-                break;
+
+        it = instructionsWhenPlay.find(packet.getInstruction());
+        if (it != instructionsWhenPlay.end()) {
+            it->second(packet);
+            continue;
         }
     }
     if (std::chrono::system_clock::now() - this->_lastPing > std::chrono::seconds(1)) {
