@@ -53,6 +53,7 @@ namespace game {
                 PurplePixel,
                 WhitePixel,
                 Arial,
+                PressStart2P,
                 playerLifeOutline,
                 playerLifeContent,
                 Bonus,

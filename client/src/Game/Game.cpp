@@ -65,6 +65,7 @@ Game::Game(std::string ip, int port) :
         this->_manager.loadTexture(client::getAssetPath("entity/player/playerLifeContent.png"), Loader::toLoad::playerLifeContent);
 
         this->_manager.loadFont(client::getAssetPath("fonts/arial.ttf"), Loader::toLoad::Arial);
+        this->_manager.loadFont(client::getAssetPath("fonts/PressStart2P-Regular.ttf"), Loader::toLoad::PressStart2P);
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;
         exit(84);
@@ -136,7 +137,7 @@ Game::Game(std::string ip, int port) :
     this->_sounds.emplace(EntityManager::SOUND_TYPE::TEST, soundEntity);
 
     if (this->getTextByType(game::EntityManager::TEXT_TYPE::PING)) {
-        entity_t newEntity = this->_factory.createText("Ping: 0", this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x - 300, 10, 15);
+        entity_t newEntity = this->_factory.createText("Ping: 0", this->_manager.getFont(Loader::Loader::PressStart2P), this->_screenSize.x - 150, this->_screenSize.y - 30, 14);
         this->_textsEntity.insert({game::EntityManager::TEXT_TYPE::PING, newEntity});
     }
 
@@ -414,7 +415,7 @@ void Game::update()
 
         entity_t gameTimeText = this->getTextByType(game::EntityManager::TEXT_TYPE::GAME_TIME);
         if (gameTimeText == 0) {
-            entity_t newEntity = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2, this->topLeftOffeset.y + 10, 20);
+            entity_t newEntity = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::PressStart2P), this->_screenSize.x / 2 - (250 * this->_resMult), this->topLeftOffeset.y + 40, 20);
             this->_textsEntity.insert({game::EntityManager::TEXT_TYPE::GAME_TIME, newEntity});
         } else {
             this->_textsUpdate.insert(std::make_pair(gameTimeText, ss.str()));
@@ -580,7 +581,7 @@ void Game::handlePlayerScore(Network::Packet &packet)
     entity_t scoreText = this->getTextByType(EntityManager::TEXT_TYPE::SCORE);
 
     if (scoreText == 0) {
-        entity_t newEntity = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - (250 * this->_resMult), 10, 20);
+        entity_t newEntity = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::PressStart2P), this->_screenSize.x / 2 - (250 * this->_resMult), 10, 20);
         this->_textsEntity.insert({EntityManager::TEXT_TYPE::SCORE, newEntity});
     } else {
         this->_textsUpdate.insert(std::make_pair(scoreText, ss.str()));
@@ -696,7 +697,7 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
             this->ecs.kill_entity(timerText);
         this->_gameState = gameState::GAME;
         this->_startGameTime = std::chrono::system_clock::now();
-        entity_t newEntity = this->_factory.createText("Score: 0", this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - (250 * this->_resMult), this->topLeftOffeset.y + 10, 20);
+        entity_t newEntity = this->_factory.createText("Score: 0", this->_manager.getFont(Loader::Loader::PressStart2P), this->_screenSize.x / 2 - (250 * this->_resMult), this->topLeftOffeset.y + 10, 20);
         this->_textsEntity.insert({EntityManager::TEXT_TYPE::SCORE, newEntity});
         this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [](ECS::components::MusicComponent &music) {
             music.playMusic();
@@ -711,7 +712,7 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
         std::ostringstream ss;
         ss << "Match making: " << std::fixed << std::setprecision(1) << timer;
         if (timerText == 0) {
-            entity_t newEntity = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - 115, this->topLeftOffeset.y + 10, 30);
+            entity_t newEntity = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::PressStart2P), this->_screenSize.x / 2 - 135, this->topLeftOffeset.y + 25, 16);
             this->_textsEntity.insert({game::EntityManager::TEXT_TYPE::TIMER, newEntity});
         } else {
             this->_textsUpdate.insert(std::make_pair(timerText, ss.str()));
@@ -946,7 +947,7 @@ void Game::handleLatency(Network::Packet &packet)
     ss <<  "Ping: " << std::fixed << std::setprecision(1) << timeMS;
     entity_t pingText = this->getTextByType(game::EntityManager::TEXT_TYPE::PING);
     if (pingText == 0) {
-        entity_t newEntity = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x - 100, 10, 15);
+        entity_t newEntity = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::PressStart2P), this->_screenSize.x - 150, this->_screenSize.y - 30, 14);
         this->_textsEntity.insert({game::EntityManager::TEXT_TYPE::PING, newEntity});
     } else {
         this->_textsUpdate.insert(std::make_pair(pingText, ss.str()));
@@ -1021,13 +1022,13 @@ void Game::handleListRooms(Network::Packet &packet)
             float sizeButtonY = (buttonSize.y) * _resMult;
 
             float xPos = 90.0f + (sizeButtonX / 2);
-            float yPos = (355.0f + this->topLeftOffeset.y) + ((sizeButtonY + 10) * nodePos);
+            float yPos = (363.0f + this->topLeftOffeset.y) + ((sizeButtonY + 10) * nodePos);
 
             std::string text1Str = "Room number " + std::to_string(foundInt);
-            text1 = this->_factory.createText(text1Str, this->_manager.getFont(Loader::Loader::Arial), xPos, yPos, 20);
+            text1 = this->_factory.createText(text1Str, this->_manager.getFont(Loader::Loader::PressStart2P), xPos, yPos, 16);
 
             std::string text2Str = std::to_string(nbrPlayers) + "/" + std::to_string(maxPlayers);
-            text2 = this->_factory.createText(text2Str, this->_manager.getFont(Loader::Loader::Arial), xPos + 320, yPos, 20);
+            text2 = this->_factory.createText(text2Str, this->_manager.getFont(Loader::Loader::PressStart2P), xPos + 320, yPos, 16);
 
             this->_roomsData[nodePos] = foundTuple;
         }
