@@ -26,8 +26,6 @@ namespace ECS {
                                 float newY = position->getY() + velocity->getDY();
                                 position->setX(newX + offset.x);
                                 position->setY(newY + offset.y);
-                                velocity->setDX(0);
-                                velocity->setDY(0);
                             }
                         }
                     } catch (std::exception &e) {
