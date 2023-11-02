@@ -77,7 +77,8 @@ public:
                 PUSH_UP,
                 VOIS_SUR_TON_CHEMIN,
                 HEUTE_NACHT,
-                CLEON
+                CLEON,
+                AMNESIA
             };
 
             Level(const std::string &path);
