@@ -17,7 +17,8 @@ namespace game {
             VOIS_SUR_TON_CHEMIN,
             HEUTE_NACHT,
             CLEON,
-            AMNESIA
+            AMNESIA,
+            SEVENNATION
         };
 
         enum SOUND_TYPE {
