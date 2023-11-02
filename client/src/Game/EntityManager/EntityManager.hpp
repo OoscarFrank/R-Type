@@ -49,7 +49,7 @@ namespace game {
             std::vector<ECS::systems::ControllableSystem::EntityEvent> _entityEvents;
             std::vector<entity_t> _parallax;
 
-            std::unordered_map<int, std::pair<entity_t, entity_t>> _roomsData; // roomId, text1, text2
+            std::vector<std::tuple<int, entity_t, entity_t>> _roomsData; // roomId, text1, text2
             std::map<SCREEN_TYPE, entity_t> _screens;
             entity_t _looser;
             entity_t _playerEntity;

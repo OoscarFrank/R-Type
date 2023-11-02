@@ -73,6 +73,12 @@ Game::Game(std::string ip, int port) :
         this->_window.create(sf::VideoMode(mode.width, mode.height), "R-TYPE");
     }
 
+    this->_roomsData.resize(6);
+
+    for (auto &node : this->_roomsData) {
+        node = std::make_tuple(-1, 0, 0);
+    }
+
     this->_realScreenSize = {static_cast<float>(this->_window.getSize().x), static_cast<float>(this->_window.getSize().y)};
     this->_realScreenSizeU = {this->_window.getSize().x, this->_window.getSize().y};
 
@@ -196,8 +202,31 @@ void Game::initButtons()
 
     for (size_t buttonNbr = 0; buttonNbr < 6; ++buttonNbr) {
         newButton = this->_factory.createButton(10.0f + (tmpSizebutton / 2), (340.0f + this->topLeftOffeset.y) + ((tmpSizebuttonY + 10) * buttonNbr), this->_manager.getTexture(Loader::Loader::MatchListButton), sf::Vector2f(_resMult, _resMult),
-        [&](void) {
-            std::cout << "feur: " << std::endl;
+        [&, buttonNbr](void) {
+            size_t nodePos = buttonNbr;
+            std::tuple<int, entity_t, entity_t> foundTuple = this->_roomsData[nodePos];
+            u_int roomId = std::get<0>(foundTuple);
+            if (roomId == -1)
+                return;
+
+            this->_menuManager.disableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
+            this->_gameState = gameState::MATCHMAKING;
+
+            for (auto &node : this->_roomsData) {
+                std::tuple<int, entity_t, entity_t> foundTuple = node;
+                if (std::get<0>(foundTuple) == -1)
+                    continue;
+                if (this->ecs.isEntityExist(std::get<1>(foundTuple)))
+                    this->ecs.kill_entity(std::get<1>(foundTuple));
+                if (this->ecs.isEntityExist(std::get<2>(foundTuple)))
+                    this->ecs.kill_entity(std::get<2>(foundTuple));
+                std::get<0>(foundTuple) = -1;
+                node = foundTuple;
+            }
+
+            Stream out;
+            out << 25_uc << roomId;
+            this->_net.send(out);
         });
         this->_menuManager.createButton((MenuManager::BUTTON_TYPE)(MenuManager::BUTTON_TYPE::ROOM_LIST_0 + buttonNbr), newButton);
     }
@@ -900,6 +929,19 @@ void Game::handleLatency(Network::Packet &packet)
     }
 }
 
+int Game::searchRoomId(int roomId)
+{
+    int roomPosition = -1;
+
+    for (int i = 0; i < _roomsData.size(); i++) {
+        if (std::get<0>(_roomsData[i]) == roomId) {
+            roomPosition = i;
+            break;
+        }
+    }
+    return roomPosition;
+}
+
 void Game::handleListRooms(Network::Packet &packet)
 {
     u_int roomId;
@@ -908,36 +950,64 @@ void Game::handleListRooms(Network::Packet &packet)
     bool joinable;
     packet >> roomId >> nbrPlayers >> maxPlayers >> joinable;
 
-    // chercher si la room existe deja dans _roomsData
-    // si non:
-    // -> create button
-    // -> create text for room id
-    // -> create text for nbr players / max players
-    // -> stock roomId on key, button , text and text in a tuple
-    // -> register button in menu manager
-    // -> add button to menu button list in menu manager
-    // si oui:
-    // -> update text for room id
-    // -> update text for nbr players / max players
+    int searchRoom = this->searchRoomId(roomId);
 
-    // if (this->_roomsData.find(roomId) != this->_roomsData.end()) {
-    //     if (_roomsData.size() >= 6) {
-    //         return;
-    //     }
-    //     this->ecs.modify_component<ECS::components::TextComponent>(this->_roomsData[roomId].first, [roomId](ECS::components::TextComponent &comp) {
-    //         comp.setString(std::to_string(roomId));
-    //     });
-    //     this->ecs.modify_component<ECS::components::TextComponent>(this->_roomsData[roomId].second, [nbrPlayers, maxPlayers](ECS::components::TextComponent &comp) {
-    //         comp.setString(std::to_string(nbrPlayers) + "/" + std::to_string(maxPlayers));
-    //     });
-    //     return;
+    if (searchRoom != -1) { // room not exist
+        if (joinable == false) { // room is off
+            std::tuple<int, entity_t, entity_t> foundTuple = this->_roomsData[searchRoom];
 
-    //     entity_t text1 = this->_factory.createText(std::to_string(roomId), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - (200 * this->_resMult), this->topLeftOffeset.y + 100 + (this->_roomsData.size() * 100), 20);
-    //     entity_t text2 = this->_factory.createText(std::to_string(nbrPlayers) + "/" + std::to_string(maxPlayers), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - (200 * this->_resMult), this->topLeftOffeset.y + 100 + (this->_roomsData.size() * 100) + 30, 20);
-    //     _roomsData[roomId] = std::make_pair(text1, text2);
-    // }
+            if (this->ecs.isEntityExist(std::get<1>(foundTuple)))
+                    this->ecs.kill_entity(std::get<1>(foundTuple));
+            if (this->ecs.isEntityExist(std::get<2>(foundTuple)))
+                this->ecs.kill_entity(std::get<2>(foundTuple));
 
+            std::get<0>(foundTuple) = -1;
+            this->_roomsData[searchRoom] = foundTuple;
+        } else { // update room
+            std::tuple<int, entity_t, entity_t> foundTuple = this->_roomsData[searchRoom];
+            entity_t text2 = std::get<2>(foundTuple);
 
+            this->ecs.modify_component<ECS::components::TextComponent>(text2, [nbrPlayers, maxPlayers](ECS::components::TextComponent &comp) {
+                comp.setString(std::to_string(nbrPlayers) + "/" + std::to_string(maxPlayers));
+            });
+        }
+    } else if (joinable == true) { // setup room data
+
+        int firstEmptyNode = -1;
+        auto it = _roomsData.begin();
+
+        for (; it != _roomsData.end(); ++it) {
+            std::cout << std::get<0>(*it) << std::endl;
+            if (std::get<0>(*it) == -1) {
+                break;
+            }
+        }
+
+        if (it != _roomsData.end()) {
+            std::tuple<int, entity_t, entity_t> foundTuple = *it;
+            int &foundInt = std::get<0>(foundTuple);
+            entity_t &text1 = std::get<1>(foundTuple);
+            entity_t &text2 = std::get<2>(foundTuple);
+
+            foundInt = static_cast<int>(roomId);
+
+            int nodePos = std::distance(_roomsData.begin(), it);
+            sf::Vector2u buttonSize = this->_manager.getTexture(Loader::Loader::MatchListButton).get()->getSize();
+            float sizeButtonX = (buttonSize.x / 2) * _resMult;
+            float sizeButtonY = (buttonSize.y) * _resMult;
+
+            float xPos = 90.0f + (sizeButtonX / 2);
+            float yPos = (355.0f + this->topLeftOffeset.y) + ((sizeButtonY + 10) * nodePos);
+
+            std::string text1Str = "Room number " + std::to_string(foundInt);
+            text1 = this->_factory.createText(text1Str, this->_manager.getFont(Loader::Loader::Arial), xPos, yPos, 20);
+
+            std::string text2Str = std::to_string(nbrPlayers) + "/" + std::to_string(maxPlayers);
+            text2 = this->_factory.createText(text2Str, this->_manager.getFont(Loader::Loader::Arial), xPos + 320, yPos, 20);
+
+            this->_roomsData[nodePos] = foundTuple;
+        }
+    }
 }
 
 

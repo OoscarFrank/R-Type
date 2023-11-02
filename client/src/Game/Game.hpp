@@ -105,6 +105,8 @@ namespace game {
             void initButtons();
             void initMenus();
 
+            int searchRoomId(int roomId);
+
             void handleTimeoutMatchmaking(Network::Packet &packet);
             void handlePlayerScore(Network::Packet &packet);
             void handleGameEnd(Network::Packet &packet);
