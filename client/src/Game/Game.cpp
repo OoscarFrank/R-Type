@@ -390,8 +390,10 @@ void Game::update()
     if (std::chrono::system_clock::now() - this->_lastPing > std::chrono::seconds(1)) {
         this->_lastPing = std::chrono::system_clock::now();
         Stream out;
-        out << 26_uc;
-        this->_net.send(out);
+        if (this->_gameState == gameState::MENU) {
+            out << 26_uc;
+            this->_net.send(out);
+        }
         out.clear();
         out << 12_uc << static_cast<long>(std::chrono::duration_cast<std::chrono::milliseconds>(_lastPing.time_since_epoch()).count());
         this->_net.send(out);
