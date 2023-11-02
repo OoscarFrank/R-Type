@@ -106,6 +106,8 @@ namespace game {
             void initMenus();
             void sendChat(const std::string &msg);
 
+            int searchRoomId(int roomId);
+
             void handleTimeoutMatchmaking(Network::Packet &packet);
             void handlePlayerScore(Network::Packet &packet);
             void handleGameEnd(Network::Packet &packet);
