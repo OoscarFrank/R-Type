@@ -35,7 +35,8 @@ struct Commands {
  * 25 gui - join d'une room (room id)
  * 26 gui - ask to list rooms
  * 30 gui -fire Bomb
- * 
+ * 34 gui - send a chat message the the room
+ *
  */
 #define IN_COMMANDS { \
     {2, {UCHAR, UCHAR}, 2, false}, \
@@ -47,6 +48,7 @@ struct Commands {
     {25, {UINT}, 4, true}, \
     {26, {}, 0, true}, \
     {30, {}, 0, true},  \
+    {34, {1000}, 1000, true}, \
     {255, {USHORT}, 2, true} \
 }
 
@@ -75,6 +77,8 @@ struct Commands {
  * 29 serv - bonus destroyed (id)
  * 31 serv - bomb position (id, x, y)
  * 32 serv - bomb destroyed (id)
+ * 33 serv - broadcast chat message (player id, message)
+ *
  */
 #define OUT_COMMANDS { \
     {1, {UINT}, 4, false}, \
@@ -100,6 +104,7 @@ struct Commands {
     {29, {UINT}, 4, true}, \
     {31, {UINT, SHORT, SHORT}, 8, false}, \
     {32, {UINT}, 4, true}, \
+    {33, {UINT, 1000}, 1004, true}, \
     {255, {USHORT}, 2, true} \
 }
 

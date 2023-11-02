@@ -85,6 +85,9 @@ void Room::addPlayer(std::shared_ptr<Client> client)
 
     _players.push_back(std::make_unique<Player>(*this, client, newId, 0, SCREEN_HEIGHT / _maxPlayer * _players.size()));
     _lastJoin = NOW;
+
+    for (auto i = _players.begin(); i != _players.end(); i++)
+        (**i).sendPos();
 }
 
 void Room::removePlayer(std::shared_ptr<Client> client)
@@ -141,14 +144,11 @@ Player &Room::getPlayer(std::shared_ptr<Client> client)
 {
     std::unique_lock<std::mutex> lock(_playersMutex);
 
-    std::cout << "in player" << std::endl;
     for (auto i = _players.begin(); i != _players.end(); i++) {
-        std::cout << (*i)->life() << std::endl;
         if ((**i).client() == client) {
             return **i;
         }
     }
-    // std::cout << "out player" << std::endl;
     throw std::runtime_error("Player not found");
     return **_players.begin();
 }
@@ -412,3 +412,51 @@ void Room::handleForcePod()
     }
 }
 
+void Room::sendChat(std::shared_ptr<Client> client, const std::string &message)
+{
+    std::unique_lock<std::mutex> lock(_playersMutex);
+    for (auto i = _players.begin(); i != _players.end(); i++) {
+        if ((**i).client() == client) {
+            _chatMessages.push_back(std::make_unique<ChatMessage>(*this, (**i).id(), message));
+            return;
+        }
+    }
+}
+
+
+
+Room::ChatMessage::ChatMessage(Room &room, u_int playerId, const std::string &message):
+    _timeStamp(std::chrono::system_clock::now()),
+    _playerId(playerId),
+    _message(message)
+{
+    std::cout << "New chat from " << playerId << ": " << message << std::endl;
+
+    Stream out;
+    out << 31_uc << playerId;
+    for (auto i = message.begin(); i != message.end(); i++) {
+        out << *i;
+    }
+    for (std::size_t i = message.size(); i < 1000; i++) {
+        out << 0_c;
+    }
+    room.sendToAll(out);
+}
+
+Room::ChatMessage::~ChatMessage()
+{}
+
+const std::chrono::system_clock::time_point &Room::ChatMessage::getTimeStamp() const
+{
+    return _timeStamp;
+}
+
+u_int Room::ChatMessage::getPlayerId() const
+{
+    return _playerId;
+}
+
+const std::string &Room::ChatMessage::getMessage() const
+{
+    return _message;
+}
