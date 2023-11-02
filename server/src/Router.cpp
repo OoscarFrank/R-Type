@@ -14,6 +14,7 @@ Router::Router(RoomManager &rm, const std::vector<std::shared_ptr<Client>> &allC
     _functions[24] = &Router::_leaveRoom;
     _functions[25] = &Router::_joinRoom;
     _functions[26] = &Router::_listRooms;
+    _functions[30] = &Router::_sendChat;
     _functions[255] = &Router::_cmdNotRecieved;
 }
 
@@ -89,6 +90,22 @@ void Router::_listRooms(Reader::Packet &packet, Levels &levels)
         out << 27_uc << (*i)->getId() << static_cast<u_char>((*i)->getNbPlayer()) << static_cast<u_char>((*i)->getMaxPlayer()) << 1_uc;
         packet.getClient()->send(out);
     }
+}
+
+void Router::_sendChat(Reader::Packet &packet, Levels &levels)
+{
+    std::string msg;
+    char tmp;
+
+    for (int i = 0; i < (((1000))); ++i) {
+        packet >> tmp;
+        if (tmp == 0)
+            break;
+        msg += tmp;
+    }
+
+    Room &room = _rm.getRoom(packet.getClient());
+    room.sendChat(packet.getClient(), msg);
 }
 
 void Router::_cmdNotRecieved(Reader::Packet &packet, Levels &levels)

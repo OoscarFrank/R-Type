@@ -347,6 +347,9 @@ void Game::update()
             case 29:
                 this->handleBonusDestroyed(packet);
                 break;
+            case 31:
+                this->handleChatMessage(packet);
+                break;
             case 255:
                 this->handleResend(packet);
                 break;
@@ -357,10 +360,10 @@ void Game::update()
     if (std::chrono::system_clock::now() - this->_lastPing > std::chrono::seconds(1)) {
         this->_lastPing = std::chrono::system_clock::now();
         Stream out;
-        if (this->_gameState == gameState::MENU)
-            out << 26_uc;
-        else
-            out << 12_uc << static_cast<long>(std::chrono::duration_cast<std::chrono::milliseconds>(_lastPing.time_since_epoch()).count());
+        out << 26_uc;
+        this->_net.send(out);
+        out.clear();
+        out << 12_uc << static_cast<long>(std::chrono::duration_cast<std::chrono::milliseconds>(_lastPing.time_since_epoch()).count());
         this->_net.send(out);
     }
 
@@ -974,4 +977,19 @@ void Game::handleBonusDestroyed(Network::Packet &packet)
             return pair.first == id;
         }), this->_bonuses.end());
     }
+}
+
+void Game::handleChatMessage(Network::Packet &packet)
+{
+    u_int playerId;
+    std::string msg;
+    char tmp;
+    packet >> playerId;
+    for (int i = 0; i < (((1000))); ++i) {
+        packet >> tmp;
+        if (tmp == 0)
+            break;
+        msg += tmp;
+    }
+    std::cout << "Chat from " << playerId << ": " << msg << std::endl;
 }

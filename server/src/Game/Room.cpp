@@ -385,3 +385,52 @@ void Room::checkCollisionBonus()
         }
     }
 }
+
+void Room::sendChat(std::shared_ptr<Client> client, const std::string &message)
+{
+    std::unique_lock<std::mutex> lock(_playersMutex);
+    for (auto i = _players.begin(); i != _players.end(); i++) {
+        if ((**i).client() == client) {
+            _chatMessages.push_back(std::make_unique<ChatMessage>(*this, (**i).id(), message));
+            return;
+        }
+    }
+}
+
+
+
+Room::ChatMessage::ChatMessage(Room &room, u_int playerId, const std::string &message):
+    _timeStamp(std::chrono::system_clock::now()),
+    _playerId(playerId),
+    _message(message)
+{
+    std::cout << "New chat from " << playerId << ": " << message << std::endl;
+
+    Stream out;
+    out << 31_uc << playerId;
+    for (auto i = message.begin(); i != message.end(); i++) {
+        out << *i;
+    }
+    for (std::size_t i = message.size(); i < (((1000))); i++) {
+        out << 0_c;
+    }
+    room.sendToAll(out);
+}
+
+Room::ChatMessage::~ChatMessage()
+{}
+
+const std::chrono::system_clock::time_point &Room::ChatMessage::getTimeStamp() const
+{
+    return _timeStamp;
+}
+
+u_int Room::ChatMessage::getPlayerId() const
+{
+    return _playerId;
+}
+
+const std::string &Room::ChatMessage::getMessage() const
+{
+    return _message;
+}

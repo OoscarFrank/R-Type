@@ -21,6 +21,25 @@
 class Room
 {
     public:
+        class ChatMessage {
+            public:
+                ChatMessage(Room &room, u_int playerId, const std::string &message);
+                ~ChatMessage();
+                ChatMessage(const ChatMessage &chatMessage) = delete;
+                ChatMessage(ChatMessage &&chatMessage) = delete;
+                ChatMessage &operator=(const ChatMessage &chatMessage) = delete;
+                ChatMessage &operator=(ChatMessage &&chatMessage) = delete;
+
+                const std::chrono::system_clock::time_point &getTimeStamp() const;
+                u_int getPlayerId() const;
+                const std::string &getMessage() const;
+
+            private:
+                std::chrono::system_clock::time_point _timeStamp;
+                u_int _playerId;
+                std::string _message;
+        };
+
         enum State {
             WAIT = 0,
             RUN = 1,
@@ -56,6 +75,7 @@ class Room
         size_t _lastMissileBonusSpawn;
         size_t _bonusIds = 0;
 
+        std::vector<std::unique_ptr<ChatMessage>> _chatMessages;
 
         void refresh();
         void update();
@@ -155,6 +175,7 @@ class Room
         bool isMonster() const;
         void handleBonus();
         void checkCollisionBonus();
+        void sendChat(std::shared_ptr<Client> client, const std::string &message);
 };
 
 #endif

@@ -126,5 +126,6 @@ namespace game {
             void handleListRooms(Network::Packet &packet);
             void handleBonusPosition(Network::Packet &packet);
             void handleBonusDestroyed(Network::Packet &packet);
+            void handleChatMessage(Network::Packet &packet);
     };
 }
