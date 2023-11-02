@@ -38,7 +38,7 @@ entity_t Factory::createButton(float x, float y, const std::shared_ptr<sf::Textu
     return newEntity;
 }
 
-entity_t Factory::createLooserScreen(float x, float y, const std::shared_ptr<sf::Texture> &texture)
+entity_t Factory::createScreen(float x, float y, const std::shared_ptr<sf::Texture> &texture)
 {
     entity_t newEntity = _registry.spawn_entity(80);
     _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});

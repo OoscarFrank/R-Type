@@ -19,7 +19,13 @@ namespace game {
                 CREATE_GAME,
                 JOIN_GAME,
                 EXIT_SYSTEM,
-                LEAVE_GAME
+                LEAVE_GAME,
+                ROOM_LIST_0,
+                ROOM_LIST_1,
+                ROOM_LIST_2,
+                ROOM_LIST_3,
+                ROOM_LIST_4,
+                ROOM_LIST_5,
             };
 
             enum MENU_TYPE {

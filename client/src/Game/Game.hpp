@@ -73,7 +73,6 @@ namespace game {
             entity_t _blackBandBottomRight;
 
 
-            std::map<int, std::pair<int, int>> _roomsList;
             std::unordered_map<entity_t, std::string> _texts;
             entity_t _timerText = 0;
             entity_t _scoreText = 0;

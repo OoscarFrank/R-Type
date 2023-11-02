@@ -27,7 +27,11 @@ Game::Game(std::string ip, int port) :
         this->_manager.loadTexture(client::getAssetPath("entity/buttons/CreateRoomButton.png"), Loader::toLoad::CreateRoomButton);
         this->_manager.loadTexture(client::getAssetPath("entity/buttons/JoinRoomButton.png"), Loader::toLoad::JoinRoomButton);
         this->_manager.loadTexture(client::getAssetPath("entity/buttons/QuitButton.png"), Loader::toLoad::QuitButton);
+        this->_manager.loadTexture(client::getAssetPath("entity/buttons/matchlist.png"), Loader::toLoad::MatchListButton);
+
         this->_manager.loadTexture(client::getAssetPath("screens/LooserScreen.png"), Loader::toLoad::LooserScreen);
+        this->_manager.loadTexture(client::getAssetPath("screens/menuScreen.png"), Loader::toLoad::MenuScreen);
+
         this->_manager.loadTexture(client::getAssetPath("entity/missile/missile.png"), Loader::toLoad::Missile);
         this->_manager.loadTexture(client::getAssetPath("entity/missile/orange_missile.png"), Loader::toLoad::OrangeMissile);
         this->_manager.loadTexture(client::getAssetPath("entity/missile/purple_missile.png"), Loader::toLoad::PurpleMissile);
@@ -118,7 +122,9 @@ Game::Game(std::string ip, int port) :
     entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/piou.ogg"), 1000);
     this->_sounds.emplace(EntityManager::SOUND_TYPE::TEST, soundEntity);
 
-    _pingText = this->_factory.createText("Ping: 0", this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x - 100, 10, 15);
+    _pingText = this->_factory.createText("Ping: 0", this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x - 300, 10, 15);
+
+    this->_screens.emplace(EntityManager::SCREEN_TYPE::MAIN_MENU, this->_factory.createScreen(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::MenuScreen)));
 }
 
 Game::~Game()
@@ -153,7 +159,7 @@ void Game::initButtons()
 {
     float tmpSizebutton = (this->_manager.getTexture(Loader::Loader::CreateRoomButton).get()->getSize().x / 2) * _resMult;
 
-    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::CREATE_GAME, this->_factory.createButton((this->_screenSize.x / 2) - (tmpSizebutton / 2), 600.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::CreateRoomButton), sf::Vector2f(_resMult, _resMult),
+    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::CREATE_GAME, this->_factory.createButton(300.0f + (tmpSizebutton / 2), 850.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::CreateRoomButton), sf::Vector2f(_resMult + 0.3, _resMult + 0.3),
     [&](void) {
         this->_menuManager.disableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
         this->_gameState = gameState::MATCHMAKING;
@@ -162,7 +168,7 @@ void Game::initButtons()
         this->_net.send(out);
     }));
 
-    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::JOIN_GAME, this->_factory.createButton((this->_screenSize.x / 2) - (tmpSizebutton / 2), 700.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::JoinRoomButton), sf::Vector2f(_resMult, _resMult),
+    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::JOIN_GAME, this->_factory.createButton(450.0f + (tmpSizebutton), 850.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::JoinRoomButton), sf::Vector2f(_resMult + 0.3, _resMult + 0.3),
     [&](void) {
         this->_menuManager.disableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
         this->_gameState = gameState::MATCHMAKING;
@@ -172,11 +178,27 @@ void Game::initButtons()
     }
     ));
 
-    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::EXIT_SYSTEM, this->_factory.createButton((this->_screenSize.x / 2) - (tmpSizebutton / 2), 800.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton), sf::Vector2f(_resMult, _resMult),
+    tmpSizebutton = (this->_manager.getTexture(Loader::Loader::QuitButton).get()->getSize().x / 2) * _resMult;
+
+    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::EXIT_SYSTEM, this->_factory.createButton(this->_screenSize.x - (tmpSizebutton + 20), 10.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton), sf::Vector2f(_resMult + 0.1, _resMult + 0.1),
     [&](void) {
         this->_window.close();
     }
     ));
+
+
+    tmpSizebutton = (this->_manager.getTexture(Loader::Loader::MatchListButton).get()->getSize().x / 2) * _resMult;
+    float tmpSizebuttonY = (this->_manager.getTexture(Loader::Loader::MatchListButton).get()->getSize().y) * _resMult;
+
+    entity_t newButton;
+
+    for (size_t buttonNbr = 0; buttonNbr < 6; ++buttonNbr) {
+        newButton = this->_factory.createButton(10.0f + (tmpSizebutton / 2), (340.0f + this->topLeftOffeset.y) + ((tmpSizebuttonY + 10) * buttonNbr), this->_manager.getTexture(Loader::Loader::MatchListButton), sf::Vector2f(_resMult, _resMult),
+        [&](void) {
+            std::cout << "feur: " << std::endl;
+        });
+        this->_menuManager.createButton((MenuManager::BUTTON_TYPE)(MenuManager::BUTTON_TYPE::ROOM_LIST_0 + buttonNbr), newButton);
+    }
 
     this->_menuManager.createButton(MenuManager::BUTTON_TYPE::LEAVE_GAME, this->_factory.createButton((this->_screenSize.x / 2) - (tmpSizebutton / 2), 800.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton), sf::Vector2f(_resMult, _resMult),
     [&](void) {
@@ -235,7 +257,17 @@ void Game::initMenus()
 {
     entity_t entity_mainMenu = this->ecs.spawn_entity();
     this->ecs.emplace_component<ECS::components::ControllableComponent>(entity_mainMenu, ECS::components::ControllableComponent{sf::Keyboard::Key::Up, sf::Keyboard::Key::Down, sf::Keyboard::Key::Left, sf::Keyboard::Key::Right, sf::Keyboard::Key::Enter});
-    this->_menuManager.createMenu(MenuManager::MENU_TYPE::MAIN_MENU, entity_mainMenu, true, std::vector<MenuManager::BUTTON_TYPE>({MenuManager::BUTTON_TYPE::CREATE_GAME, MenuManager::BUTTON_TYPE::JOIN_GAME, MenuManager::BUTTON_TYPE::EXIT_SYSTEM}));
+    this->_menuManager.createMenu(MenuManager::MENU_TYPE::MAIN_MENU, entity_mainMenu, true, std::vector<MenuManager::BUTTON_TYPE>({
+        MenuManager::BUTTON_TYPE::ROOM_LIST_0,
+        MenuManager::BUTTON_TYPE::ROOM_LIST_1,
+        MenuManager::BUTTON_TYPE::ROOM_LIST_2,
+        MenuManager::BUTTON_TYPE::ROOM_LIST_3,
+        MenuManager::BUTTON_TYPE::ROOM_LIST_4,
+        MenuManager::BUTTON_TYPE::ROOM_LIST_5,
+        MenuManager::BUTTON_TYPE::CREATE_GAME,
+        MenuManager::BUTTON_TYPE::JOIN_GAME,
+        MenuManager::BUTTON_TYPE::EXIT_SYSTEM
+    }));
 
     entity_t entity_looseMenu = this->ecs.spawn_entity();
     this->ecs.emplace_component<ECS::components::ControllableComponent>(entity_looseMenu, ECS::components::ControllableComponent{ sf::Keyboard::Key::Enter, sf::Keyboard::Key::Right});
@@ -580,6 +612,11 @@ void Game::handleRoomJoin(Network::Packet &packet)
 
     entity_t playerLifeBar = this->_factory.createLoadingBar(this->topLeftOffeset.x + 10.0f, this->topLeftOffeset.y + this->_screenSize.y - (100.0f * this->_resMult), this->_manager.getTexture(Loader::Loader::playerLifeOutline), this->_manager.getTexture(Loader::Loader::playerLifeContent), this->_resMult);
     this->_loadingBar.insert(std::make_pair(EntityManager::LOADINGBAR_TYPE::PLAYER_LIFE, playerLifeBar));
+
+    auto it = this->_screens.find(SCREEN_TYPE::MAIN_MENU);
+    if (it != this->_screens.end()) {
+        this->ecs.kill_entity(it->second);
+    }
 }
 
 void Game::handleTimeoutMatchmaking(Network::Packet &packet)
@@ -719,7 +756,7 @@ void Game::handlePlayerDeath(Network::Packet &packet)
     packet >> id;
     entity_t res = getPlayerEntityFromId(id);
     if (res == this->_playerEntity) {
-        this->_looser = this->_factory.createLooserScreen(this->topLeftOffeset.x, this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::LooserScreen));
+        this->_looser = this->_factory.createScreen(this->topLeftOffeset.x, this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::LooserScreen));
         this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_looser, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
         this->_menuManager.enableMenu(MenuManager::MENU_TYPE::LOOSER_MENU);
         this->_gameState = gameState::ENDGAME;
@@ -852,12 +889,34 @@ void Game::handleListRooms(Network::Packet &packet)
     u_char maxPlayers;
     packet >> maxPlayers;
 
-    // std::cout << "RoomId: " << roomId << " nbrPlayers: " << static_cast<int>(nbrPlayers) << " maxPlayers: " << static_cast<int>(maxPlayers) << std::endl;
-    auto it = _roomsList.find(roomId);
-    if (it != _roomsList.end()) {
-        it->second.first = static_cast<int>(nbrPlayers);
-        it->second.second = static_cast<int>(maxPlayers);
-    } else {
-        _roomsList[roomId] = std::make_pair(static_cast<int>(nbrPlayers), static_cast<int>(maxPlayers));
-    }
+    // chercher si la room existe deja dans _roomsData
+    // si non:
+    // -> create button
+    // -> create text for room id
+    // -> create text for nbr players / max players
+    // -> stock roomId on key, button , text and text in a tuple
+    // -> register button in menu manager
+    // -> add button to menu button list in menu manager
+    // si oui:
+    // -> update text for room id
+    // -> update text for nbr players / max players
+
+    // if (this->_roomsData.find(roomId) != this->_roomsData.end()) {
+    //     if (_roomsData.size() >= 6) {
+    //         return;
+    //     }
+    //     this->ecs.modify_component<ECS::components::TextComponent>(this->_roomsData[roomId].first, [roomId](ECS::components::TextComponent &comp) {
+    //         comp.setString(std::to_string(roomId));
+    //     });
+    //     this->ecs.modify_component<ECS::components::TextComponent>(this->_roomsData[roomId].second, [nbrPlayers, maxPlayers](ECS::components::TextComponent &comp) {
+    //         comp.setString(std::to_string(nbrPlayers) + "/" + std::to_string(maxPlayers));
+    //     });
+    //     return;
+
+    //     entity_t text1 = this->_factory.createText(std::to_string(roomId), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - (200 * this->_resMult), this->topLeftOffeset.y + 100 + (this->_roomsData.size() * 100), 20);
+    //     entity_t text2 = this->_factory.createText(std::to_string(nbrPlayers) + "/" + std::to_string(maxPlayers), this->_manager.getFont(Loader::Loader::Arial), this->_screenSize.x / 2 - (200 * this->_resMult), this->topLeftOffeset.y + 100 + (this->_roomsData.size() * 100) + 30, 20);
+    //     _roomsData[roomId] = std::make_pair(text1, text2);
+    // }
+
+
 }
