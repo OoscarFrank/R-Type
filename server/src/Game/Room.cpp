@@ -85,6 +85,9 @@ void Room::addPlayer(std::shared_ptr<Client> client)
 
     _players.push_back(std::make_unique<Player>(*this, client, newId, 0, SCREEN_HEIGHT / _maxPlayer * _players.size()));
     _lastJoin = NOW;
+
+    for (auto i = _players.begin(); i != _players.end(); i++)
+        (**i).sendPos();
 }
 
 void Room::removePlayer(std::shared_ptr<Client> client)
