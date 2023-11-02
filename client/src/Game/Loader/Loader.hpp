@@ -55,7 +55,9 @@ namespace game {
                 Arial,
                 playerLifeOutline,
                 playerLifeContent,
-                Bonus
+                Bonus,
+                Bomb,
+                Laser
             };
         /**
          * @brief Load a texture from a path

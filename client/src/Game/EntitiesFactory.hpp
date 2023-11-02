@@ -69,6 +69,7 @@ namespace game {
             entity_t createSound(const std::string &soundPath, float volume = 100.0f);
             entity_t createBonus(const std::shared_ptr<sf::Texture> &texture, float x, float y, float scale);
             entity_t createMissileAnnimated(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale);
+            entity_t createBomb(const std::shared_ptr<sf::Texture> &texture, float x, float y, float scale);
         private:
             ECS::Registry &_registry;
     };

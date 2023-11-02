@@ -50,7 +50,7 @@ class Room
     private:
         State _state;
         std::thread _thread;
-        std::mutex _playersMutex;
+        
         std::vector<std::unique_ptr<Player>> _players;
         std::vector<std::unique_ptr<Monster>> _monsters;
         const std::vector<std::shared_ptr<Client>> &_allClients;
@@ -71,10 +71,13 @@ class Room
         size_t _lastPlayerUpdate;
         size_t _lastGameOver;
 
-        std::unique_ptr<MissileBonus> _missileBonus;
-        size_t _lastMissileBonusSpawn;
+        std::unique_ptr<BonusBox> _bonusBox;
+        size_t _lastBonusBoxSpawn;
         size_t _bonusIds = 0;
 
+        size_t _bombIds = 0;
+        size_t _rayIds = 0;
+        size_t _laserIds = 0;
         std::vector<std::unique_ptr<ChatMessage>> _chatMessages;
 
         void refresh();
@@ -168,6 +171,7 @@ class Room
          *
          * @return u_int&
          */
+        
         u_int &getMissilesIds();
         void addMonster(IEntity::Type type, int x, int y);
         std::pair<short, short> getNearestPlayerPos(const IEntity &entity);
@@ -175,7 +179,12 @@ class Room
         bool isMonster() const;
         void handleBonus();
         void checkCollisionBonus();
+        size_t &getBombIds();
+        void handleForcePod();
+
+        std::mutex _playersMutex;
         void sendChat(std::shared_ptr<Client> client, const std::string &message);
 };
+
 
 #endif

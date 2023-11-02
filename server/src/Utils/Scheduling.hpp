@@ -28,6 +28,9 @@
 #define BOSS3_MONSTER_HEIGHT       282
 #define BOSS3_MONSTER_WIDTH        317
 
+#define BOMB_WIDTH         64
+#define BOMB_HEIGHT        60
+
 #define MISSILE_HEIGHT      1
 #define MISSILE_WIDTH       1
 
@@ -63,6 +66,7 @@
 
 #define PLAYER_MOVE_TIME                10 // ms
 #define PLAYER_FIRE_TIME                150 // ms
+#define PLAYER_FIRE_BOMB_TIME                150 // ms
 
 #define MONSTER_MOVE_TIME               12 // ms
 #define LITTLE_MONSTER_FIRE_TIME        1000 // ms
@@ -73,18 +77,22 @@
 #define BOSS2_MONSTER_FIRE_TIME         1000 // ms
 #define BIG_FIRE_TIME                   8000 // ms
 
-#define BONUS_SPAWN_TIME                45000 // ms
+#define BONUS_SPAWN_TIME                10000 // ms
 
 #define CHANGE_HORIZONTAL_DIRECTION     3 // second
 #define CHANGE_VERTICAL_DIRECTION       5 // second
 
 #define MISSILES_MOVE_TIME              10 // ms
 #define BONUS_MOVE_TIME                 10 // ms
+#define BOMB_MOVE_TIME                  10 // ms
 
 #define SEND_WAIT_MESSAGE_TIME          200 // ms
 #define PLAYER_ALIVE_MAX_TIME           10 // seconds
-#define TIMEOUT_START_GAME              20000 // ms
+#define TIMEOUT_START_GAME              1000 // ms
 #define TIMEOUT_BETWEEN_LEVELS          10000 // ms
 #define GAME_OVER_REFRESH               500 // ms
+
+// damages
+#define BOMB_DAMAGE                     75
 
 #endif

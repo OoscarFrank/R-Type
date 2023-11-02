@@ -2,11 +2,11 @@
 #include "../Entity.hpp"
 
 
-class MissileBonus : public AEntity
+class BonusBox : public AEntity
 {
     public:
-        MissileBonus(Room &room, u_int id);
-        virtual ~MissileBonus() = default;
+        BonusBox(Room &room, u_int id);
+        virtual ~BonusBox() = default;
 
         virtual void refresh();
     private:

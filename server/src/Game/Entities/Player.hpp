@@ -3,6 +3,7 @@
 
 #include "Entity.hpp"
 #include "ArmedEntity.hpp"
+#include "../ForcePod.hpp"
 
 class Player: public ArmedEntity {
     public:
@@ -116,10 +117,13 @@ class Player: public ArmedEntity {
          */
         void setPodMissileLvl(unsigned char podMissileLvl);
 
+        ForcePod &forcePod();
+
     private:
         unsigned char _podMissileLvl = 1;
         int _score;
         std::shared_ptr<Client> _client;
+        ForcePod _forcePod;
 };
 
 #endif

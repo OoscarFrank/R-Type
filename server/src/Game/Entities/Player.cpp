@@ -4,7 +4,8 @@
 Player::Player(Room &room, std::shared_ptr<Client> client, u_int id, short x, short y):
     ArmedEntity(room, id, x, y, PLAYER_WIDTH, PLAYER_HEIGHT),
     _score(0),
-    _client(client)
+    _client(client),
+    _forcePod(ForcePod(room, *this))
 {
     _room.sendToAll(StreamFactory::playerJoinedGame(_id));
     sendPos();
@@ -13,7 +14,8 @@ Player::Player(Room &room, std::shared_ptr<Client> client, u_int id, short x, sh
 Player::Player(Room &room, std::shared_ptr<Client> client, u_int id, const std::pair<short, short> &pos):
     ArmedEntity(room, id, pos, {PLAYER_WIDTH, PLAYER_HEIGHT}),
     _score(0),
-    _client(client)
+    _client(client),
+    _forcePod(ForcePod(room, *this))
 {
     _room.sendToAll(StreamFactory::playerJoinedGame(_id));
     sendPos();
@@ -121,4 +123,9 @@ unsigned char Player::podMissileLvl() const
 void Player::setPodMissileLvl(unsigned char podMissileLvl)
 {
     _podMissileLvl = podMissileLvl;
+}
+
+ForcePod &Player::forcePod()
+{
+    return _forcePod;
 }
