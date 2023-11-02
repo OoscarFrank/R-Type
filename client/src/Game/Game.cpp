@@ -461,8 +461,9 @@ int Game::MainLoop()
 {
     while (this->_window.isOpen()) {
         this->refreshScreenSize();
-        this->_lastTime = NOW;
-        float deltaTime = (this->_lastTime - this->_lastTime) / 1.0f;
+        long currentTime = NOW;
+        float deltaTime = (currentTime - this->_lastTime) / 1.0f;
+        this->_lastTime = currentTime;
         this->update();
 
         // ALL SYSTEMS CALL HERE
