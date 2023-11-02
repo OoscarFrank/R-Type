@@ -76,36 +76,18 @@ Game::Game(std::string ip, int port) :
     } else {
         this->_window.create(sf::VideoMode(mode.width, mode.height), "R-TYPE");
     }
-
-    this->_roomsData.resize(6);
-
-    for (auto &node : this->_roomsData) {
-        node = std::make_tuple(-1, 0, 0);
-    }
-
-    this->_realScreenSize = {static_cast<float>(this->_window.getSize().x), static_cast<float>(this->_window.getSize().y)};
-    this->_realScreenSizeU = {this->_window.getSize().x, this->_window.getSize().y};
-
-    if (_realScreenSize.x / _realScreenSize.y <= 16.0f / 9.0f) {
-        this->_screenSize = {this->_realScreenSize.x, this->_realScreenSize.x * ((1.0f / 16.0f) / (1.0f / 9.0f)) };
-        unsigned int difHeight = this->_realScreenSize.y - this->_screenSize.y;
-        difHeight /= 2;
-        this->topLeftOffeset = {0, difHeight};
-        _blackBandTopLeft = this->_factory.createBlackband(sf::IntRect(0, 0, this->_realScreenSize.x, difHeight), this->_manager.getTexture(Loader::Loader::BlackPixel));
-        _blackBandBottomRight = this->_factory.createBlackband(sf::IntRect(0, this->_realScreenSize.y - difHeight, this->_realScreenSize.x, difHeight), this->_manager.getTexture(Loader::Loader::BlackPixel));
-    } else {
-        this->_screenSize = {this->_realScreenSize.y * ((1.0f / 9.0f) / (1.0f / 16.0f)), this->_realScreenSize.y};
-        unsigned int difWidth = this->_realScreenSize.x - this->_screenSize.x;
-        difWidth /= 2;
-        this->topLeftOffeset = {difWidth, 0};
-        _blackBandTopLeft = this->_factory.createBlackband(sf::IntRect(0, 0, difWidth, this->_realScreenSize.y), this->_manager.getTexture(Loader::Loader::BlackPixel));
-        _blackBandBottomRight = this->_factory.createBlackband(sf::IntRect(this->_realScreenSize.x - difWidth, 0, difWidth, this->_realScreenSize.y), this->_manager.getTexture(Loader::Loader::BlackPixel));
-    }
-
+    this->refreshScreenSize();
     this->_window.setFramerateLimit(120);
+    this->_resMult = static_cast<float>(this->_screenSize.x)/ SCREEN_WIDTH;
+
     this->_lastTime = NOW;
     this->eventMemory = 0;
     this->_gameState = gameState::MENU;
+
+    this->_roomsData.resize(6);
+    for (auto &node : this->_roomsData) {
+        node = std::make_tuple(-1, 0, 0);
+    }
 
     this->_musics.emplace(EntityManager::MUSIC_TYPE::SOUND_OF_SPACE, this->_factory.createMusic(client::getAssetPath("songs/SOUND_OF_SPACE.ogg"), 100, true));
     this->_musics.emplace(EntityManager::MUSIC_TYPE::TURN_ON_THE_LIGHTS, this->_factory.createMusic(client::getAssetPath("songs/TURN_ON_THE_LIGHTS.ogg"), 100, true));
@@ -116,7 +98,6 @@ Game::Game(std::string ip, int port) :
     this->_musics.emplace(EntityManager::MUSIC_TYPE::AMNESIA, this->_factory.createMusic(client::getAssetPath("songs/AMNESIA.ogg"), 100, true));
     this->_musics.emplace(EntityManager::MUSIC_TYPE::SEVENNATION, this->_factory.createMusic(client::getAssetPath("songs/SEVENNATION.ogg"), 100, true));
 
-    this->_resMult = static_cast<float>(this->_screenSize.x)/ SCREEN_WIDTH;
 
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.070f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.1f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
@@ -203,7 +184,6 @@ void Game::initButtons()
     }
     ));
 
-
     tmpSizebutton = (this->_manager.getTexture(Loader::Loader::MatchListButton).get()->getSize().x / 2) * _resMult;
     float tmpSizebuttonY = (this->_manager.getTexture(Loader::Loader::MatchListButton).get()->getSize().y) * _resMult;
 
@@ -215,6 +195,7 @@ void Game::initButtons()
             size_t nodePos = buttonNbr;
             std::tuple<int, entity_t, entity_t> foundTuple = this->_roomsData[nodePos];
             u_int roomId = std::get<0>(foundTuple);
+
             if (roomId == -1)
                 return;
 
@@ -263,9 +244,6 @@ void Game::initButtons()
         }
         this->_players.clear();
 
-        // this->ecs.kill_entity(this->_playerEntity);
-        // this->_playerEntity = 0;
-
         this->ecs.kill_entity(this->_scoreCoche);
         this->_scoreCoche = 0;
 
@@ -287,7 +265,14 @@ void Game::initButtons()
 void Game::initMenus()
 {
     entity_t entity_mainMenu = this->ecs.spawn_entity();
-    this->ecs.emplace_component<ECS::components::ControllableComponent>(entity_mainMenu, ECS::components::ControllableComponent{sf::Keyboard::Key::Up, sf::Keyboard::Key::Down, sf::Keyboard::Key::Left, sf::Keyboard::Key::Right, sf::Keyboard::Key::Enter});
+    this->ecs.emplace_component<ECS::components::ControllableComponent>(entity_mainMenu, ECS::components::ControllableComponent{
+        sf::Keyboard::Key::Up,
+        sf::Keyboard::Key::Down,
+        sf::Keyboard::Key::Left,
+        sf::Keyboard::Key::Right,
+        sf::Keyboard::Key::Enter
+    });
+
     this->_menuManager.createMenu(MenuManager::MENU_TYPE::MAIN_MENU, entity_mainMenu, true, std::vector<MenuManager::BUTTON_TYPE>({
         MenuManager::BUTTON_TYPE::ROOM_LIST_0,
         MenuManager::BUTTON_TYPE::ROOM_LIST_1,
@@ -301,8 +286,13 @@ void Game::initMenus()
     }));
 
     entity_t entity_looseMenu = this->ecs.spawn_entity();
-    this->ecs.emplace_component<ECS::components::ControllableComponent>(entity_looseMenu, ECS::components::ControllableComponent{ sf::Keyboard::Key::Enter, sf::Keyboard::Key::Right});
-    this->_menuManager.createMenu(MenuManager::MENU_TYPE::LOOSER_MENU, entity_looseMenu, false, std::vector<MenuManager::BUTTON_TYPE>({MenuManager::BUTTON_TYPE::LEAVE_GAME}));
+    this->ecs.emplace_component<ECS::components::ControllableComponent>(entity_looseMenu, ECS::components::ControllableComponent{
+        sf::Keyboard::Key::Enter,
+        sf::Keyboard::Key::Right
+    });
+    this->_menuManager.createMenu(MenuManager::MENU_TYPE::LOOSER_MENU, entity_looseMenu, false, std::vector<MenuManager::BUTTON_TYPE>({
+        MenuManager::BUTTON_TYPE::LEAVE_GAME
+    }));
 }
 
 void Game::update()
@@ -439,6 +429,7 @@ void Game::sendMoveToServer()
             }
             continue;
         }
+
         if (this->_gameState == gameState::GAME && (*i).getEntity() == this->_playerEntity) {
             char move = (*i).getEvent() & (UP | DOWN | LEFT | RIGHT);
             if ((*i).getEvent() & move) {
@@ -470,9 +461,8 @@ int Game::MainLoop()
 {
     while (this->_window.isOpen()) {
         this->refreshScreenSize();
-        long currentTime = NOW;
-        float deltaTime = (currentTime - this->_lastTime) / 1.0f;
-        this->_lastTime = currentTime;
+        this->_lastTime = NOW;
+        float deltaTime = (this->_lastTime - this->_lastTime) / 1.0f;
         this->update();
 
         // ALL SYSTEMS CALL HERE
@@ -523,46 +513,46 @@ void Game::handleMissilePosition(Network::Packet &packet)
     if (res == 0) {
         switch ((int)type) {
             case 1: {
-                entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Missile));
-                this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
-                this->_missiles.push_back(std::make_pair(id, newEntity));
-            }
+                    entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Missile));
+                    this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
+                    this->_missiles.push_back(std::make_pair(id, newEntity));
+                }
                 break;
             case 2: {
-                entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Missile));
-                this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
-                this->_missiles.push_back(std::make_pair(id, newEntity));
-            }
+                    entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Missile));
+                    this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
+                    this->_missiles.push_back(std::make_pair(id, newEntity));
+                }
                 break;
             case 3: {
-                entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::OrangeMissile), this->_resMult);
-                this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
-                this->_missiles.push_back(std::make_pair(id, newEntity));
-            }
+                    entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::OrangeMissile), this->_resMult);
+                    this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
+                    this->_missiles.push_back(std::make_pair(id, newEntity));
+                }
                 break;
             case 4: {
-                entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::PurpleMissile), this->_resMult);
-                this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
-                this->_missiles.push_back(std::make_pair(id, newEntity));
-            }
+                    entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::PurpleMissile), this->_resMult);
+                    this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
+                    this->_missiles.push_back(std::make_pair(id, newEntity));
+                }
                 break;
             case 5: {
-                entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::GreenMissile), this->_resMult);
-                this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
-                this->_missiles.push_back(std::make_pair(id, newEntity));
-            }
+                    entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::GreenMissile), this->_resMult);
+                    this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
+                    this->_missiles.push_back(std::make_pair(id, newEntity));
+                }
                 break;
             case 6: {
-                entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::MissileRed));
-                this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
-                this->_missiles.push_back(std::make_pair(id, newEntity));
-            }
+                    entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::MissileRed));
+                    this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
+                    this->_missiles.push_back(std::make_pair(id, newEntity));
+                }
                 break;
             case 7: {
-                entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::MissileRed));
-                this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
-                this->_missiles.push_back(std::make_pair(id, newEntity));
-            }
+                    entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::MissileRed));
+                    this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
+                    this->_missiles.push_back(std::make_pair(id, newEntity));
+                }
                 break;
             default:
                 break;
@@ -578,8 +568,8 @@ void Game::handlePlayerScore(Network::Packet &packet)
     packet >> score;
     std::ostringstream ss;
     ss <<  "Score: " << std::fixed << std::setprecision(1) << score;
-    entity_t scoreText = this->getTextByType(EntityManager::TEXT_TYPE::SCORE);
 
+    entity_t scoreText = this->getTextByType(EntityManager::TEXT_TYPE::SCORE);
     if (scoreText == 0) {
         entity_t newEntity = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::PressStart2P), this->_screenSize.x / 2 - (250 * this->_resMult), 10, 20);
         this->_textsEntity.insert({EntityManager::TEXT_TYPE::SCORE, newEntity});
@@ -602,43 +592,43 @@ void Game::handleEnnemiPosition(Network::Packet &packet)
     if (res == 0) {
         switch ((int)type) {
             case 2: {
-                entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster2), this->_resMult);
-                this->_ennemies.push_back(std::make_pair(id, newEntity));
-            }
+                    entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster2), this->_resMult);
+                    this->_ennemies.push_back(std::make_pair(id, newEntity));
+                }
                 break;
             case 3: {
-                entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster3), this->_resMult);
-                this->_ennemies.push_back(std::make_pair(id, newEntity));
-            }
+                    entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster3), this->_resMult);
+                    this->_ennemies.push_back(std::make_pair(id, newEntity));
+                }
                 break;
             case 4: {
-                entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster4), this->_resMult);
-                this->_ennemies.push_back(std::make_pair(id, newEntity));
-            }
+                    entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster4), this->_resMult);
+                    this->_ennemies.push_back(std::make_pair(id, newEntity));
+                }
                 break;
             case 5: {
-                entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster4), this->_resMult);
-                this->_ennemies.push_back(std::make_pair(id, newEntity));
-            }
+                    entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster4), this->_resMult);
+                    this->_ennemies.push_back(std::make_pair(id, newEntity));
+                }
             case 6: {
-                entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss1), this->_resMult);
-                this->_ennemies.push_back(std::make_pair(id, newEntity));
-            }
+                    entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss1), this->_resMult);
+                    this->_ennemies.push_back(std::make_pair(id, newEntity));
+                }
                 break;
             case 7: {
-                entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss2), this->_resMult);
-                this->_ennemies.push_back(std::make_pair(id, newEntity));
-            }
+                    entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss2), this->_resMult);
+                    this->_ennemies.push_back(std::make_pair(id, newEntity));
+                }
                 break;
             case 8: {
-                entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss3), this->_resMult);
-                this->_ennemies.push_back(std::make_pair(id, newEntity));
-            }
+                    entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss3), this->_resMult);
+                    this->_ennemies.push_back(std::make_pair(id, newEntity));
+                }
                 break;
             case 9: {
-                entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss4), this->_resMult);
-                this->_ennemies.push_back(std::make_pair(id, newEntity));
-            }
+                    entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss4), this->_resMult);
+                    this->_ennemies.push_back(std::make_pair(id, newEntity));
+                }
                 break;
             default:
                 break;
@@ -697,6 +687,7 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
             this->ecs.kill_entity(timerText);
         this->_gameState = gameState::GAME;
         this->_startGameTime = std::chrono::system_clock::now();
+
         entity_t newEntity = this->_factory.createText("Score: 0", this->_manager.getFont(Loader::Loader::PressStart2P), this->_screenSize.x / 2 - (250 * this->_resMult), this->topLeftOffeset.y + 10, 20);
         this->_textsEntity.insert({EntityManager::TEXT_TYPE::SCORE, newEntity});
         this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [](ECS::components::MusicComponent &music) {
@@ -756,8 +747,8 @@ void Game::handlePlayerDisconnected(Network::Packet &packet)
 {
     unsigned int id;
     packet >> id;
-    entity_t res = getPlayerEntityFromId(id);
 
+    entity_t res = getPlayerEntityFromId(id);
     if (res != 0) {
         this->ecs.kill_entity(res);
 
@@ -782,7 +773,6 @@ void Game::handleMissileDeath(Network::Packet &packet)
     y *= this->_resMult;
 
     entity_t res = getMissileEntityFromId(id);
-
     if (res != 0) {
         this->ecs.kill_entity(res);
 
@@ -800,8 +790,8 @@ void Game::handleEnnemiDeath(Network::Packet &packet)
 {
     unsigned int id;
     packet >> id;
-    entity_t res = getEnnemiEntityFromId(id);
 
+    entity_t res = getEnnemiEntityFromId(id);
     if (res != 0) {
         this->ecs.kill_entity(res);
 
@@ -826,6 +816,7 @@ void Game::handlePlayerDeath(Network::Packet &packet)
 {
     unsigned int id;
     packet >> id;
+
     entity_t res = getPlayerEntityFromId(id);
     if (res == this->_playerEntity) {
         this->_looser = this->_factory.createScreen(this->topLeftOffeset.x, this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::LooserScreen));
@@ -863,7 +854,6 @@ void Game::handlePlayerLife(Network::Packet &packet)
     auto &barComp = this->ecs.getComponent<ECS::components::LoadingBarComponent>(loadingPlayerlifeBar);
     float newWidth = barComp.calculate(life);
 
-
     this->ecs.modify_component<ECS::components::RectangleShapeComponent>(this->_loadingBar[EntityManager::LOADINGBAR_TYPE::PLAYER_LIFE], [newWidth](ECS::components::RectangleShapeComponent &comp) {
         comp.setSize(sf::Vector2f(newWidth, comp.getSize().y));
     });
@@ -874,10 +864,10 @@ void Game::handleMonsterLife(Network::Packet &packet)
     u_int id;
     int life;
     packet >> id >> life;
+
     entity_t res = getEnnemiEntityFromId(id);
     if (res == 0)
         return;
-
 }
 
 void Game::handleStrobes(Network::Packet &packet)
@@ -914,7 +904,6 @@ void Game::handleChangeLevel(Network::Packet &packet)
     unsigned char started = packet.getData().getDataUChar();
     unsigned int fadeOutTime = 7000;
 
-
     if (!started) {
         this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [timeout, fadeOutTime](ECS::components::MusicComponent &music) {
             if (timeout <= fadeOutTime) {
@@ -945,6 +934,7 @@ void Game::handleLatency(Network::Packet &packet)
     packet >> timeMS;
     std::ostringstream ss;
     ss <<  "Ping: " << std::fixed << std::setprecision(1) << timeMS;
+
     entity_t pingText = this->getTextByType(game::EntityManager::TEXT_TYPE::PING);
     if (pingText == 0) {
         entity_t newEntity = this->_factory.createText(ss.str(), this->_manager.getFont(Loader::Loader::PressStart2P), this->_screenSize.x - 150, this->_screenSize.y - 30, 14);
@@ -976,7 +966,6 @@ void Game::handleListRooms(Network::Packet &packet)
     packet >> roomId >> nbrPlayers >> maxPlayers >> joinable;
 
     int searchRoom = this->searchRoomId(roomId);
-
     if (searchRoom != -1) { // room not exist
         if (joinable == false) { // room is off
             std::tuple<int, entity_t, entity_t> foundTuple = this->_roomsData[searchRoom];
@@ -1056,7 +1045,6 @@ void Game::handleBonusDestroyed(Network::Packet &packet)
     unsigned int id = packet.getData().getDataUInt();
 
     entity_t entity = getBonusEntityFromId(id);
-
     if (entity != 0) {
         this->ecs.kill_entity(entity);
 
@@ -1089,8 +1077,8 @@ void Game::handleBombPosition(Network::Packet &packet)
 void Game::handleBombDestroyed(Network::Packet &packet)
 {
     unsigned int id = packet.getData().getDataUInt();
-    entity_t entity = getBombEntityFromId(id);
 
+    entity_t entity = getBombEntityFromId(id);
     if (entity != 0) {
         this->ecs.kill_entity(entity);
 
@@ -1110,6 +1098,7 @@ void Game::handleChatMessage(Network::Packet &packet)
     std::string msg;
     char tmp;
     packet >> playerId;
+
     for (int i = 0; i < 1000; ++i) {
         packet >> tmp;
         if (tmp == 0)
@@ -1123,9 +1112,11 @@ void Game::sendChat(std::string const &msg)
 {
     Stream out;
     out << 34_uc;
+
     for (auto i = msg.begin(); i != msg.end(); i++) {
         out << *i;
     }
+
     for (std::size_t i = msg.size(); i < 1000; i++) {
         out << 0_c;
     }
