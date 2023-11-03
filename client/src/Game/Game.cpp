@@ -126,6 +126,70 @@ Game::~Game()
 {
 }
 
+void Game::createMainMenuScene()
+{
+    this->_gameState = gameState::MENU;
+
+    this->_menuManager.disableAllmenu();
+
+    for (auto &e : this->_parallax) {
+        this->ecs.kill_entity(e);
+    }
+    this->_parallax.clear();
+
+    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.070f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
+    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.1f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
+
+    this->_screens.emplace(EntityManager::SCREEN_TYPE::MAIN_MENU, this->_factory.createScreen(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::MenuScreen)));
+    this->_menuManager.enableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
+}
+
+void Game::killGameEntity()
+{
+    for (auto &e : this->_players) {
+        this->ecs.kill_entity(e.second);
+    }
+    this->_players.clear();
+
+    for (auto &e : this->_missiles) {
+        this->ecs.kill_entity(e.second);
+    }
+    this->_missiles.clear();
+
+    for (auto &e : this->_ennemies) {
+        this->ecs.kill_entity(e.second);
+    }
+    this->_ennemies.clear();
+
+    for (auto &e : this->_bonuses) {
+        this->ecs.kill_entity(e.second);
+    }
+    this->_bonuses.clear();
+
+    for (auto &e : this->_bombs) {
+        this->ecs.kill_entity(e.second);
+    }
+    this->_bombs.clear();
+
+    for (auto &e : this->_loadingBar) {
+        this->ecs.kill_entity(e.second);
+    }
+    this->_loadingBar.clear();
+
+    this->ecs.kill_entity(this->_scoreCoche);
+    this->_scoreCoche = 0;
+
+    for (auto &e : this->_textsEntity) {
+        if (this->ecs.isEntityExist(e.second))
+            this->ecs.kill_entity(e.second);
+    }
+    this->_textsEntity.clear();
+
+    if (this->ecs.isEntityExist(_looser)) {
+        this->ecs.kill_entity(_looser);
+    }
+}
+
 void Game::refreshScreenSize()
 {
     if (this->_realScreenSizeU.x != this->_window.getSize().x || this->_realScreenSizeU.y != this->_window.getSize().y) {
@@ -223,38 +287,8 @@ void Game::initButtons()
         Stream out;
         out << 24_uc;
         this->_net.send(out);
-
-        this->_gameState = gameState::MENU;
-        this->_menuManager.disableAllmenu();
-        this->_menuManager.enableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
-
-        for (auto &e : this->_missiles) {
-            this->ecs.kill_entity(e.second);
-        }
-        this->_missiles.clear();
-        for (auto &e : this->_ennemies) {
-            this->ecs.kill_entity(e.second);
-        }
-        this->_ennemies.clear();
-        for (auto &e : this->_players) {
-            this->ecs.kill_entity(e.second);
-        }
-        this->_players.clear();
-
-        this->ecs.kill_entity(this->_scoreCoche);
-        this->_scoreCoche = 0;
-
-        for (auto &e : _loadingBar) {
-            this->ecs.kill_entity(e.second);
-        }
-        this->_loadingBar.clear();
-
-        this->ecs.kill_entity(this->_looser);
-        this->_looser = 0;
-
-        for (auto &e : this->_strobes) {
-            this->ecs.disableEntity(e);
-        }
+        this->killGameEntity();
+        this->createMainMenuScene();
     }
     ));
 }
@@ -631,8 +665,10 @@ void Game::handleRoomJoin(Network::Packet &packet)
 
     this->_scoreCoche = this->_factory.createScoreCoche((((this->_window.getSize().x / 2) - ((660.0 * this->_resMult) / 2))), this->topLeftOffeset.y , this->_manager.getTexture(Loader::Loader::ScoreCoche), this->_resMult);
 
-    entity_t playerLifeBar = this->_factory.createLoadingBar(this->topLeftOffeset.x + 10.0f, this->topLeftOffeset.y + this->_screenSize.y - (100.0f * this->_resMult), this->_manager.getTexture(Loader::Loader::playerLifeOutline), this->_manager.getTexture(Loader::Loader::playerLifeContent), this->_resMult);
-    this->_loadingBar.insert(std::make_pair(EntityManager::LOADINGBAR_TYPE::PLAYER_LIFE, playerLifeBar));
+    if (this->_loadingBar.find(EntityManager::LOADINGBAR_TYPE::PLAYER_LIFE) == this->_loadingBar.end()) {
+        entity_t playerLifeBar = this->_factory.createLoadingBar(this->topLeftOffeset.x + 10.0f, this->topLeftOffeset.y + this->_screenSize.y - (100.0f * this->_resMult), this->_manager.getTexture(Loader::Loader::playerLifeOutline), this->_manager.getTexture(Loader::Loader::playerLifeContent), this->_resMult);
+        this->_loadingBar.insert(std::make_pair(EntityManager::LOADINGBAR_TYPE::PLAYER_LIFE, playerLifeBar));
+    }
 
     auto it = this->_screens.find(SCREEN_TYPE::MAIN_MENU);
     if (it != this->_screens.end()) {

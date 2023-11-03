@@ -48,8 +48,11 @@ namespace game {
          *
          */
             void update();
-
             void sendMoveToServer();
+
+            void createMainMenuScene();
+
+            void killGameEntity();
 
             enum gameState {
                 MENU,
