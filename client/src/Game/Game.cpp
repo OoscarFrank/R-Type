@@ -523,6 +523,9 @@ int Game::MainLoop()
         this->sendMoveToServer();
     }
     this->_net.setClosed(true);
+    Stream out;
+    out << 12_uc << static_cast<long>(std::chrono::duration_cast<std::chrono::milliseconds>(_lastPing.time_since_epoch()).count());
+    this->_net.send(out);
     return 0;
 }
 
