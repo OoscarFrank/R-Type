@@ -437,7 +437,7 @@ Room::ChatMessage::ChatMessage(Room &room, u_int playerId, const std::string &me
     std::cout << "New chat from " << playerId << ": " << message << std::endl;
 
     Stream out;
-    out << 31_uc << playerId;
+    out << 33_uc << playerId;
     for (auto i = message.begin(); i != message.end(); i++) {
         out << *i;
     }
