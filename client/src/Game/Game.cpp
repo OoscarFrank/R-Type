@@ -454,8 +454,8 @@ int Game::MainLoop()
 void Game::handlePlayerPosition(Network::Packet &packet)
 {
     unsigned int id;
-    unsigned short x;
-    unsigned short y;
+    short x;
+    short y;
     packet >> id >> x >> y;
     x *= this->_resMult;
     y *= this->_resMult;
@@ -467,8 +467,8 @@ void Game::handleMissilePosition(Network::Packet &packet)
 {
     unsigned int id;
     unsigned char type;
-    unsigned short x;
-    unsigned short y;
+    short x;
+    short y;
     packet >> id >> type >> x >> y;
     x *= this->_resMult;
     y *= this->_resMult;
@@ -547,8 +547,8 @@ void Game::handleEnnemiPosition(Network::Packet &packet)
 {
     unsigned int id;
     unsigned char type;
-    unsigned short x;
-    unsigned short y;
+    short x;
+    short y;
     packet >> id >> type >> x >> y;
     x *= this->_resMult;
     y *= this->_resMult;
@@ -731,8 +731,8 @@ void Game::handleMissileDeath(Network::Packet &packet)
 {
     unsigned int id;
     unsigned char type;
-    unsigned short x;
-    unsigned short y;
+    short x;
+    short y;
     packet >> id >> type >> x >> y;
     x *= this->_resMult;
     y *= this->_resMult;
