@@ -211,3 +211,15 @@ entity_t Factory::createBomb(const std::shared_ptr<sf::Texture> &texture, float 
     _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{scale, scale});
     return newEntity;
 }
+
+entity_t Factory::createPod(const std::shared_ptr<sf::Texture> &texture, float scale)
+{
+    entity_t newEntity = _registry.spawn_entity(59);
+    _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{-500, -500});
+    _registry.emplace_component<ECS::components::MovableComponent>(newEntity, ECS::components::MovableComponent{});
+    _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{0, 0, (int)texture->getSize().x, 48, 6, 150.0f});
+    _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
+    _registry.emplace_component<ECS::components::AnimationComponent>(newEntity, ECS::components::AnimationComponent{});
+    _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{scale, scale});
+    return newEntity;
+}

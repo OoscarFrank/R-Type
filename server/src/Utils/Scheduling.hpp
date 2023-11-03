@@ -37,6 +37,11 @@
 #define BONUS_WIDTH   75
 #define BONUS_HEIGHT  75
 
+#define POD_ONE_SCORE       1000
+#define POD_TWO_SCORE       2000
+#define POD_THREE_SCORE     3000
+
+
 // Progress steps
 #define MAP_PROGRESS_STEP                       7
 
@@ -66,7 +71,7 @@
 
 #define PLAYER_MOVE_TIME                10 // ms
 #define PLAYER_FIRE_TIME                150 // ms
-#define PLAYER_FIRE_BOMB_TIME                150 // ms
+#define PLAYER_FIRE_BOMB_TIME           1000 // ms
 
 #define MONSTER_MOVE_TIME               12 // ms
 #define LITTLE_MONSTER_FIRE_TIME        1000 // ms
@@ -93,6 +98,7 @@
 #define GAME_OVER_REFRESH               500 // ms
 
 // damages
-#define BOMB_DAMAGE                     75
+#define BOMB_DAMAGE                     150
+
 
 #endif
