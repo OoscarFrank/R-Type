@@ -749,8 +749,13 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
         for (auto &e : this->_textChat) {
             this->ecs.kill_entity(e);
         }
-
         this->_textChat.clear();
+
+        auto it2 = this->_textsEntity.find(EntityManager::TEXT_TYPE::TCHAT);
+        if (it2 != this->_textsEntity.end()) {
+            this->ecs.kill_entity(it2->second);
+            this->_textsEntity.erase(it2);
+        }
 
         entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effects/good_luck.ogg"), 1000, true);
         this->_sounds.emplace_back(soundEntity);
