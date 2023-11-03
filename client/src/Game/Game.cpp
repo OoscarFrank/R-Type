@@ -481,6 +481,9 @@ int Game::MainLoop()
                         sendChat(_chatInput);
                     _chatInput = "";
                     break;
+                } else if (i == '\b') {
+                    if (_chatInput.size() > 0)
+                        _chatInput.pop_back();
                 } else if (_chatInput.size() < 30) {
                     _chatInput += i;
                 }
@@ -1213,6 +1216,8 @@ void Game::handleChatMessage(Network::Packet &packet)
             break;
         msg += tmp;
     }
+
+    msg = std::to_string(playerId) + ": " + msg;
 
     sf::Vector2u rectSize = this->_manager.getTexture(Loader::Loader::ChatBox).get()->getSize();
     std::size_t vectorSize = this->_textChat.size();
