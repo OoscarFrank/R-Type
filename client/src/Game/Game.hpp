@@ -107,6 +107,10 @@ namespace game {
             std::chrono::system_clock::time_point _lastPlayerFireTime;
             std::chrono::system_clock::time_point _lastPlayerBombFireTime;
 
+            std::vector<u_char> _keyboardInputs;
+            std::string _chatInput;
+            entity_t _chatText;
+
             void refreshScreenSize();
 
             void initButtons();
