@@ -40,6 +40,7 @@ namespace game {
                 CreateRoomButton,
                 JoinRoomButton,
                 QuitButton,
+                LeaveGame,
                 MatchListButton,
                 LooserScreen,
                 MenuScreen,

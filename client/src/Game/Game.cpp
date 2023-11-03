@@ -27,6 +27,7 @@ Game::Game(std::string ip, int port) :
         this->_manager.loadTexture(client::getAssetPath("entity/buttons/CreateRoomButton.png"), Loader::toLoad::CreateRoomButton);
         this->_manager.loadTexture(client::getAssetPath("entity/buttons/JoinRoomButton.png"), Loader::toLoad::JoinRoomButton);
         this->_manager.loadTexture(client::getAssetPath("entity/buttons/QuitButton.png"), Loader::toLoad::QuitButton);
+        this->_manager.loadTexture(client::getAssetPath("entity/buttons/LeaveGame.png"), Loader::toLoad::LeaveGame);
         this->_manager.loadTexture(client::getAssetPath("entity/buttons/matchlist.png"), Loader::toLoad::MatchListButton);
 
         this->_manager.loadTexture(client::getAssetPath("screens/LooserScreen.png"), Loader::toLoad::LooserScreen);
@@ -300,7 +301,8 @@ void Game::initButtons()
         this->_menuManager.createButton((MenuManager::BUTTON_TYPE)(MenuManager::BUTTON_TYPE::ROOM_LIST_0 + buttonNbr), newButton);
     }
 
-    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::LEAVE_GAME, this->_factory.createButton((this->_screenSize.x / 2) - (tmpSizebutton / 2), 800.0f + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::QuitButton), sf::Vector2f(_resMult, _resMult),
+    tmpSizebutton = (this->_manager.getTexture(Loader::Loader::LeaveGame).get()->getSize().x / 2) * _resMult;
+    this->_menuManager.createButton(MenuManager::BUTTON_TYPE::LEAVE_GAME, this->_factory.createButton((this->_screenSize.x / 2) - (tmpSizebutton), (this->_screenSize.y) - 200, this->_manager.getTexture(Loader::Loader::LeaveGame), sf::Vector2f(_resMult + 0.8, _resMult + 0.8),
     [&](void) {
         Stream out;
         out << 24_uc;
@@ -1101,7 +1103,6 @@ void Game::handleListRooms(Network::Packet &packet)
         auto it = _roomsData.begin();
 
         for (; it != _roomsData.end(); ++it) {
-            std::cout << std::get<0>(*it) << std::endl;
             if (std::get<0>(*it) == -1) {
                 break;
             }
@@ -1234,7 +1235,7 @@ void Game::handleChatMessage(Network::Packet &packet)
         msg += tmp;
     }
 
-    msg = std::to_string(playerId) + ": " + msg;
+    msg = std::to_string(playerId) + " > " + msg;
 
     sf::Vector2u rectSize = this->_manager.getTexture(Loader::Loader::ChatBox).get()->getSize();
     std::size_t vectorSize = this->_textChat.size();
