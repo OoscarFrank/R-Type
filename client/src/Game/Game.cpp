@@ -206,6 +206,10 @@ void Game::killGameEntity()
     if (this->ecs.isEntityExist(_looser)) {
         this->ecs.kill_entity(_looser);
     }
+
+    for (auto &e : this->_strobes) {
+        this->ecs.disableEntity(e);
+    }
 }
 
 void Game::refreshScreenSize()
