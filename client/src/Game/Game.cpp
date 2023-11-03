@@ -114,9 +114,6 @@ Game::Game(std::string ip, int port) :
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::CyanPixel), _screenSize.x, _screenSize.y));
     _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::WhitePixel), _screenSize.x, _screenSize.y));
 
-    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/piou.ogg"), 1000);
-    this->_sounds.emplace(EntityManager::SOUND_TYPE::TEST, soundEntity);
-
     if (this->getTextByType(game::EntityManager::TEXT_TYPE::PING)) {
         entity_t newEntity = this->_factory.createText("Ping: 0", this->_manager.getFont(Loader::Loader::PressStart2P), this->_screenSize.x - 150, this->_screenSize.y - 30, 14);
         this->_textsEntity.insert({game::EntityManager::TEXT_TYPE::PING, newEntity});
@@ -406,8 +403,8 @@ void Game::sendMoveToServer()
                 Stream out;
                 out << 5_uc;
                 this->_net.send(out);
-                auto soundComponent = this->ecs.getComponent<ECS::components::SoundComponent>(this->_sounds[EntityManager::SOUND_TYPE::TEST]);
-                soundComponent.playSound();
+                entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/piou.ogg"), 1000, true);
+                this->_sounds.emplace_back(soundEntity);
             }
             if ((*i).getEvent() & BOMB && std::chrono::system_clock::now() - this->_lastPlayerBombFireTime > std::chrono::milliseconds(160)) {
                 this->_lastPlayerBombFireTime = std::chrono::system_clock::now();
@@ -438,6 +435,7 @@ int Game::MainLoop()
         ECS::systems::MovableSystem().update(this->ecs, this->_entityPositions, this->topLeftOffeset);
         ECS::systems::ScaleSystem().update(this->ecs);
         ECS::systems::TextSystem().update(this->ecs, this->_textsUpdate);
+        ECS::systems::SoundSystem().update(this->ecs, this->_sounds);
         this->_window.clear();
 
         // DRAW SYSTEM CALL HERE

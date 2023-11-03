@@ -16,13 +16,15 @@ namespace ECS {
                  * @brief Construct a new Sound Component object
                  *
                  */
-                SoundComponent(const std::string &soundPath, float volume = 100.0f): _soundPath(soundPath) {
+                SoundComponent(const std::string &soundPath, float volume = 100.0f, bool play = false): _soundPath(soundPath) {
                     _soundBuffer = std::make_shared<sf::SoundBuffer>();
                     _soundBuffer->loadFromFile(_soundPath);
 
                     _sound = std::make_shared<sf::Sound>();
                     _sound->setBuffer(*_soundBuffer);
                     _sound->setVolume(volume);
+                    if (play)
+                        _sound->play();
                 }
 
                 int playSound() {
