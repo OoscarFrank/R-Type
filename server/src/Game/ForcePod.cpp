@@ -14,6 +14,7 @@ void ForcePod::refresh()
         (*i)->refresh();
         if (!(*i)->exists()) {
             _room.sendToAll(StreamFactory::bombDestroyed((*i)->id()));
+            _room.degInZone((*i)->box().x + (*i)->box().width / 2, (*i)->box().y + (*i)->box().height / 2, 256, this->_player);
             i = _bombs.erase(i);
             if (i == _bombs.end())
                 break;
@@ -42,8 +43,9 @@ void ForcePod::bombCollide(IEntity &other)
     for(auto i = _bombs.begin(); i != _bombs.end(); ++i) {
         if ((*i)->collide(other)) {
             other.setLife(other.life() - BOMB_DAMAGE);
-            _player.setScore(_player.score() + 15);
+            _player.setScore(_player.score() + BOMB_SCORE);
             _room.sendToAll(StreamFactory::bombDestroyed((*i)->id()));
+            _room.degInZone((*i)->box().x + (*i)->box().width / 2, (*i)->box().y + (*i)->box().height / 2, 256, this->_player);
             i = _bombs.erase(i);
             if (i == _bombs.end())
                 break;

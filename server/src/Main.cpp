@@ -51,7 +51,7 @@ int main(int argc, char **argv)
             printHelp();
             return 0;
         }
-        std::vector<std::string> defaultStages = {"./stages/stage1.script","./stages/stage2.script","./stages/stage3.script","./stages/stage4.script","./stages/stage5.script","./stages/stage6.script", "./stages/stage7.script"};
+        std::vector<std::string> defaultStages = {"./stages/stage1.script","./stages/stage2.script","./stages/stage3.script","./stages/stage4.script","./stages/stage5.script","./stages/stage6.script", "./stages/stage7.script", "./stages/stage8.script"};
         exec(args.getFlagValue<int>("-p", 4242), args.getFlagValues<std::string>("-s", defaultStages));
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
