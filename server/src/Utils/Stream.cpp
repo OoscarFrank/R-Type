@@ -648,3 +648,13 @@ Stream StreamFactory::bombDestroyed(u_int id)
     out.setDataUInt(id);
     return out;
 }
+
+Stream StreamFactory::podInfo(u_int userId, u_char lvl, u_char front)
+{
+    Stream out;
+    out.setDataUChar(35);
+    out.setDataUInt(userId);
+    out.setDataUChar(lvl);
+    out.setDataUChar(front);
+    return out;
+}

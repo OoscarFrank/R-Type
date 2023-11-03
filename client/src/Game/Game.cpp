@@ -60,6 +60,9 @@ Game::Game(std::string ip, int port) :
         this->_manager.loadTexture(client::getAssetPath("entity/bonus/bonus.png"), Loader::toLoad::Bonus);
         this->_manager.loadTexture(client::getAssetPath("entity/missile/bomb.png"), Loader::toLoad::Bomb);
         this->_manager.loadTexture(client::getAssetPath("entity/missile/laser.png"), Loader::toLoad::Laser);
+        this->_manager.loadTexture(client::getAssetPath("entity/bonus/forcePodOne.png"), Loader::toLoad::Pod1);
+        this->_manager.loadTexture(client::getAssetPath("entity/bonus/forcePodTwo.png"), Loader::toLoad::Pod2);
+        this->_manager.loadTexture(client::getAssetPath("entity/bonus/forcePodThree.png"), Loader::toLoad::Pod3);
 
         this->_manager.loadTexture(client::getAssetPath("entity/player/PlayerLifeOutline.png"), Loader::toLoad::playerLifeOutline);
         this->_manager.loadTexture(client::getAssetPath("entity/player/playerLifeContent.png"), Loader::toLoad::playerLifeContent);
@@ -389,6 +392,9 @@ void Game::update()
             case 33:
                 this->handleChatMessage(packet);
                 break;
+            case 35:
+                this->handlePodInfo(packet);
+                break;
             case 255:
                 this->handleResend(packet);
                 break;
@@ -448,7 +454,7 @@ void Game::sendMoveToServer()
                 out << 2_uc << static_cast<u_char>((*i).getEvent() & move) << 1_uc;
                 _net.send(out);
             }
-            if ((*i).getEvent() & SPACE && std::chrono::system_clock::now() - this->_lastPlayerFireTime > std::chrono::milliseconds(160)) {
+            if ((*i).getEvent() & SPACE && std::chrono::system_clock::now() - this->_lastPlayerFireTime > std::chrono::milliseconds(140)) {
                 this->_lastPlayerFireTime = std::chrono::system_clock::now();
                 Stream out;
                 out << 5_uc;
@@ -456,7 +462,7 @@ void Game::sendMoveToServer()
                 auto soundComponent = this->ecs.getComponent<ECS::components::SoundComponent>(this->_sounds[EntityManager::SOUND_TYPE::TEST]);
                 soundComponent.playSound();
             }
-            if ((*i).getEvent() & BOMB && std::chrono::system_clock::now() - this->_lastPlayerBombFireTime > std::chrono::milliseconds(160)) {
+            if ((*i).getEvent() & BOMB && std::chrono::system_clock::now() - this->_lastPlayerBombFireTime > std::chrono::milliseconds(900)) {
                 this->_lastPlayerBombFireTime = std::chrono::system_clock::now();
                 Stream out;
                 out << 30_uc;
@@ -507,6 +513,12 @@ void Game::handlePlayerPosition(Network::Packet &packet)
     x *= this->_resMult;
     y *= this->_resMult;
 
+    std::pair<entity_t, unsigned char> tmp = getPodEntityFromId(id);
+
+    if (tmp.first != 0) {
+        if (tmp.second == 1)
+            this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(tmp.first, x + 240 * _resMult, y + 41 * _resMult));
+    }
     this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(this->getPlayerEntityFromId(id), x, y));
 }
 
@@ -838,6 +850,17 @@ void Game::handlePlayerDeath(Network::Packet &packet)
         this->_players.erase(std::remove_if(this->_players.begin(), this->_players.end(), [id](std::pair<unsigned int, entity_t> const &pair) {
             return pair.first == id;
         }), this->_players.end());
+
+        entity_t pod = getPodEntityFromId(id).first;
+        if (pod != 0) {
+            for(auto i = _pods.begin(); i != _pods.end(); ++i) {
+                if (std::get<0>(*i) == id) {
+                    _pods.erase(i);
+                    break;
+                }
+            }
+            this->ecs.kill_entity(pod);
+        }
     }
 }
 
@@ -1096,6 +1119,7 @@ void Game::handleBombDestroyed(Network::Packet &packet)
         }), this->_bombs.end());
     }
 }
+
 void Game::handleChatMessage(Network::Packet &packet)
 {
     std::cout << "msg" << std::endl;
@@ -1123,4 +1147,34 @@ void Game::sendChat(std::string const &msg)
         out << 0_c;
     }
     this->_net.send(out);
+}
+
+
+void Game::handlePodInfo(Network::Packet &packet)
+{
+    unsigned int userId = packet.getData().getDataUInt();
+    unsigned char level = packet.getData().getDataUChar();
+    unsigned char front = packet.getData().getDataUChar();
+
+
+    std::pair<entity_t, unsigned char> tmp = getPodEntityFromId(userId);
+
+    entity_t entity = tmp.first;
+    if (entity == 0) {
+        entity = this->_factory.createPod(this->_manager.getTexture(Loader::Loader::Pod1), this->_resMult);
+        std::tuple<size_t, entity_t, unsigned char> newPod(static_cast<size_t>(userId), entity, front);
+        this->_pods.push_back(newPod);
+    } else {
+        for(auto i = _pods.begin(); i != _pods.end(); ++i) {
+            if (std::get<0>(*i) == userId) {
+                std::get<2>(*i) = level;
+                break;
+            }
+        }
+    }
+    this->ecs.modify_component<ECS::components::PositionComponent>(getPlayerEntityFromId(userId), [this, entity, level](ECS::components::PositionComponent &comp) {
+        if (level == 1)
+            this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(entity, comp.getX() + 240 * this->_resMult, comp.getY() + 41 * this->_resMult));
+    });
+
 }

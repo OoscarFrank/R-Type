@@ -57,7 +57,10 @@ namespace game {
                 playerLifeContent,
                 Bonus,
                 Bomb,
-                Laser
+                Laser,
+                Pod1,
+                Pod2,
+                Pod3
             };
         /**
          * @brief Load a texture from a path

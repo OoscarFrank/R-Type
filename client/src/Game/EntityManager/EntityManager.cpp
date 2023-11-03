@@ -71,3 +71,14 @@ entity_t EntityManager::getBombEntityFromId(unsigned int id)
 }
 
 
+std::pair<entity_t, unsigned char> EntityManager::getPodEntityFromId(unsigned int id)
+{
+    for (auto &pod : this->_pods)
+    {
+        if (std::get<0>(pod) == id) {
+            std::pair<entity_t, unsigned char> out(std::get<1>(pod), std::get<2>(pod));
+            return out;
+        }
+    }
+    return std::make_pair(0, 0);
+}

@@ -70,6 +70,7 @@ namespace game {
             entity_t createBonus(const std::shared_ptr<sf::Texture> &texture, float x, float y, float scale);
             entity_t createMissileAnnimated(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale);
             entity_t createBomb(const std::shared_ptr<sf::Texture> &texture, float x, float y, float scale);
+            entity_t createPod(const std::shared_ptr<sf::Texture> &texture, float scale);
         private:
             ECS::Registry &_registry;
     };

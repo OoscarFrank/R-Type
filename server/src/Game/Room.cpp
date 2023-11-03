@@ -407,6 +407,10 @@ void Room::handleForcePod()
 {
     for(auto p = _players.begin(); p != _players.end(); ++p) {
         (*p)->forcePod().refresh();
+        if ((*p)->forcePod().getLvl() != 1 && (*p)->score() >= POD_ONE_SCORE) {
+            (*p)->forcePod().setLvl(1);
+            this->sendToAll(StreamFactory::podInfo((*p)->id(), 1, 1));
+        }
         for (auto m = _monsters.begin(); m != _monsters.end(); m++)
             (*p)->forcePod().bombCollide(**m);
     }

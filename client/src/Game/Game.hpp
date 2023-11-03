@@ -133,5 +133,7 @@ namespace game {
             void handleBombPosition(Network::Packet &packet);
             void handleBombDestroyed(Network::Packet &packet);
             void handleChatMessage(Network::Packet &packet);
+            void handlePodInfo(Network::Packet &packet);
+            
     };
 }

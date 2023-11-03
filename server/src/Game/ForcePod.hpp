@@ -16,7 +16,8 @@ class ForcePod {
         void toggleFront();
         void shootBomb();
         void bombCollide(IEntity &other);
-
+        void setLvl(u_char lvl);
+        u_char getLvl() const;
         std::mutex _mutex;
     private:
         bool _isFront;

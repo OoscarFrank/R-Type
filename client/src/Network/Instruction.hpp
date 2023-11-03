@@ -82,6 +82,7 @@ struct Commands {
  * 31 serv - bomb position (id, x, y)
  * 32 serv - bomb destroyed (id)
  * 33 serv - broadcast chat message (player id, message)
+ * 35 serv - player pod level (userId, level, front)
  *
  */
 #define IN_COMMANDS { \
@@ -109,5 +110,6 @@ struct Commands {
     {31, {UINT, SHORT, SHORT}, 8, false}, \
     {32, {UINT}, 4, true}, \
     {33, {UINT, 1000}, 1004, true}, \
+    {35, {UINT, UCHAR, UCHAR}, 6, true}, \
     {255, {USHORT}, 2, true} \
 }
