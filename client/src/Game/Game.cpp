@@ -721,8 +721,8 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
 
     entity_t timerText = this->getTextByType(game::EntityManager::TEXT_TYPE::TIMER);
     if (this->_started == true) {
-        entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effets/good_luck.ogg"), 1000, true);
-        this->_sounds.emplace_back(soundEntity);
+        // entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effets/good_luck.ogg"), 1000, true);
+        // this->_sounds.emplace_back(soundEntity);
 
         if (timerText != 0)
             this->ecs.kill_entity(timerText);
