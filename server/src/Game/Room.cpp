@@ -327,7 +327,7 @@ void Room::checkCollisionMonsters()
                 continue;
             if ((**p).collide(**m)) {
                 (**m).setLife((**m).life() - (**p).getDamage());
-                (**p).setScore((**p).score() + 10);
+                (**p).setScore((**p).score() + MISSILE_SCORE);
                 return;
             }
         }
@@ -463,4 +463,38 @@ u_int Room::ChatMessage::getPlayerId() const
 const std::string &Room::ChatMessage::getMessage() const
 {
     return _message;
+}
+
+void Room::degInZone(float x, float y, size_t radius, Player &player)
+{
+    for(auto i = _monsters.begin(); i != _monsters.end(); ++i) {
+        float tmpX = (*i)->box().x;
+        float tmpY = (*i)->box().y;
+        if ((std::sqrt(std::pow(tmpX - x, 2) + std::pow(tmpY - y, 2))) <= radius) {
+            (*i)->setLife((*i)->life() - BOMB_DAMAGE);
+            player.setScore(player.score() + BOMB_SCORE);
+            continue;
+        }
+        tmpX = (*i)->box().x + (*i)->box().width;
+        tmpY = (*i)->box().y;
+        if ((std::sqrt(std::pow(tmpX - x, 2) + std::pow(tmpY - y, 2))) <= radius) {
+            (*i)->setLife((*i)->life() - BOMB_DAMAGE);
+            player.setScore(player.score() + BOMB_SCORE);
+            continue;
+        }
+        tmpX = (*i)->box().x + (*i)->box().width;
+        tmpY = (*i)->box().y + (*i)->box().height;
+        if ((std::sqrt(std::pow(tmpX - x, 2) + std::pow(tmpY - y, 2))) <= radius) {
+            (*i)->setLife((*i)->life() - BOMB_DAMAGE);
+            player.setScore(player.score() + BOMB_SCORE);
+            continue;
+        }
+        tmpX = (*i)->box().x;
+        tmpY = (*i)->box().y + (*i)->box().height;
+        if ((std::sqrt(std::pow(tmpX - x, 2) + std::pow(tmpY - y, 2))) <= radius) {
+            (*i)->setLife((*i)->life() - BOMB_DAMAGE);
+            player.setScore(player.score() + BOMB_SCORE);
+            continue;
+        }
+    }
 }

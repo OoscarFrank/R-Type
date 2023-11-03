@@ -41,6 +41,8 @@
 #define POD_TWO_SCORE       2000
 #define POD_THREE_SCORE     3000
 
+#define BOMB_SCORE          15
+#define MISSILE_SCORE       10
 
 // Progress steps
 #define MAP_PROGRESS_STEP                       7

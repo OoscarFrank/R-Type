@@ -1192,7 +1192,7 @@ void Game::handleBombDestroyed(Network::Packet &packet)
         }
 
         this->ecs.modify_component<ECS::components::PositionComponent>(entity, [this](ECS::components::PositionComponent &comp) {
-            this->_factory.createExplosion(this->_manager.getTexture(Loader::Loader::Explosion1),  comp.getX() - 112 * this->_resMult, comp.getY() - 113 * this->_resMult, this->_resMult);
+            this->_factory.createExplosion(this->_manager.getTexture(Loader::Loader::Explosion1),  comp.getX() - 240 * this->_resMult, comp.getY() - 241 * this->_resMult, this->_resMult);
         });
 
 
