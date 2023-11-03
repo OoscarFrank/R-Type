@@ -82,7 +82,6 @@ Game::Game(std::string ip, int port) :
 
     this->_lastTime = NOW;
     this->eventMemory = 0;
-    this->_gameState = gameState::MENU;
 
     this->_roomsData.resize(6);
     for (auto &node : this->_roomsData) {
@@ -104,29 +103,95 @@ Game::Game(std::string ip, int port) :
 
     this->initButtons();
     this->initMenus();
-    this->_menuManager.enableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
 
-    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::RedPixel), _screenSize.x, _screenSize.y));
-    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::GreenPixel), _screenSize.x, _screenSize.y));
-    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::BluePixel), _screenSize.x, _screenSize.y));
-    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::YellowPixel), _screenSize.x, _screenSize.y));
-    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::PurplePixel), _screenSize.x, _screenSize.y));
-    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::CyanPixel), _screenSize.x, _screenSize.y));
-    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::WhitePixel), _screenSize.x, _screenSize.y));
-
-    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/piou.ogg"), 1000);
-    this->_sounds.emplace(EntityManager::SOUND_TYPE::TEST, soundEntity);
+    this->_strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::RedPixel), this->_screenSize.x, this->_screenSize.y));
+    this->_strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::GreenPixel), this->_screenSize.x, this->_screenSize.y));
+    this->_strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::BluePixel), this->_screenSize.x, this->_screenSize.y));
+    this->_strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::YellowPixel), this->_screenSize.x, this->_screenSize.y));
+    this->_strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::PurplePixel), this->_screenSize.x, this->_screenSize.y));
+    this->_strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::CyanPixel), this->_screenSize.x, this->_screenSize.y));
+    this->_strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::WhitePixel), this->_screenSize.x, this->_screenSize.y));
 
     if (this->getTextByType(game::EntityManager::TEXT_TYPE::PING)) {
         entity_t newEntity = this->_factory.createText("Ping: 0", this->_manager.getFont(Loader::Loader::PressStart2P), this->_screenSize.x - 150, this->_screenSize.y - 30, 14);
         this->_textsEntity.insert({game::EntityManager::TEXT_TYPE::PING, newEntity});
     }
-
-    this->_screens.emplace(EntityManager::SCREEN_TYPE::MAIN_MENU, this->_factory.createScreen(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::MenuScreen)));
+    this->createMainMenuScene();
 }
 
 Game::~Game()
 {
+}
+
+void Game::createMainMenuScene()
+{
+    this->_gameState = gameState::MENU;
+
+    this->_menuManager.disableAllmenu();
+
+    for (auto &e : this->_parallax) {
+        this->ecs.kill_entity(e);
+    }
+    this->_parallax.clear();
+    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.070f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
+    this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.1f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
+
+    auto it = this->_screens.find(SCREEN_TYPE::MAIN_MENU);
+    if (it != this->_screens.end()) {
+        this->ecs.enableEntity(it->second);
+    } else {
+        this->_screens.emplace(EntityManager::SCREEN_TYPE::MAIN_MENU, this->_factory.createScreen(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::MenuScreen)));
+    }
+
+    this->_menuManager.enableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
+}
+
+void Game::killGameEntity()
+{
+    this->stopAllMusic(this->ecs);
+
+    for (auto &e : this->_players) {
+        this->ecs.kill_entity(e.second);
+    }
+    this->_players.clear();
+
+    for (auto &e : this->_missiles) {
+        this->ecs.kill_entity(e.second);
+    }
+    this->_missiles.clear();
+
+    for (auto &e : this->_ennemies) {
+        this->ecs.kill_entity(e.second);
+    }
+    this->_ennemies.clear();
+
+    for (auto &e : this->_bonuses) {
+        this->ecs.kill_entity(e.second);
+    }
+    this->_bonuses.clear();
+
+    for (auto &e : this->_bombs) {
+        this->ecs.kill_entity(e.second);
+    }
+    this->_bombs.clear();
+
+    for (auto &e : this->_loadingBar) {
+        this->ecs.kill_entity(e.second);
+    }
+    this->_loadingBar.clear();
+
+    this->ecs.kill_entity(this->_scoreCoche);
+    this->_scoreCoche = 0;
+
+    for (auto &e : this->_textsEntity) {
+        if (this->ecs.isEntityExist(e.second))
+            this->ecs.kill_entity(e.second);
+    }
+    this->_textsEntity.clear();
+
+    if (this->ecs.isEntityExist(_looser)) {
+        this->ecs.kill_entity(_looser);
+    }
 }
 
 void Game::refreshScreenSize()
@@ -226,38 +291,8 @@ void Game::initButtons()
         Stream out;
         out << 24_uc;
         this->_net.send(out);
-
-        this->_gameState = gameState::MENU;
-        this->_menuManager.disableAllmenu();
-        this->_menuManager.enableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
-
-        for (auto &e : this->_missiles) {
-            this->ecs.kill_entity(e.second);
-        }
-        this->_missiles.clear();
-        for (auto &e : this->_ennemies) {
-            this->ecs.kill_entity(e.second);
-        }
-        this->_ennemies.clear();
-        for (auto &e : this->_players) {
-            this->ecs.kill_entity(e.second);
-        }
-        this->_players.clear();
-
-        this->ecs.kill_entity(this->_scoreCoche);
-        this->_scoreCoche = 0;
-
-        for (auto &e : _loadingBar) {
-            this->ecs.kill_entity(e.second);
-        }
-        this->_loadingBar.clear();
-
-        this->ecs.kill_entity(this->_looser);
-        this->_looser = 0;
-
-        for (auto &e : this->_strobes) {
-            this->ecs.disableEntity(e);
-        }
+        this->killGameEntity();
+        this->createMainMenuScene();
     }
     ));
 }
@@ -406,8 +441,8 @@ void Game::sendMoveToServer()
                 Stream out;
                 out << 5_uc;
                 this->_net.send(out);
-                auto soundComponent = this->ecs.getComponent<ECS::components::SoundComponent>(this->_sounds[EntityManager::SOUND_TYPE::TEST]);
-                soundComponent.playSound();
+                entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/piou.ogg"), 1000, true);
+                this->_sounds.emplace_back(soundEntity);
             }
             if ((*i).getEvent() & BOMB && std::chrono::system_clock::now() - this->_lastPlayerBombFireTime > std::chrono::milliseconds(160)) {
                 this->_lastPlayerBombFireTime = std::chrono::system_clock::now();
@@ -438,6 +473,7 @@ int Game::MainLoop()
         ECS::systems::MovableSystem().update(this->ecs, this->_entityPositions, this->topLeftOffeset);
         ECS::systems::ScaleSystem().update(this->ecs);
         ECS::systems::TextSystem().update(this->ecs, this->_textsUpdate);
+        ECS::systems::SoundSystem().update(this->ecs, this->_sounds);
         this->_window.clear();
 
         // DRAW SYSTEM CALL HERE
@@ -454,8 +490,8 @@ int Game::MainLoop()
 void Game::handlePlayerPosition(Network::Packet &packet)
 {
     unsigned int id;
-    unsigned short x;
-    unsigned short y;
+    short x;
+    short y;
     packet >> id >> x >> y;
     x *= this->_resMult;
     y *= this->_resMult;
@@ -467,8 +503,8 @@ void Game::handleMissilePosition(Network::Packet &packet)
 {
     unsigned int id;
     unsigned char type;
-    unsigned short x;
-    unsigned short y;
+    short x;
+    short y;
     packet >> id >> type >> x >> y;
     x *= this->_resMult;
     y *= this->_resMult;
@@ -547,8 +583,8 @@ void Game::handleEnnemiPosition(Network::Packet &packet)
 {
     unsigned int id;
     unsigned char type;
-    unsigned short x;
-    unsigned short y;
+    short x;
+    short y;
     packet >> id >> type >> x >> y;
     x *= this->_resMult;
     y *= this->_resMult;
@@ -633,12 +669,14 @@ void Game::handleRoomJoin(Network::Packet &packet)
 
     this->_scoreCoche = this->_factory.createScoreCoche((((this->_window.getSize().x / 2) - ((660.0 * this->_resMult) / 2))), this->topLeftOffeset.y , this->_manager.getTexture(Loader::Loader::ScoreCoche), this->_resMult);
 
-    entity_t playerLifeBar = this->_factory.createLoadingBar(this->topLeftOffeset.x + 10.0f, this->topLeftOffeset.y + this->_screenSize.y - (100.0f * this->_resMult), this->_manager.getTexture(Loader::Loader::playerLifeOutline), this->_manager.getTexture(Loader::Loader::playerLifeContent), this->_resMult);
-    this->_loadingBar.insert(std::make_pair(EntityManager::LOADINGBAR_TYPE::PLAYER_LIFE, playerLifeBar));
+    if (this->_loadingBar.find(EntityManager::LOADINGBAR_TYPE::PLAYER_LIFE) == this->_loadingBar.end()) {
+        entity_t playerLifeBar = this->_factory.createLoadingBar(this->topLeftOffeset.x + 10.0f, this->topLeftOffeset.y + this->_screenSize.y - (100.0f * this->_resMult), this->_manager.getTexture(Loader::Loader::playerLifeOutline), this->_manager.getTexture(Loader::Loader::playerLifeContent), this->_resMult);
+        this->_loadingBar.insert(std::make_pair(EntityManager::LOADINGBAR_TYPE::PLAYER_LIFE, playerLifeBar));
+    }
 
     auto it = this->_screens.find(SCREEN_TYPE::MAIN_MENU);
     if (it != this->_screens.end()) {
-        this->ecs.kill_entity(it->second);
+        this->ecs.disableEntity(it->second);
     }
 }
 
@@ -731,8 +769,8 @@ void Game::handleMissileDeath(Network::Packet &packet)
 {
     unsigned int id;
     unsigned char type;
-    unsigned short x;
-    unsigned short y;
+    short x;
+    short y;
     packet >> id >> type >> x >> y;
     x *= this->_resMult;
     y *= this->_resMult;

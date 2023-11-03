@@ -181,10 +181,10 @@ entity_t Factory::createLoadingBar(float x, float y, const std::shared_ptr<sf::T
     return newEntity;
 }
 
-entity_t Factory::createSound(const std::string &soundPath, float volume)
+entity_t Factory::createSound(const std::string &soundPath, float volume, bool play)
 {
     entity_t newEntity = _registry.spawn_entity();
-    _registry.emplace_component<ECS::components::SoundComponent>(newEntity, ECS::components::SoundComponent{soundPath, volume});
+    _registry.emplace_component<ECS::components::SoundComponent>(newEntity, ECS::components::SoundComponent{soundPath, volume, play});
     return newEntity;
 }
 

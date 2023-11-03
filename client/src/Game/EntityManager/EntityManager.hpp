@@ -22,10 +22,6 @@ namespace game {
             BLAHBLAH
         };
 
-        enum SOUND_TYPE {
-            TEST
-        };
-
         enum LOADINGBAR_TYPE {
             PLAYER_LIFE
         };
@@ -49,11 +45,12 @@ namespace game {
             entity_t getBombEntityFromId(unsigned int id);
             entity_t getTextByType(TEXT_TYPE type);
 
+            void stopAllMusic(ECS::Registry &ecs);
             void handleMusic(ECS::Registry &ecs, MUSIC_TYPE type, std::function<void(ECS::components::MusicComponent&)> callback);
 
             std::unordered_map<LOADINGBAR_TYPE, entity_t> _loadingBar;
             std::unordered_map<MUSIC_TYPE, entity_t> _musics;
-            std::unordered_map<SOUND_TYPE, entity_t> _sounds;
+            std::vector<entity_t> _sounds;
             std::vector<std::pair<size_t, entity_t>> _players;
             std::vector<std::pair<size_t, entity_t>> _missiles;
             std::vector<std::pair<size_t, entity_t>> _ennemies;
