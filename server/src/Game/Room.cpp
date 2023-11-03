@@ -179,6 +179,7 @@ void Room::refresh()
             _state = STOPPED;
             break;
         }
+        std::this_thread::sleep_for(1us);
     }
 }
 

@@ -25,8 +25,7 @@ void exec(int port, std::vector<std::string> stages)
 
     std::cout << "Server listening on port " << port << std::endl;
 
-    int nbThread = std::thread::hardware_concurrency() - 3;
-    ThreadPool reqPool(nbThread / 2, 10);
+    ThreadPool reqPool(4, 10);
     while (true) {
         Reader::Packet value = queueIn.pop();
         reqPool.submit([value, &router, &levels]() {

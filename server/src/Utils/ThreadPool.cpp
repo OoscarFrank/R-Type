@@ -50,16 +50,14 @@ void ThreadPool::_newThread()
 void ThreadPool::_threadHandler()
 {
     std::cout << "Thread started" << std::endl;
-    std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
     std::function<void()> func = nullptr;
-    while (_pool.tryPop(func) || std::chrono::system_clock::now() - start < std::chrono::seconds(_secondsToWait)) {
-        if (func != nullptr) {
-            if (!_pool.empty())
-                _newThread();
-            func();
-            func = nullptr;
-            start = std::chrono::system_clock::now();
-        }
+    while (_pool.tryPop(func, std::chrono::seconds(_secondsToWait))) {
+        if (func == nullptr)
+            break;
+        if (!_pool.empty())
+            _newThread();
+        func();
+        func = nullptr;
     }
     std::cout << "Thread finished" << std::endl;
 }
