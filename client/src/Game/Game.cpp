@@ -124,6 +124,8 @@ Game::Game(std::string ip, int port) :
         this->_textsEntity.insert({game::EntityManager::TEXT_TYPE::PING, newEntity});
     }
     this->createMainMenuScene();
+
+    _chatText = this->_factory.createText("", this->_manager.getFont(Loader::Loader::PressStart2P), 10, this->_screenSize.y / 2, 14);
 }
 
 Game::~Game()
@@ -481,6 +483,23 @@ void Game::sendMoveToServer()
 int Game::MainLoop()
 {
     while (this->_window.isOpen()) {
+        if (this->_gameState == gameState::MATCHMAKING) {
+            ECS::components::TextComponent &text = this->ecs.getComponent<ECS::components::TextComponent>(_chatText);
+            for (auto &i : _keyboardInputs) {
+                if (i == '\n' || i == '\r') {
+                    if (_chatInput.size() != 0)
+                        sendChat(_chatInput);
+                    _chatInput = "";
+                    this->_textsUpdate[_chatText] = _chatInput;
+                    break;
+                } else {
+                    _chatInput += i;
+                    this->_textsUpdate[_chatText] = _chatInput;
+                }
+            }
+        }
+        _keyboardInputs.clear();
+
         this->refreshScreenSize();
         long currentTime = NOW;
         float deltaTime = (currentTime - this->_lastTime) / 1.0f;
@@ -488,7 +507,7 @@ int Game::MainLoop()
         this->update();
 
         // ALL SYSTEMS CALL HERE
-        ECS::systems::ControllableSystem().update(this->ecs, this->_entityEvents, this->_window, this->eventMemory);
+        ECS::systems::ControllableSystem().update(this->ecs, this->_entityEvents, this->_keyboardInputs, this->_window, this->eventMemory);
         ECS::systems::PositionSystem().update(this->ecs, this->topLeftOffeset);
         ECS::systems::AnimationSystem().update(this->ecs, deltaTime);
         ECS::systems::AnimationOneTimeSystem().update(this->ecs, deltaTime);
@@ -1166,7 +1185,6 @@ void Game::handleBombDestroyed(Network::Packet &packet)
 
 void Game::handleChatMessage(Network::Packet &packet)
 {
-    std::cout << "msg" << std::endl;
     u_int playerId;
     std::string msg;
     char tmp;
