@@ -61,6 +61,16 @@ namespace game {
                 ENDGAME
             };
 
+            enum MISSILE_TYPE {
+                PLAYER_ONE = 1,
+                LITTLE_MONSTER,
+                ORANGE_MISSILE,
+                PURPLE_MISSILE,
+                GREEN_MISSILE,
+                PLAYER_TWO,
+                PLAYER_THREE,
+            };
+
         private:
             sf::RenderWindow _window;
             sf::Vector2f _screenSize;
@@ -130,6 +140,6 @@ namespace game {
             void handleBombDestroyed(Network::Packet &packet);
             void handleChatMessage(Network::Packet &packet);
             void handlePodInfo(Network::Packet &packet);
-            
+
     };
 }
