@@ -485,19 +485,17 @@ int Game::MainLoop()
 {
     while (this->_window.isOpen()) {
         if (this->_gameState == gameState::MATCHMAKING) {
-            ECS::components::TextComponent &text = this->ecs.getComponent<ECS::components::TextComponent>(_chatText);
             for (auto &i : _keyboardInputs) {
                 if (i == '\n' || i == '\r') {
-                    if (_chatInput.size() != 0)
+                    if (_chatInput.size() > 0)
                         sendChat(_chatInput);
                     _chatInput = "";
-                    this->_textsUpdate[_chatText] = _chatInput;
                     break;
                 } else {
                     _chatInput += i;
-                    this->_textsUpdate[_chatText] = _chatInput;
                 }
             }
+            this->_textsUpdate[_chatText] = _chatInput;
         }
         _keyboardInputs.clear();
 
