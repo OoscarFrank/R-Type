@@ -550,7 +550,7 @@ void Game::handleMissilePosition(Network::Packet &packet)
 
     if (res == 0) {
         switch ((int)type) {
-            case MISSILE_TYPE::PLAYER_ONE: { // MISSILE
+            case MISSILE_TYPE::PLAYER_ONE: {
                     entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Missile));
                     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                     this->_missiles.push_back(std::make_pair(id, newEntity));
@@ -720,6 +720,18 @@ void Game::handleRoomJoin(Network::Packet &packet)
     auto it = this->_screens.find(SCREEN_TYPE::MAIN_MENU);
     if (it != this->_screens.end()) {
         this->ecs.disableEntity(it->second);
+    }
+
+    for (auto &node : this->_roomsData) {
+        std::tuple<int, entity_t, entity_t> foundTuple = node;
+        if (std::get<0>(foundTuple) == -1)
+            continue;
+        if (this->ecs.isEntityExist(std::get<1>(foundTuple)))
+            this->ecs.kill_entity(std::get<1>(foundTuple));
+        if (this->ecs.isEntityExist(std::get<2>(foundTuple)))
+            this->ecs.kill_entity(std::get<2>(foundTuple));
+        std::get<0>(foundTuple) = -1;
+        node = foundTuple;
     }
 
     this->stopAllMusic(this->ecs);

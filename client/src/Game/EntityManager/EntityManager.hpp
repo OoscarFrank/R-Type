@@ -70,12 +70,13 @@ namespace game {
             std::map<SCREEN_TYPE, entity_t> _screens;
             std::unordered_map<entity_t, std::string> _textsUpdate;
             std::unordered_map<TEXT_TYPE, entity_t> _textsEntity;
-
             std::vector<entity_t> _textChat;
-
 
             entity_t _looser;
             entity_t _playerEntity;
             entity_t _scoreCoche;
+
+            entity_t _blackBandTopLeft;
+            entity_t _blackBandBottomRight;
     };
 }
