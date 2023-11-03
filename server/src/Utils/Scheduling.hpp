@@ -37,7 +37,7 @@
 #define BONUS_WIDTH   75
 #define BONUS_HEIGHT  75
 
-#define POD_ONE_SCORE       1000
+#define POD_ONE_SCORE       10
 #define POD_TWO_SCORE       2000
 #define POD_THREE_SCORE     3000
 

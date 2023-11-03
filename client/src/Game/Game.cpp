@@ -63,6 +63,7 @@ Game::Game(std::string ip, int port) :
         this->_manager.loadTexture(client::getAssetPath("entity/bonus/forcePodOne.png"), Loader::toLoad::Pod1);
         this->_manager.loadTexture(client::getAssetPath("entity/bonus/forcePodTwo.png"), Loader::toLoad::Pod2);
         this->_manager.loadTexture(client::getAssetPath("entity/bonus/forcePodThree.png"), Loader::toLoad::Pod3);
+        this->_manager.loadTexture(client::getAssetPath("entity/missile/explosion1.png"), Loader::toLoad::Explosion1);
 
         this->_manager.loadTexture(client::getAssetPath("entity/player/PlayerLifeOutline.png"), Loader::toLoad::playerLifeOutline);
         this->_manager.loadTexture(client::getAssetPath("entity/player/playerLifeContent.png"), Loader::toLoad::playerLifeContent);
@@ -472,6 +473,7 @@ int Game::MainLoop()
         ECS::systems::ControllableSystem().update(this->ecs, this->_entityEvents, this->_window, this->eventMemory);
         ECS::systems::PositionSystem().update(this->ecs, this->topLeftOffeset);
         ECS::systems::AnimationSystem().update(this->ecs, deltaTime);
+        ECS::systems::AnimationOneTimeSystem().update(this->ecs, deltaTime);
         ECS::systems::ParallaxSystem().update(this->ecs, deltaTime, this->topLeftOffeset);
         ECS::systems::MovableSystem().update(this->ecs, this->_entityPositions, this->topLeftOffeset);
         ECS::systems::ScaleSystem().update(this->ecs);
@@ -1111,7 +1113,6 @@ void Game::handleBombDestroyed(Network::Packet &packet)
 
     entity_t entity = getBombEntityFromId(id);
     if (entity != 0) {
-        this->ecs.kill_entity(entity);
 
         this->_entityPositions.erase(std::remove_if(this->_entityPositions.begin(), this->_entityPositions.end(), [id](ECS::systems::MovableSystem::EntityPos const &pair) {
             return pair.getEntity() == id;
@@ -1120,6 +1121,12 @@ void Game::handleBombDestroyed(Network::Packet &packet)
         this->_bombs.erase(std::remove_if(this->_bombs.begin(), this->_bombs.end(), [id](std::pair<unsigned int, entity_t> const &pair) {
             return pair.first == id;
         }), this->_bombs.end());
+
+        this->ecs.modify_component<ECS::components::PositionComponent>(entity, [this](ECS::components::PositionComponent &comp) {
+            this->_factory.createExplosion(this->_manager.getTexture(Loader::Loader::Explosion1),  comp.getX() - 112 * this->_resMult, comp.getY() - 113 * this->_resMult, this->_resMult);
+        });
+
+        this->ecs.kill_entity(entity);
     }
 }
 
