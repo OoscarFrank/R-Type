@@ -230,8 +230,9 @@ namespace ECS
             if (this->hasComponent<components::LoadingBarComponent>(e))
                 this->remove_component<components::LoadingBarComponent>(e);
 
-            if (this->hasComponent<components::ScoreComponent>(e))
-                this->remove_component<components::ScoreComponent>(e);
+            
+            if (this->hasComponent<components::AnimationOneTimeComponent>(e))
+                this->remove_component<components::AnimationOneTimeComponent>(e);
 
             _entity_to_index.erase(it);
             if (_entity_sprite_order.count(e) > 0) {

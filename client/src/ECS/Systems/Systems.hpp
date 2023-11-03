@@ -9,3 +9,4 @@
 #include "ScaleSystem.hpp"
 #include "TextSystem.hpp"
 #include "SoundSystem.hpp"
+#include "AnimationOneTimeSystem.hpp"

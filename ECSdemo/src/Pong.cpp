@@ -21,7 +21,6 @@ Pong::Pong():
     _ecs.register_component<ECS::components::ScaleComponent>();
     _ecs.register_component<ECS::components::ButtonComponent>();
     _ecs.register_component<ECS::components::AnimationComponent>();
-    _ecs.register_component<ECS::components::ScoreComponent>();
     _ecs.register_component<ECS::components::MusicComponent>();
     _ecs.register_component<ECS::components::TextComponent>();
     _ecs.register_component<ECS::components::RectangleShapeComponent>();

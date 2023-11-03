@@ -28,7 +28,7 @@ namespace game {
                 OrangeMissile,
                 PurpleMissile,
                 GreenMissile,
-                Explosion,
+                Explosion1,
                 Monster1,
                 Monster2,
                 Monster3,
@@ -61,7 +61,7 @@ namespace game {
                 Laser,
                 Pod1,
                 Pod2,
-                Pod3
+                Pod3,
             };
         /**
          * @brief Load a texture from a path

@@ -19,7 +19,9 @@ namespace game {
             CLEON,
             AMNESIA,
             SEVENNATION,
-            BLAHBLAH
+            BLAHBLAH,
+            LOBBY,
+            MATCHMAKING
         };
 
         enum LOADINGBAR_TYPE {
@@ -58,7 +60,7 @@ namespace game {
             std::vector<std::pair<size_t, entity_t>> _bonuses;
             std::vector<std::pair<size_t, entity_t>> _bombs;
             std::vector<std::tuple<size_t, entity_t, unsigned char>> _pods;
-            
+
             std::vector<ECS::systems::MovableSystem::EntityPos> _entityPositions;
             std::vector<ECS::systems::ControllableSystem::EntityEvent> _entityEvents;
             std::vector<entity_t> _parallax;
