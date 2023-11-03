@@ -48,8 +48,11 @@ namespace game {
          *
          */
             void update();
-
             void sendMoveToServer();
+
+            void createMainMenuScene();
+
+            void killGameEntity();
 
             enum gameState {
                 MENU,
@@ -71,13 +74,6 @@ namespace game {
 
             entity_t _blackBandTopLeft;
             entity_t _blackBandBottomRight;
-
-
-            std::unordered_map<entity_t, std::string> _texts;
-            entity_t _timerText = 0;
-            entity_t _scoreText = 0;
-            entity_t _gameTimeText = 0;
-            entity_t _pingText = 0;
 
             Loader _manager;
             ECS::Registry ecs;

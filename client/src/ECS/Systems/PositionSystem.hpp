@@ -9,8 +9,8 @@ namespace ECS {
             public:
             /**
              * @brief Update the position of each entity with a position and a velocity component
-             * 
-             * @param ecs 
+             *
+             * @param ecs
              */
                 void update(Registry &ecs, sf::Vector2u offset = {0, 0}) {
                     try {
@@ -26,8 +26,6 @@ namespace ECS {
                                 float newY = position->getY() + velocity->getDY();
                                 position->setX(newX + offset.x);
                                 position->setY(newY + offset.y);
-                                velocity->setDX(0);
-                                velocity->setDY(0);
                             }
                         }
                     } catch (std::exception &e) {
