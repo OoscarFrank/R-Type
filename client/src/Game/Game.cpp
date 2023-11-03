@@ -91,17 +91,18 @@ Game::Game(std::string ip, int port) :
         node = std::make_tuple(-1, 0, 0);
     }
 
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::SOUND_OF_SPACE, this->_factory.createMusic(client::getAssetPath("songs/SOUND_OF_SPACE.ogg"), 50, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::TURN_ON_THE_LIGHTS, this->_factory.createMusic(client::getAssetPath("songs/TURN_ON_THE_LIGHTS.ogg"), 50, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::PUSH_UP, this->_factory.createMusic(client::getAssetPath("songs/PUSH_UP.ogg"), 50, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::VOIS_SUR_TON_CHEMIN, this->_factory.createMusic(client::getAssetPath("songs/VOIS_SUR_TON_CHEMIN.ogg"), 50, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::HEUTE_NACHT, this->_factory.createMusic(client::getAssetPath("songs/HEUTE_NACHT.ogg"), 50, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::CLEON, this->_factory.createMusic(client::getAssetPath("songs/CLEON.ogg"), 50, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::AMNESIA, this->_factory.createMusic(client::getAssetPath("songs/AMNESIA.ogg"), 50, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::SEVENNATION, this->_factory.createMusic(client::getAssetPath("songs/SEVENNATION.ogg"), 50, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::BLAHBLAH, this->_factory.createMusic(client::getAssetPath("songs/BLAHBLAH.ogg"), 100, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::LOBBY, this->_factory.createMusic(client::getAssetPath("songs/lobby.ogg"), 60, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::MATCHMAKING, this->_factory.createMusic(client::getAssetPath("songs/matchmaking.ogg"), 50, false));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::SOUND_OF_SPACE, this->_factory.createMusic(client::getAssetPath("songs/levels/SOUND_OF_SPACE.ogg"), 50, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::TURN_ON_THE_LIGHTS, this->_factory.createMusic(client::getAssetPath("songs/levels/TURN_ON_THE_LIGHTS.ogg"), 50, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::PUSH_UP, this->_factory.createMusic(client::getAssetPath("songs/levels/PUSH_UP.ogg"), 50, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::VOIS_SUR_TON_CHEMIN, this->_factory.createMusic(client::getAssetPath("songs/levels/VOIS_SUR_TON_CHEMIN.ogg"), 50, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::HEUTE_NACHT, this->_factory.createMusic(client::getAssetPath("songs/levels/HEUTE_NACHT.ogg"), 50, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::CLEON, this->_factory.createMusic(client::getAssetPath("songs/levels/CLEON.ogg"), 50, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::AMNESIA, this->_factory.createMusic(client::getAssetPath("songs/levels/AMNESIA.ogg"), 50, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::SEVENNATION, this->_factory.createMusic(client::getAssetPath("songs/levels/SEVENNATION.ogg"), 50, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::BLAHBLAH, this->_factory.createMusic(client::getAssetPath("songs/levels/BLAHBLAH.ogg"), 100, true));
+
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::LOBBY, this->_factory.createMusic(client::getAssetPath("songs/ambient/lobby.ogg"), 60, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::MATCHMAKING, this->_factory.createMusic(client::getAssetPath("songs/ambient/matchmaking.ogg"), 50, false));
 
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.070f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.1f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
@@ -543,7 +544,7 @@ void Game::handleMissilePosition(Network::Packet &packet)
                     entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Missile));
                     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                     this->_missiles.push_back(std::make_pair(id, newEntity));
-                    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/piou.ogg"), 1000, true);
+                    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effets/piou.ogg"), 1000, true);
                     this->_sounds.emplace_back(soundEntity);
                 }
                 break;
@@ -551,7 +552,7 @@ void Game::handleMissilePosition(Network::Packet &packet)
                     entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Missile));
                     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                     this->_missiles.push_back(std::make_pair(id, newEntity));
-                    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/piou.ogg"), 1000, true);
+                    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effets/piou.ogg"), 1000, true);
                     this->_sounds.emplace_back(soundEntity);
                 }
                 break;
@@ -577,7 +578,7 @@ void Game::handleMissilePosition(Network::Packet &packet)
                     entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::MissileRed));
                     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                     this->_missiles.push_back(std::make_pair(id, newEntity));
-                    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/piou.ogg"), 1000, true);
+                    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effets/piou.ogg"), 1000, true);
                     this->_sounds.emplace_back(soundEntity);
                 }
                 break;
@@ -585,7 +586,7 @@ void Game::handleMissilePosition(Network::Packet &packet)
                     entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::MissileRed));
                     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                     this->_missiles.push_back(std::make_pair(id, newEntity));
-                    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/piou.ogg"), 1000, true);
+                    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effets/piou.ogg"), 1000, true);
                     this->_sounds.emplace_back(soundEntity);
                 }
                 break;
@@ -720,7 +721,7 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
 
     entity_t timerText = this->getTextByType(game::EntityManager::TEXT_TYPE::TIMER);
     if (this->_started == true) {
-        entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/good_luck.ogg"), 1000, true);
+        entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effets/good_luck.ogg"), 1000, true);
         this->_sounds.emplace_back(soundEntity);
 
         if (timerText != 0)
@@ -860,7 +861,7 @@ void Game::handlePlayerDeath(Network::Packet &packet)
 
     entity_t res = getPlayerEntityFromId(id);
     if (res == this->_playerEntity) {
-        entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/your_dead.ogg"), 1000, true);
+        entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effets/your_dead.ogg"), 1000, true);
         this->_sounds.emplace_back(soundEntity);
 
         this->_looser = this->_factory.createScreen(this->topLeftOffeset.x, this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::LooserScreen));
@@ -869,6 +870,9 @@ void Game::handlePlayerDeath(Network::Packet &packet)
         this->_gameState = gameState::ENDGAME;
     }
     if (res != 0) {
+        entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effets/tango_down.ogg"), 1000, true);
+        this->_sounds.emplace_back(soundEntity);
+
         this->ecs.kill_entity(res);
 
         this->_entityPositions.erase(std::remove_if(this->_entityPositions.begin(), this->_entityPositions.end(), [id](ECS::systems::MovableSystem::EntityPos const &pair) {
@@ -1101,7 +1105,7 @@ void Game::handleBonusDestroyed(Network::Packet &packet)
 
     entity_t entity = getBonusEntityFromId(id);
     if (entity != 0) {
-        entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/tracket.ogg"), 1000, true);
+        entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effets/tracket.ogg"), 1000, true);
         this->_sounds.emplace_back(soundEntity);
 
         this->ecs.kill_entity(entity);
