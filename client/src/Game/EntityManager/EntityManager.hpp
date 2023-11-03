@@ -18,7 +18,8 @@ namespace game {
             HEUTE_NACHT,
             CLEON,
             AMNESIA,
-            SEVENNATION
+            SEVENNATION,
+            LOBBY
         };
 
         enum LOADINGBAR_TYPE {
