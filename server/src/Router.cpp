@@ -16,6 +16,7 @@ Router::Router(RoomManager &rm, const std::vector<std::shared_ptr<Client>> &allC
     _functions[26] = &Router::_listRooms;
     _functions[30] = &Router::_fireBomb;
     _functions[34] = &Router::_sendChat;
+    _functions[36] = &Router::_fireLaser;
     _functions[255] = &Router::_cmdNotRecieved;
 }
 
@@ -125,6 +126,21 @@ void Router::_fireBomb(Reader::Packet &packet, Levels &levels)
         tmpRoom._playersMutex.lock();
         ForcePod &tmp = tmpPlayer.forcePod();
         tmp.shootBomb();
+        tmpRoom._playersMutex.unlock();
+    } catch (const std::runtime_error &e) {
+        tmpRoom._playersMutex.unlock();
+        std::cout << "error" << std::endl;;
+    }
+}
+
+void Router::_fireLaser(Reader::Packet &packet, Levels &levels)
+{
+    Room &tmpRoom = _rm.getRoom(packet.getClient());
+    try {
+        Player &tmpPlayer = tmpRoom.getPlayer(packet.getClient());
+        tmpRoom._playersMutex.lock();
+        ForcePod &tmp = tmpPlayer.forcePod();
+        tmp.shootLaser();
         tmpRoom._playersMutex.unlock();
     } catch (const std::runtime_error &e) {
         tmpRoom._playersMutex.unlock();

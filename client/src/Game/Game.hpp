@@ -103,6 +103,7 @@ namespace game {
             std::chrono::system_clock::time_point _startGameTime;
             std::chrono::system_clock::time_point _lastPlayerFireTime;
             std::chrono::system_clock::time_point _lastPlayerBombFireTime;
+            std::chrono::system_clock::time_point _lastPlaerLaserFireTime;
 
             std::vector<u_char> _keyboardInputs;
             std::string _chatInput;
@@ -140,6 +141,7 @@ namespace game {
             void handleBombDestroyed(Network::Packet &packet);
             void handleChatMessage(Network::Packet &packet);
             void handlePodInfo(Network::Packet &packet);
+            void handleLaser(Network::Packet &packet);
 
     };
 }

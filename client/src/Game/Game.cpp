@@ -61,11 +61,11 @@ Game::Game(std::string ip, int port) :
         this->_manager.loadTexture(client::getAssetPath("entity/Pixels/WhitePixel.png"), Loader::toLoad::WhitePixel);
         this->_manager.loadTexture(client::getAssetPath("entity/bonus/bonus.png"), Loader::toLoad::Bonus);
         this->_manager.loadTexture(client::getAssetPath("entity/missile/bomb.png"), Loader::toLoad::Bomb);
-        this->_manager.loadTexture(client::getAssetPath("entity/missile/laser.png"), Loader::toLoad::Laser);
         this->_manager.loadTexture(client::getAssetPath("entity/bonus/forcePodOne.png"), Loader::toLoad::Pod1);
         this->_manager.loadTexture(client::getAssetPath("entity/bonus/forcePodTwo.png"), Loader::toLoad::Pod2);
         this->_manager.loadTexture(client::getAssetPath("entity/bonus/forcePodThree.png"), Loader::toLoad::Pod3);
         this->_manager.loadTexture(client::getAssetPath("entity/missile/explosion1.png"), Loader::toLoad::Explosion1);
+        this->_manager.loadTexture(client::getAssetPath("entity/missile/laser.png"), Loader::toLoad::Laser);
 
         this->_manager.loadTexture(client::getAssetPath("entity/player/PlayerLifeOutline.png"), Loader::toLoad::playerLifeOutline);
         this->_manager.loadTexture(client::getAssetPath("entity/player/playerLifeContent.png"), Loader::toLoad::playerLifeContent);
@@ -384,6 +384,7 @@ void Game::update()
         {32, [&](Network::Packet &packet) { this->handleBombDestroyed(packet); }},
         {33, [&](Network::Packet &packet) { this->handleChatMessage(packet); }},
         {35, [&](Network::Packet &packet) { this->handlePodInfo(packet); }},
+        {37, [&](Network::Packet &packet) { this->handleLaser(packet); }},
     };
 
     while (this->_net.getQueueIn().tryPop(packet)) {
@@ -471,6 +472,12 @@ void Game::sendMoveToServer()
                 out << 30_uc;
                 this->_net.send(out);
             }
+            if ((*i).getEvent() & LASER && std::chrono::system_clock::now() - this->_lastPlaerLaserFireTime > std::chrono::milliseconds(900)) {
+                this->_lastPlaerLaserFireTime = std::chrono::system_clock::now();
+                Stream out;
+                out << 36_uc;
+                this->_net.send(out);
+            }
             continue;
         }
     }
@@ -545,6 +552,8 @@ void Game::handlePlayerPosition(Network::Packet &packet)
     if (tmp.first != 0) {
         if (tmp.second == 1)
             this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(tmp.first, x + 240 * _resMult, y + 41 * _resMult));
+        if (tmp.second == 2)
+            this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(tmp.first, x + 240 * _resMult, y + 33 * _resMult));
     }
     this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(this->getPlayerEntityFromId(id), x, y));
 }
@@ -1315,6 +1324,26 @@ void Game::handlePodInfo(Network::Packet &packet)
     this->ecs.modify_component<ECS::components::PositionComponent>(getPlayerEntityFromId(userId), [this, entity, level](ECS::components::PositionComponent &comp) {
         if (level == 1)
             this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(entity, comp.getX() + 240 * this->_resMult, comp.getY() + 41 * this->_resMult));
+        if (level == 2) {
+            const std::shared_ptr<sf::Texture> &texture = this->_manager.getTexture(Loader::Loader::Pod2);
+            this->ecs.emplace_component<ECS::components::SpriteComponent>(entity, ECS::components::SpriteComponent{texture});
+            this->ecs.emplace_component<ECS::components::TextureRectComponent>(entity, ECS::components::TextureRectComponent{0, 0, (int)texture->getSize().x, 64, 6, 150.0f});
+            this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(entity, comp.getX() + 240 * this->_resMult, comp.getY() + 41 * this->_resMult));
+        }
     });
 
+}
+
+void Game::handleLaser(Network::Packet &packet)
+{
+    unsigned int id = packet.getData().getDataUInt();
+    unsigned short y = packet.getData().getDataUShort();
+
+    float tmp = 320 * this->_resMult;
+
+    for (int i = 0; i < this->_screenSize.x; i += tmp) {
+        --i;
+
+        this->_factory.createLaser(this->_manager.getTexture(Loader::Loader::Laser), i,(y - 80) * this->_resMult, this->_resMult);
+    }
 }

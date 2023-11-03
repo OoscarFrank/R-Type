@@ -658,3 +658,12 @@ Stream StreamFactory::podInfo(u_int userId, u_char lvl, u_char front)
     out.setDataUChar(front);
     return out;
 }
+
+Stream StreamFactory::laserCreated(u_int id, u_short y)
+{
+    Stream out;
+    out.setDataUChar(37);
+    out.setDataUInt(id);
+    out.setDataUShort(y);
+    return out;
+}
