@@ -43,6 +43,7 @@ namespace game {
                 MatchListButton,
                 LooserScreen,
                 MenuScreen,
+                ChatBox,
                 BlackPixel,
                 ScoreCoche,
                 RedPixel,

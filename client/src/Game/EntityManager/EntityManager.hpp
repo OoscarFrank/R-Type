@@ -29,14 +29,16 @@ namespace game {
         };
 
         enum SCREEN_TYPE {
-            MAIN_MENU
+            MAIN_MENU,
+            CHAT_BOX
         };
 
         enum TEXT_TYPE {
             TIMER,
             SCORE,
             GAME_TIME,
-            PING
+            PING,
+            TCHAT
         };
 
         protected:
@@ -68,6 +70,8 @@ namespace game {
             std::map<SCREEN_TYPE, entity_t> _screens;
             std::unordered_map<entity_t, std::string> _textsUpdate;
             std::unordered_map<TEXT_TYPE, entity_t> _textsEntity;
+
+            std::vector<entity_t> _textChat;
 
 
             entity_t _looser;

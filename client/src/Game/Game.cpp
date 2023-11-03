@@ -31,6 +31,7 @@ Game::Game(std::string ip, int port) :
 
         this->_manager.loadTexture(client::getAssetPath("screens/LooserScreen.png"), Loader::toLoad::LooserScreen);
         this->_manager.loadTexture(client::getAssetPath("screens/menuScreen.png"), Loader::toLoad::MenuScreen);
+        this->_manager.loadTexture(client::getAssetPath("screens/chatbox.png"), Loader::toLoad::ChatBox);
 
         this->_manager.loadTexture(client::getAssetPath("entity/missile/missile.png"), Loader::toLoad::Missile);
         this->_manager.loadTexture(client::getAssetPath("entity/missile/missileRed.png"), Loader::toLoad::MissileRed);
@@ -103,7 +104,7 @@ Game::Game(std::string ip, int port) :
     this->_musics.emplace(EntityManager::MUSIC_TYPE::SEVENNATION, this->_factory.createMusic(client::getAssetPath("songs/levels/SEVENNATION.ogg"), soundLevel_volume, true));
     this->_musics.emplace(EntityManager::MUSIC_TYPE::BLAHBLAH, this->_factory.createMusic(client::getAssetPath("songs/levels/BLAHBLAH.ogg"), 100, true));
 
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::LOBBY, this->_factory.createMusic(client::getAssetPath("songs/ambient/lobby.ogg"), 60, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::LOBBY, this->_factory.createMusic(client::getAssetPath("songs/ambient/lobby.ogg"), soundLevel_volume, true));
     this->_musics.emplace(EntityManager::MUSIC_TYPE::MATCHMAKING, this->_factory.createMusic(client::getAssetPath("songs/ambient/matchmaking.ogg"), soundLevel_volume, false));
 
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.070f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
@@ -125,8 +126,6 @@ Game::Game(std::string ip, int port) :
         this->_textsEntity.insert({game::EntityManager::TEXT_TYPE::PING, newEntity});
     }
     this->createMainMenuScene();
-
-    _chatText = this->_factory.createText("", this->_manager.getFont(Loader::Loader::PressStart2P), 10, this->_screenSize.y / 2, 14);
 }
 
 Game::~Game()
@@ -239,10 +238,7 @@ void Game::initButtons()
     [&](void) {
         this->_menuManager.disableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
         this->_gameState = gameState::MATCHMAKING;
-        this->stopAllMusic(this->ecs);
-        this->handleMusic(this->ecs, EntityManager::MUSIC_TYPE::MATCHMAKING, [&](ECS::components::MusicComponent &music) {
-            music.playMusic();
-        });
+
         Stream out;
         out << 8_uc << 0_uc;
         this->_net.send(out);
@@ -252,10 +248,7 @@ void Game::initButtons()
     [&](void) {
         this->_menuManager.disableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
         this->_gameState = gameState::MATCHMAKING;
-        this->stopAllMusic(this->ecs);
-        this->handleMusic(this->ecs, EntityManager::MUSIC_TYPE::MATCHMAKING, [&](ECS::components::MusicComponent &music) {
-            music.playMusic();
-        });
+
         Stream out;
         out << 9_uc;
         this->_net.send(out);
@@ -287,10 +280,6 @@ void Game::initButtons()
 
             this->_menuManager.disableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
             this->_gameState = gameState::MATCHMAKING;
-            this->stopAllMusic(this->ecs);
-            this->handleMusic(this->ecs, EntityManager::MUSIC_TYPE::MATCHMAKING, [&](ECS::components::MusicComponent &music) {
-                music.playMusic();
-            });
 
             for (auto &node : this->_roomsData) {
                 std::tuple<int, entity_t, entity_t> foundTuple = node;
@@ -484,18 +473,19 @@ void Game::sendMoveToServer()
 int Game::MainLoop()
 {
     while (this->_window.isOpen()) {
-        if (this->_gameState == gameState::MATCHMAKING) {
+        entity_t tchatText = this->getTextByType(EntityManager::TEXT_TYPE::TCHAT);
+        if (this->_gameState == gameState::MATCHMAKING && this->ecs.isEntityExist(tchatText)) {
             for (auto &i : _keyboardInputs) {
                 if (i == '\n' || i == '\r') {
                     if (_chatInput.size() > 0)
                         sendChat(_chatInput);
                     _chatInput = "";
                     break;
-                } else {
+                } else if (_chatInput.size() < 30) {
                     _chatInput += i;
                 }
             }
-            this->_textsUpdate[_chatText] = _chatInput;
+            this->_textsUpdate.insert(std::make_pair(tchatText, _chatInput));
         }
         _keyboardInputs.clear();
 
@@ -731,6 +721,18 @@ void Game::handleRoomJoin(Network::Packet &packet)
     if (it != this->_screens.end()) {
         this->ecs.disableEntity(it->second);
     }
+
+    this->stopAllMusic(this->ecs);
+    this->handleMusic(this->ecs, EntityManager::MUSIC_TYPE::MATCHMAKING, [&](ECS::components::MusicComponent &music) {
+        music.playMusic();
+    });
+
+    sf::Vector2u rectSize = this->_manager.getTexture(Loader::Loader::ChatBox).get()->getSize();
+    entity_t newE = this->_factory.createScreen(this->_screenSize.x - (rectSize.x * (this->_resMult + 0.1)), (this->_screenSize.y / 2) - ((rectSize.y * (this->_resMult + 0.1)) / 2), this->_manager.getTexture(Loader::Loader::ChatBox), sf::Vector2f(this->_resMult + 0.1, this->_resMult + 0.1));
+    this->_screens.emplace(EntityManager::SCREEN_TYPE::CHAT_BOX, newE);
+
+    entity_t newEntityTchat = this->_factory.createText("", this->_manager.getFont(Loader::Loader::PressStart2P), (this->_screenSize.x - (rectSize.x * (this->_resMult + 0.1))) + 32, (this->_screenSize.y / 2) + 305, 14);
+    this->_textsEntity.insert({game::EntityManager::TEXT_TYPE::TCHAT, newEntityTchat});
 }
 
 void Game::handleTimeoutMatchmaking(Network::Packet &packet)
@@ -739,6 +741,17 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
 
     entity_t timerText = this->getTextByType(game::EntityManager::TEXT_TYPE::TIMER);
     if (this->_started == true) {
+        auto it = this->_screens.find(SCREEN_TYPE::CHAT_BOX);
+        if (it != this->_screens.end()) {
+            this->ecs.disableEntity(it->second);
+        }
+
+        for (auto &e : this->_textChat) {
+            this->ecs.kill_entity(e);
+        }
+
+        this->_textChat.clear();
+
         entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effects/good_luck.ogg"), 1000, true);
         this->_sounds.emplace_back(soundEntity);
 
@@ -1200,7 +1213,25 @@ void Game::handleChatMessage(Network::Packet &packet)
             break;
         msg += tmp;
     }
-    std::cout << "Chat from " << playerId << ": " << msg << std::endl;
+
+    sf::Vector2u rectSize = this->_manager.getTexture(Loader::Loader::ChatBox).get()->getSize();
+    std::size_t vectorSize = this->_textChat.size();
+
+    if (vectorSize > 16) {
+        if (this->ecs.isEntityExist(this->_textChat.front()))
+            this->ecs.kill_entity(this->_textChat.front());
+        this->_textChat.erase(this->_textChat.begin());
+
+        for (std::size_t i = 0; i < vectorSize - 1; i++) {
+            this->ecs.modify_component<ECS::components::PositionComponent>(this->_textChat[i], [this, rectSize, vectorSize, i](ECS::components::PositionComponent &comp) {
+                comp.setY(300 + i * 30);
+            });
+        }
+    }
+    vectorSize = this->_textChat.size();
+
+    entity_t newEntity = this->_factory.createText(msg, this->_manager.getFont(Loader::Loader::PressStart2P), (this->_screenSize.x - (rectSize.x * (this->_resMult + 0.1))) + 32, (300 + (vectorSize * 30)), 14);
+    this->_textChat.push_back(newEntity);
 }
 
 void Game::sendChat(std::string const &msg)

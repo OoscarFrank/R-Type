@@ -109,7 +109,6 @@ namespace game {
 
             std::vector<u_char> _keyboardInputs;
             std::string _chatInput;
-            entity_t _chatText;
 
             void refreshScreenSize();
 
