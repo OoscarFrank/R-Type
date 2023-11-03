@@ -161,6 +161,7 @@ void Game::createMainMenuScene()
 
 void Game::killGameEntity()
 {
+    this->_started = false;
     this->stopAllMusic(this->ecs);
 
     for (auto &e : this->_players) {
@@ -745,8 +746,14 @@ void Game::handleRoomJoin(Network::Packet &packet)
     });
 
     sf::Vector2u rectSize = this->_manager.getTexture(Loader::Loader::ChatBox).get()->getSize();
-    entity_t newE = this->_factory.createScreen(this->_screenSize.x - (rectSize.x * (this->_resMult + 0.1)), (this->_screenSize.y / 2) - ((rectSize.y * (this->_resMult + 0.1)) / 2), this->_manager.getTexture(Loader::Loader::ChatBox), sf::Vector2f(this->_resMult + 0.1, this->_resMult + 0.1));
-    this->_screens.emplace(EntityManager::SCREEN_TYPE::CHAT_BOX, newE);
+
+    auto it3 = this->_screens.find(SCREEN_TYPE::CHAT_BOX);
+    if (it3 == this->_screens.end()) {
+        entity_t newE = this->_factory.createScreen(this->_screenSize.x - (rectSize.x * (this->_resMult + 0.1)), (this->_screenSize.y / 2) - ((rectSize.y * (this->_resMult + 0.1)) / 2), this->_manager.getTexture(Loader::Loader::ChatBox), sf::Vector2f(this->_resMult + 0.1, this->_resMult + 0.1));
+        this->_screens.emplace(EntityManager::SCREEN_TYPE::CHAT_BOX, newE);
+    } else {
+        this->ecs.enableEntity(it3->second);
+    }
 
     entity_t newEntityTchat = this->_factory.createText("", this->_manager.getFont(Loader::Loader::PressStart2P), (this->_screenSize.x - (rectSize.x * (this->_resMult + 0.1))) + 32, (this->_screenSize.y / 2) + 305, 14);
     this->_textsEntity.insert({game::EntityManager::TEXT_TYPE::TCHAT, newEntityTchat});
@@ -773,6 +780,7 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
             this->ecs.kill_entity(it2->second);
             this->_textsEntity.erase(it2);
         }
+        this->_chatInput.clear();
 
         entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effects/good_luck.ogg"), 1000, true);
         this->_sounds.emplace_back(soundEntity);
