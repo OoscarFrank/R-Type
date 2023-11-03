@@ -91,16 +91,17 @@ Game::Game(std::string ip, int port) :
         node = std::make_tuple(-1, 0, 0);
     }
 
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::SOUND_OF_SPACE, this->_factory.createMusic(client::getAssetPath("songs/SOUND_OF_SPACE.ogg"), 60, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::TURN_ON_THE_LIGHTS, this->_factory.createMusic(client::getAssetPath("songs/TURN_ON_THE_LIGHTS.ogg"), 60, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::PUSH_UP, this->_factory.createMusic(client::getAssetPath("songs/PUSH_UP.ogg"), 60, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::VOIS_SUR_TON_CHEMIN, this->_factory.createMusic(client::getAssetPath("songs/VOIS_SUR_TON_CHEMIN.ogg"), 60, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::HEUTE_NACHT, this->_factory.createMusic(client::getAssetPath("songs/HEUTE_NACHT.ogg"), 60, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::CLEON, this->_factory.createMusic(client::getAssetPath("songs/CLEON.ogg"), 60, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::AMNESIA, this->_factory.createMusic(client::getAssetPath("songs/AMNESIA.ogg"), 60, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::SEVENNATION, this->_factory.createMusic(client::getAssetPath("songs/SEVENNATION.ogg"), 60, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::SOUND_OF_SPACE, this->_factory.createMusic(client::getAssetPath("songs/SOUND_OF_SPACE.ogg"), 50, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::TURN_ON_THE_LIGHTS, this->_factory.createMusic(client::getAssetPath("songs/TURN_ON_THE_LIGHTS.ogg"), 50, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::PUSH_UP, this->_factory.createMusic(client::getAssetPath("songs/PUSH_UP.ogg"), 50, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::VOIS_SUR_TON_CHEMIN, this->_factory.createMusic(client::getAssetPath("songs/VOIS_SUR_TON_CHEMIN.ogg"), 50, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::HEUTE_NACHT, this->_factory.createMusic(client::getAssetPath("songs/HEUTE_NACHT.ogg"), 50, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::CLEON, this->_factory.createMusic(client::getAssetPath("songs/CLEON.ogg"), 50, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::AMNESIA, this->_factory.createMusic(client::getAssetPath("songs/AMNESIA.ogg"), 50, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::SEVENNATION, this->_factory.createMusic(client::getAssetPath("songs/SEVENNATION.ogg"), 50, true));
     this->_musics.emplace(EntityManager::MUSIC_TYPE::BLAHBLAH, this->_factory.createMusic(client::getAssetPath("songs/BLAHBLAH.ogg"), 100, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::LOBBY, this->_factory.createMusic(client::getAssetPath("songs/lobby.ogg"), 100, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::LOBBY, this->_factory.createMusic(client::getAssetPath("songs/lobby.ogg"), 60, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::MATCHMAKING, this->_factory.createMusic(client::getAssetPath("songs/matchmaking.ogg"), 50, false));
 
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.070f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.1f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
@@ -234,6 +235,9 @@ void Game::initButtons()
         this->_menuManager.disableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
         this->_gameState = gameState::MATCHMAKING;
         this->stopAllMusic(this->ecs);
+        this->handleMusic(this->ecs, EntityManager::MUSIC_TYPE::MATCHMAKING, [&](ECS::components::MusicComponent &music) {
+            music.playMusic();
+        });
         Stream out;
         out << 8_uc << 0_uc;
         this->_net.send(out);
@@ -244,6 +248,9 @@ void Game::initButtons()
         this->_menuManager.disableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
         this->_gameState = gameState::MATCHMAKING;
         this->stopAllMusic(this->ecs);
+        this->handleMusic(this->ecs, EntityManager::MUSIC_TYPE::MATCHMAKING, [&](ECS::components::MusicComponent &music) {
+            music.playMusic();
+        });
         Stream out;
         out << 9_uc;
         this->_net.send(out);
@@ -276,6 +283,9 @@ void Game::initButtons()
             this->_menuManager.disableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
             this->_gameState = gameState::MATCHMAKING;
             this->stopAllMusic(this->ecs);
+            this->handleMusic(this->ecs, EntityManager::MUSIC_TYPE::MATCHMAKING, [&](ECS::components::MusicComponent &music) {
+                music.playMusic();
+            });
 
             for (auto &node : this->_roomsData) {
                 std::tuple<int, entity_t, entity_t> foundTuple = node;
@@ -710,6 +720,9 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
 
     entity_t timerText = this->getTextByType(game::EntityManager::TEXT_TYPE::TIMER);
     if (this->_started == true) {
+        entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/good_luck.ogg"), 1000, true);
+        this->_sounds.emplace_back(soundEntity);
+
         if (timerText != 0)
             this->ecs.kill_entity(timerText);
         this->_gameState = gameState::GAME;
@@ -717,6 +730,7 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
 
         entity_t newEntity = this->_factory.createText("Score: 0", this->_manager.getFont(Loader::Loader::PressStart2P), this->_screenSize.x / 2 - (250 * this->_resMult), this->topLeftOffeset.y + 10, 20);
         this->_textsEntity.insert({EntityManager::TEXT_TYPE::SCORE, newEntity});
+        this->stopAllMusic(this->ecs);
         this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [](ECS::components::MusicComponent &music) {
             music.playMusic();
         });
@@ -846,6 +860,9 @@ void Game::handlePlayerDeath(Network::Packet &packet)
 
     entity_t res = getPlayerEntityFromId(id);
     if (res == this->_playerEntity) {
+        entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/your_dead.ogg"), 1000, true);
+        this->_sounds.emplace_back(soundEntity);
+
         this->_looser = this->_factory.createScreen(this->topLeftOffeset.x, this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::LooserScreen));
         this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_looser, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
         this->_menuManager.enableMenu(MenuManager::MENU_TYPE::LOOSER_MENU);

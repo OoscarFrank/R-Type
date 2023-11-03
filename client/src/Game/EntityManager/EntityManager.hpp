@@ -20,7 +20,8 @@ namespace game {
             AMNESIA,
             SEVENNATION,
             BLAHBLAH,
-            LOBBY
+            LOBBY,
+            MATCHMAKING
         };
 
         enum LOADINGBAR_TYPE {
