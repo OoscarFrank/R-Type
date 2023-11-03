@@ -540,53 +540,53 @@ void Game::handleMissilePosition(Network::Packet &packet)
 
     if (res == 0) {
         switch ((int)type) {
-            case 1: {
+            case MISSILE_TYPE::PLAYER_ONE: { // MISSILE
                     entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Missile));
                     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                     this->_missiles.push_back(std::make_pair(id, newEntity));
-                    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effets/piou.ogg"), 1000, true);
+                    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effects/piou.ogg"), 1000, true);
                     this->_sounds.emplace_back(soundEntity);
                 }
                 break;
-            case 2: {
+            case MISSILE_TYPE::LITTLE_MONSTER: {
                     entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Missile));
                     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                     this->_missiles.push_back(std::make_pair(id, newEntity));
-                    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effets/piou.ogg"), 1000, true);
+                    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effects/tfou.ogg"), 1000, true);
                     this->_sounds.emplace_back(soundEntity);
                 }
                 break;
-            case 3: {
+            case MISSILE_TYPE::ORANGE_MISSILE: {
                     entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::OrangeMissile), this->_resMult);
                     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                     this->_missiles.push_back(std::make_pair(id, newEntity));
                 }
                 break;
-            case 4: {
+            case MISSILE_TYPE::PURPLE_MISSILE: {
                     entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::PurpleMissile), this->_resMult);
                     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                     this->_missiles.push_back(std::make_pair(id, newEntity));
                 }
                 break;
-            case 5: {
+            case MISSILE_TYPE::GREEN_MISSILE: {
                     entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::GreenMissile), this->_resMult);
                     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                     this->_missiles.push_back(std::make_pair(id, newEntity));
                 }
                 break;
-            case 6: {
+            case MISSILE_TYPE::PLAYER_TWO: {
                     entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::MissileRed));
                     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                     this->_missiles.push_back(std::make_pair(id, newEntity));
-                    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effets/piou.ogg"), 1000, true);
+                    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effects/piuu.ogg"), 1000, true);
                     this->_sounds.emplace_back(soundEntity);
                 }
                 break;
-            case 7: {
+            case MISSILE_TYPE::PLAYER_THREE: {
                     entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::MissileRed));
                     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                     this->_missiles.push_back(std::make_pair(id, newEntity));
-                    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effets/piou.ogg"), 1000, true);
+                    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effects/piuu.ogg"), 1000, true);
                     this->_sounds.emplace_back(soundEntity);
                 }
                 break;
@@ -721,8 +721,8 @@ void Game::handleTimeoutMatchmaking(Network::Packet &packet)
 
     entity_t timerText = this->getTextByType(game::EntityManager::TEXT_TYPE::TIMER);
     if (this->_started == true) {
-        // entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effets/good_luck.ogg"), 1000, true);
-        // this->_sounds.emplace_back(soundEntity);
+        entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effects/good_luck.ogg"), 1000, true);
+        this->_sounds.emplace_back(soundEntity);
 
         if (timerText != 0)
             this->ecs.kill_entity(timerText);
@@ -861,7 +861,7 @@ void Game::handlePlayerDeath(Network::Packet &packet)
 
     entity_t res = getPlayerEntityFromId(id);
     if (res == this->_playerEntity) {
-        entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effets/your_dead.ogg"), 1000, true);
+        entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effects/your_dead.ogg"), 1000, true);
         this->_sounds.emplace_back(soundEntity);
 
         this->_looser = this->_factory.createScreen(this->topLeftOffeset.x, this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::LooserScreen));
@@ -870,7 +870,7 @@ void Game::handlePlayerDeath(Network::Packet &packet)
         this->_gameState = gameState::ENDGAME;
     }
     if (res != 0) {
-        entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effets/tango_down.ogg"), 1000, true);
+        entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effects/tango_down.ogg"), 1000, true);
         this->_sounds.emplace_back(soundEntity);
 
         this->ecs.kill_entity(res);
