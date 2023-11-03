@@ -97,7 +97,7 @@ Game::Game(std::string ip, int port) :
     this->_musics.emplace(EntityManager::MUSIC_TYPE::CLEON, this->_factory.createMusic(client::getAssetPath("songs/CLEON.ogg"), 100, true));
     this->_musics.emplace(EntityManager::MUSIC_TYPE::AMNESIA, this->_factory.createMusic(client::getAssetPath("songs/AMNESIA.ogg"), 100, true));
     this->_musics.emplace(EntityManager::MUSIC_TYPE::SEVENNATION, this->_factory.createMusic(client::getAssetPath("songs/SEVENNATION.ogg"), 100, true));
-
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::BLAHBLAH, this->_factory.createMusic(client::getAssetPath("songs/BLAHBLAH.ogg"), 100, true));
 
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.070f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.1f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
