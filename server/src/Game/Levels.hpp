@@ -79,7 +79,8 @@ public:
                 HEUTE_NACHT,
                 CLEON,
                 AMNESIA,
-                SEVENNATION
+                SEVENNATION,
+                BLAHBLAH
             };
 
             Level(const std::string &path);
