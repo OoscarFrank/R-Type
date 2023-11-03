@@ -49,6 +49,15 @@ entity_t EntityManager::getTextByType(TEXT_TYPE type)
     return 0;
 }
 
+void EntityManager::stopAllMusic(ECS::Registry &ecs)
+{
+    for (auto &music : this->_musics) {
+        ecs.modify_component<ECS::components::MusicComponent>(music.second, [](ECS::components::MusicComponent &music) {
+            music.stopmusic();
+        });
+    }
+}
+
 void EntityManager::handleMusic(ECS::Registry &ecs, MUSIC_TYPE type, std::function<void(ECS::components::MusicComponent&)> callback)
 {
     auto it = std::find_if(this->_musics.begin(), this->_musics.end(), [type](const auto& pair) {

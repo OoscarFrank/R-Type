@@ -44,6 +44,7 @@ namespace game {
             entity_t getBombEntityFromId(unsigned int id);
             entity_t getTextByType(TEXT_TYPE type);
 
+            void stopAllMusic(ECS::Registry &ecs);
             void handleMusic(ECS::Registry &ecs, MUSIC_TYPE type, std::function<void(ECS::components::MusicComponent&)> callback);
 
             std::unordered_map<LOADINGBAR_TYPE, entity_t> _loadingBar;

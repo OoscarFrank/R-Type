@@ -82,7 +82,6 @@ Game::Game(std::string ip, int port) :
 
     this->_lastTime = NOW;
     this->eventMemory = 0;
-    this->_gameState = gameState::MENU;
 
     this->_roomsData.resize(6);
     for (auto &node : this->_roomsData) {
@@ -104,22 +103,20 @@ Game::Game(std::string ip, int port) :
 
     this->initButtons();
     this->initMenus();
-    this->_menuManager.enableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
 
-    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::RedPixel), _screenSize.x, _screenSize.y));
-    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::GreenPixel), _screenSize.x, _screenSize.y));
-    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::BluePixel), _screenSize.x, _screenSize.y));
-    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::YellowPixel), _screenSize.x, _screenSize.y));
-    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::PurplePixel), _screenSize.x, _screenSize.y));
-    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::CyanPixel), _screenSize.x, _screenSize.y));
-    _strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::WhitePixel), _screenSize.x, _screenSize.y));
+    this->_strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::RedPixel), this->_screenSize.x, this->_screenSize.y));
+    this->_strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::GreenPixel), this->_screenSize.x, this->_screenSize.y));
+    this->_strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::BluePixel), this->_screenSize.x, this->_screenSize.y));
+    this->_strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::YellowPixel), this->_screenSize.x, this->_screenSize.y));
+    this->_strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::PurplePixel), this->_screenSize.x, this->_screenSize.y));
+    this->_strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::CyanPixel), this->_screenSize.x, this->_screenSize.y));
+    this->_strobes.push_back(this->_factory.createStrobe(this->_manager.getTexture(Loader::Loader::WhitePixel), this->_screenSize.x, this->_screenSize.y));
 
     if (this->getTextByType(game::EntityManager::TEXT_TYPE::PING)) {
         entity_t newEntity = this->_factory.createText("Ping: 0", this->_manager.getFont(Loader::Loader::PressStart2P), this->_screenSize.x - 150, this->_screenSize.y - 30, 14);
         this->_textsEntity.insert({game::EntityManager::TEXT_TYPE::PING, newEntity});
     }
-
-    this->_screens.emplace(EntityManager::SCREEN_TYPE::MAIN_MENU, this->_factory.createScreen(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::MenuScreen)));
+    this->createMainMenuScene();
 }
 
 Game::~Game()
@@ -136,16 +133,23 @@ void Game::createMainMenuScene()
         this->ecs.kill_entity(e);
     }
     this->_parallax.clear();
-
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.070f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.1f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
 
-    this->_screens.emplace(EntityManager::SCREEN_TYPE::MAIN_MENU, this->_factory.createScreen(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::MenuScreen)));
+    auto it = this->_screens.find(SCREEN_TYPE::MAIN_MENU);
+    if (it != this->_screens.end()) {
+        this->ecs.enableEntity(it->second);
+    } else {
+        this->_screens.emplace(EntityManager::SCREEN_TYPE::MAIN_MENU, this->_factory.createScreen(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::MenuScreen)));
+    }
+
     this->_menuManager.enableMenu(MenuManager::MENU_TYPE::MAIN_MENU);
 }
 
 void Game::killGameEntity()
 {
+    this->stopAllMusic(this->ecs);
+
     for (auto &e : this->_players) {
         this->ecs.kill_entity(e.second);
     }
@@ -672,7 +676,7 @@ void Game::handleRoomJoin(Network::Packet &packet)
 
     auto it = this->_screens.find(SCREEN_TYPE::MAIN_MENU);
     if (it != this->_screens.end()) {
-        this->ecs.kill_entity(it->second);
+        this->ecs.disableEntity(it->second);
     }
 }
 
