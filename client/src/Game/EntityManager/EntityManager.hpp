@@ -21,10 +21,6 @@ namespace game {
             SEVENNATION
         };
 
-        enum SOUND_TYPE {
-            TEST
-        };
-
         enum LOADINGBAR_TYPE {
             PLAYER_LIFE
         };
@@ -52,7 +48,7 @@ namespace game {
 
             std::unordered_map<LOADINGBAR_TYPE, entity_t> _loadingBar;
             std::unordered_map<MUSIC_TYPE, entity_t> _musics;
-            std::unordered_map<SOUND_TYPE, entity_t> _sounds;
+            std::vector<entity_t> _sounds;
             std::vector<std::pair<size_t, entity_t>> _players;
             std::vector<std::pair<size_t, entity_t>> _missiles;
             std::vector<std::pair<size_t, entity_t>> _ennemies;
