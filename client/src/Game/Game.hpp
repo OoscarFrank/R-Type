@@ -82,9 +82,6 @@ namespace game {
 
             sf::Vector2u topLeftOffeset;
 
-            entity_t _blackBandTopLeft;
-            entity_t _blackBandBottomRight;
-
             Loader _manager;
             ECS::Registry ecs;
             Factory _factory;
