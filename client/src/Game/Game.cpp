@@ -921,10 +921,12 @@ void Game::handlePlayerDeath(Network::Packet &packet)
         this->ecs.emplace_component<ECS::components::ScaleComponent>(this->_looser, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
         this->_menuManager.enableMenu(MenuManager::MENU_TYPE::LOOSER_MENU);
         this->_gameState = gameState::ENDGAME;
-    }
-    if (res != 0) {
+    } else {
         entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effects/tango_down.ogg"), 1000, true);
         this->_sounds.emplace_back(soundEntity);
+    }
+
+    if (res != 0) {
 
         this->ecs.kill_entity(res);
 
