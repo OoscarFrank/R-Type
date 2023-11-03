@@ -1107,8 +1107,11 @@ void Game::handleBonusDestroyed(Network::Packet &packet)
 
     entity_t entity = getBonusEntityFromId(id);
     if (entity != 0) {
-        entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effets/tracket.ogg"), 1000, true);
-        this->_sounds.emplace_back(soundEntity);
+        auto &c = this->ecs.getComponent<ECS::components::PositionComponent>(entity);
+        if (c.getX() > 10) {
+            entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effects/tracket.ogg"), 1000, true);
+            this->_sounds.emplace_back(soundEntity);
+        }
 
         this->ecs.kill_entity(entity);
 
