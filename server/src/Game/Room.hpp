@@ -76,8 +76,8 @@ class Room
         size_t _bonusIds = 0;
 
         size_t _bombIds = 0;
-        size_t _rayIds = 0;
         size_t _laserIds = 0;
+        size_t _rayIds = 0;
         std::vector<std::unique_ptr<ChatMessage>> _chatMessages;
 
         void refresh();
@@ -180,6 +180,7 @@ class Room
         void handleBonus();
         void checkCollisionBonus();
         size_t &getBombIds();
+        size_t &getLaserIds();
         void handleForcePod();
         void degInZone(float x, float y, size_t radius, Player &player);
 

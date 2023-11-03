@@ -72,6 +72,7 @@ namespace game {
             entity_t createBomb(const std::shared_ptr<sf::Texture> &texture, float x, float y, float scale);
             entity_t createPod(const std::shared_ptr<sf::Texture> &texture, float scale);
             entity_t createExplosion(const std::shared_ptr<sf::Texture> &texture, float x, float y, float scale);
+            entity_t createLaser(const std::shared_ptr<sf::Texture> &texture, float x, float y, float scale);
         private:
             ECS::Registry &_registry;
     };

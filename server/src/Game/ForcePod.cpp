@@ -20,6 +20,15 @@ void ForcePod::refresh()
                 break;
         }
     }
+
+    for(auto i = _lasers.begin(); i != _lasers.end(); ++i) {
+        (*i)->refresh();
+        if (!(*i)->exists()) {
+            i = _lasers.erase(i);
+            if (i == _lasers.end())
+                break;
+        }
+    }
 }
 
 void ForcePod::toggleFront()
@@ -51,6 +60,8 @@ void ForcePod::bombCollide(IEntity &other)
                 break;
         }
     }
+
+    
 }
 
 void ForcePod::setLvl(u_char lvl)
@@ -62,4 +73,31 @@ void ForcePod::setLvl(u_char lvl)
 u_char ForcePod::getLvl() const
 {
     return lvl;
+}
+
+void ForcePod::shootLaser()
+{
+    if (this->lvl < 2)
+        return;
+    auto now = std::chrono::system_clock::now();
+    if (_player.exists() && std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastLaser).count() >= PLAYER_FIRE_LASER_TIME) {
+        _lasers.push_back(std::make_unique<Laser>(_room, ++_room.getLaserIds(), 0, _player.box().y - (LASER_HEIGHT - _player.box().height) / 2, _isFront));
+        _lastLaser = now;
+    }
+}
+
+void ForcePod::laserCollide(IEntity &other)
+{
+
+    auto now = std::chrono::system_clock::now();
+
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastLaserHit).count() >= LASER_MOVE_TIME) {
+        for(auto i = _lasers.begin(); i != _lasers.end(); ++i) {
+            if ((*i)->collide(other)) {
+                other.setLife(other.life() - LASER_DAMAGE);
+                _player.setScore(_player.score() + LASER_SCORE);
+            }
+        }
+        _lastLaserHit = now;
+    }
 }

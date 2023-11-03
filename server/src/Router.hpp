@@ -26,6 +26,7 @@ class Router {
         void _listRooms(Reader::Packet &packet, Levels &levels);
         void _fireBomb(Reader::Packet &packet, Levels &levels);
         void _sendChat(Reader::Packet &packet, Levels &levels);
+        void _fireLaser(Reader::Packet &packet, Levels &levels);
 
         void _cmdNotRecieved(Reader::Packet &packet, Levels &levels);
 };

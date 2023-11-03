@@ -31,18 +31,21 @@
 #define BOMB_WIDTH         64
 #define BOMB_HEIGHT        60
 
+#define LASER_HEIGHT       160
+
 #define MISSILE_HEIGHT      1
 #define MISSILE_WIDTH       1
 
 #define BONUS_WIDTH   75
 #define BONUS_HEIGHT  75
 
-#define POD_ONE_SCORE       10
-#define POD_TWO_SCORE       2000
+#define POD_ONE_SCORE       500
+#define POD_TWO_SCORE       100
 #define POD_THREE_SCORE     3000
 
-#define BOMB_SCORE          15
+#define BOMB_SCORE          8
 #define MISSILE_SCORE       10
+#define LASER_SCORE         5
 
 // Progress steps
 #define MAP_PROGRESS_STEP                       7
@@ -74,6 +77,7 @@
 #define PLAYER_MOVE_TIME                10 // ms
 #define PLAYER_FIRE_TIME                150 // ms
 #define PLAYER_FIRE_BOMB_TIME           1000 // ms
+#define PLAYER_FIRE_LASER_TIME          5000 //ms
 
 #define MONSTER_MOVE_TIME               12 // ms
 #define LITTLE_MONSTER_FIRE_TIME        1000 // ms
@@ -92,6 +96,7 @@
 #define MISSILES_MOVE_TIME              10 // ms
 #define BONUS_MOVE_TIME                 10 // ms
 #define BOMB_MOVE_TIME                  10 // ms
+#define LASER_MOVE_TIME                 100 // ms
 
 #define SEND_WAIT_MESSAGE_TIME          200 // ms
 #define PLAYER_ALIVE_MAX_TIME           10 // seconds
@@ -101,6 +106,7 @@
 
 // damages
 #define BOMB_DAMAGE                     150
+#define LASER_DAMAGE                    34
 
 
 #endif
