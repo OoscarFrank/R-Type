@@ -32,6 +32,7 @@ class Pong {
         entity_t _scoreText;
 
         std::vector<ECS::systems::ControllableSystem::EntityEvent> _pollEntityEvents;
+        std::vector<u_char> _pollKeys;
         std::vector<ECS::systems::MovableSystem::EntityPos> _pollEntityPositions;
         std::unordered_map<entity_t, std::string> _pollTexts;
 };

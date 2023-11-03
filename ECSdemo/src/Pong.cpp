@@ -62,7 +62,8 @@ void Pong::run()
             ECS::systems::TextSystem().update(_ecs, _pollTexts);
         }
         _pollEntityEvents.clear();
-        ECS::systems::ControllableSystem().update(_ecs, _pollEntityEvents, _window, _eventMemory);
+        _pollKeys.clear();
+        ECS::systems::ControllableSystem().update(_ecs, _pollEntityEvents, _pollKeys, _window, _eventMemory);
         _window.clear();
         ECS::systems::DrawSystem().update(_ecs, _window);
         _window.display();

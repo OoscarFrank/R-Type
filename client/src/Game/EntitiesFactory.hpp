@@ -18,7 +18,7 @@ namespace game {
          */
             ~Factory();
             entity_t createButton(float x, float y, const std::shared_ptr<sf::Texture> &texture, const sf::Vector2f &scale, std::function<void()> callback);
-            entity_t createScreen(float x, float y, const std::shared_ptr<sf::Texture> &texture);
+            entity_t createScreen(float x, float y, const std::shared_ptr<sf::Texture> &texture, const sf::Vector2f &scale = {1.0, 1.0});
         /**
          * @brief Create a Player object
          *

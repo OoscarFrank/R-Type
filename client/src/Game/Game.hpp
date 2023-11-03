@@ -82,9 +82,6 @@ namespace game {
 
             sf::Vector2u topLeftOffeset;
 
-            entity_t _blackBandTopLeft;
-            entity_t _blackBandBottomRight;
-
             Loader _manager;
             ECS::Registry ecs;
             Factory _factory;
@@ -110,7 +107,6 @@ namespace game {
 
             std::vector<u_char> _keyboardInputs;
             std::string _chatInput;
-            entity_t _chatText;
 
             void refreshScreenSize();
 
