@@ -51,6 +51,8 @@ namespace game {
             void update();
             void sendMoveToServer();
 
+            void handleChatInput(float deltaTime);
+
             void createMainMenuScene();
 
             void killGameEntity();
@@ -110,6 +112,7 @@ namespace game {
 
             std::vector<u_char> _keyboardInputs;
             std::string _chatInput;
+            float _timeSinceLastUpdate;
 
             void refreshScreenSize();
 
