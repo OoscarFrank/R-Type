@@ -773,7 +773,7 @@ void Game::handleRoomJoin(Network::Packet &packet)
         entity_t playerLifeBar = this->_factory.createLoadingBar(this->topLeftOffeset.x + 10.0f, this->topLeftOffeset.y + this->_screenSize.y - (100.0f * this->_resMult), this->_manager.getTexture(Loader::Loader::playerLifeOutline), this->_manager.getTexture(Loader::Loader::playerLifeContent), this->_resMult);
         this->_loadingBar.insert(std::make_pair(EntityManager::LOADINGBAR_TYPE::PLAYER_LIFE, playerLifeBar));
     }
-
+    this->_chatInput.clear();
     auto it = this->_screens.find(SCREEN_TYPE::MAIN_MENU);
     if (it != this->_screens.end()) {
         this->ecs.disableEntity(it->second);
