@@ -8,6 +8,7 @@
 #include "EntitiesFactory.hpp"
 #include "EntityManager/MenuManager.hpp"
 #include "EntityManager/EntityManager.hpp"
+#include "Fbr.hpp"
 
 #define SERVER_WIDTH        3840
 #define SERVER_HEIGHT       2160
@@ -74,6 +75,7 @@ namespace game {
             };
 
         private:
+            std::unique_ptr<Fbr> _fbr;
             sf::RenderWindow _window;
             sf::Vector2f _screenSize;
             sf::Vector2f _realScreenSize;
@@ -106,6 +108,7 @@ namespace game {
             std::chrono::system_clock::time_point _lastPlayerFireTime;
             std::chrono::system_clock::time_point _lastPlayerBombFireTime;
             std::chrono::system_clock::time_point _lastPlaerLaserFireTime;
+            std::chrono::system_clock::time_point _lastPlaerRayFireTime;
 
             std::vector<u_char> _keyboardInputs;
             std::string _chatInput;
@@ -145,6 +148,7 @@ namespace game {
             void handleChatMessage(Network::Packet &packet);
             void handlePodInfo(Network::Packet &packet);
             void handleLaser(Network::Packet &packet);
+            void handleRay(Network::Packet &packet);
 
     };
 }

@@ -37,6 +37,7 @@ struct Commands {
  * 30 gui -fire Bomb
  * 34 gui - send a chat message the the room
  * 36 gui - fire laser
+ * 38 gui - fire ray
  *
  */
 #define IN_COMMANDS { \
@@ -51,6 +52,7 @@ struct Commands {
     {30, {}, 0, true},  \
     {34, {1000}, 1000, true}, \
     {36, {}, 0, true}, \
+    {38, {}, 0, true}, \
     {255, {USHORT}, 2, true} \
 }
 
@@ -82,6 +84,7 @@ struct Commands {
  * 33 serv - broadcast chat message (player id, message)
  * 35 serv - player pod level (userId, level, front)
  * 37 serv - laser position (id, y)
+ * 39 serv - ray position (id, x, y)
  *
  */
 #define OUT_COMMANDS { \
@@ -111,6 +114,7 @@ struct Commands {
     {33, {UINT, 1000}, 1004, true}, \
     {35, {UINT, UCHAR, UCHAR}, 6, true}, \
     {37, {UINT , USHORT}, 6, true}, \
+    {39, {UINT, USHORT, USHORT}, 8}, \
     {255, {USHORT}, 2, true} \
 }
 

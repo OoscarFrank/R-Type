@@ -210,7 +210,7 @@ void Room::update()
                 continue;
             }
             if ((**i).exists() && (**i).isOutOfScreen())
-                (**i).kill();
+                _monsters.erase(i);
             else
                 i++;
         }
@@ -219,8 +219,8 @@ void Room::update()
         checkCollisionMonsters();
         checkCollisionBonus();
 
-        handleForcePod();
         _levels.update(*this);
+        handleForcePod();
         _playersMutex.unlock();
     }
     if (_state == WAIT) {
@@ -297,6 +297,7 @@ void Room::addMonster(IEntity::Type type, int x, int y)
             _monsters.push_back(std::make_unique<Boss4Monster>(*this, ++_monstersIds, x, y));
             break;
         default:
+            std::cout << "bad monster" << std::endl;
             return;
     }
     // std::cout << "Monster " << static_cast<u_int>(_monstersIds) << " spawned in room " << static_cast<int>(_id) << std::endl;
@@ -320,10 +321,12 @@ void Room::checkCollisionPlayer()
 
 void Room::checkCollisionMonsters()
 {
+    int tmp = 0;
     for (auto p = _players.begin(); p != _players.end(); p++) {
         if (!(**p).exists())
             continue;
         for (auto m = _monsters.begin(); m != _monsters.end(); m++) {
+            ++tmp;
             if (!(**m).exists())
                 continue;
             if ((**p).collide(**m)) {
@@ -331,6 +334,7 @@ void Room::checkCollisionMonsters()
                 (**p).setScore((**p).score() + MISSILE_SCORE);
                 return;
             }
+            
         }
     }
 }
@@ -409,6 +413,12 @@ size_t &Room::getLaserIds()
     return _laserIds;
 }
 
+size_t &Room::getRayIds()
+{
+    return _rayIds;
+}
+
+
 void Room::handleForcePod()
 {
     for(auto p = _players.begin(); p != _players.end(); ++p) {
@@ -421,9 +431,26 @@ void Room::handleForcePod()
             (*p)->forcePod().setLvl(2);
             this->sendToAll(StreamFactory::podInfo((*p)->id(), 2, 1));
         }
-        for (auto m = _monsters.begin(); m != _monsters.end(); m++) {
-            (*p)->forcePod().bombCollide(**m);
-            (*p)->forcePod().laserCollide(**m);
+        if ((*p)->forcePod().getLvl() < 3 && (*p)->score() >= POD_THREE_SCORE) {
+            (*p)->forcePod().setLvl(3);
+            this->sendToAll(StreamFactory::podInfo((*p)->id(), 3, 1));
+        }
+        for(auto m = _monsters.begin(); m != _monsters.end(); ++m) {
+            (*p)->forcePod().bombCollide((**m));
+        }
+        auto now = std::chrono::system_clock::now();
+
+        if (std::chrono::duration_cast<std::chrono::milliseconds>(now - (*p)->forcePod()._lastLaserHit).count() >= LASER_MOVE_TIME) {
+            for(auto m = _monsters.begin(); m != _monsters.end(); ++m) {
+                (*p)->forcePod().laserCollide((**m));
+            }
+            (*p)->forcePod()._lastLaserHit = now;
+        }
+        if (std::chrono::duration_cast<std::chrono::milliseconds>(now - (*p)->forcePod()._lastRayHit).count() >= RAY_MOVE_TIME) {
+            for(auto m = _monsters.begin(); m != _monsters.end(); ++m) {
+                (*p)->forcePod().rayCollide((**m));
+            }
+            (*p)->forcePod()._lastRayHit = now;
         }
     }
 }

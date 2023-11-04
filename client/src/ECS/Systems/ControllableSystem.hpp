@@ -10,6 +10,7 @@
 #define ENTER 32
 #define BOMB 64
 #define LASER 128
+#define RAY 256
 
 namespace ECS
 {
@@ -120,6 +121,9 @@ namespace ECS
                             case sf::Keyboard::Z:
                                 eventMemory |= LASER;
                                 break;
+                            case sf::Keyboard::E:
+                                eventMemory |= RAY;
+                                break;
                             default:
                                 break;
                             }
@@ -150,6 +154,9 @@ namespace ECS
                                 break;
                             case sf::Keyboard::Z:
                                 eventMemory ^= LASER;
+                                break;
+                            case sf::Keyboard::E:
+                                eventMemory ^= RAY;
                                 break;
                             default:
                                 break;
@@ -214,6 +221,12 @@ namespace ECS
                                         ControllableComponent->setEvent(p_move | LASER);
                                     else if (!(eventMemory & LASER) && p_move & LASER)
                                         ControllableComponent->setEvent(p_move ^ LASER);
+                                    break;
+                                case sf::Keyboard::E:
+                                    if (eventMemory & RAY && !(p_move & RAY))
+                                        ControllableComponent->setEvent(p_move | RAY);
+                                    else if (!(eventMemory & RAY) && p_move & RAY)
+                                        ControllableComponent->setEvent(p_move ^ RAY);
                                     break;
                                 default:
                                     break;

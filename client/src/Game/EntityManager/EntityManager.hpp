@@ -48,6 +48,7 @@ namespace game {
             entity_t getBonusEntityFromId(unsigned int id);
             entity_t getBombEntityFromId(unsigned int id);
             std::pair<entity_t, unsigned char> getPodEntityFromId(unsigned int id);
+            sf::Vector2f getRayEntityFromId(unsigned int id);
             entity_t getTextByType(TEXT_TYPE type);
 
             void stopAllMusic(ECS::Registry &ecs);
@@ -62,6 +63,7 @@ namespace game {
             std::vector<std::pair<size_t, entity_t>> _bonuses;
             std::vector<std::pair<size_t, entity_t>> _bombs;
             std::vector<std::tuple<size_t, entity_t, unsigned char>> _pods;
+            std::vector<std::pair<size_t, sf::Vector2f>> _rays;
 
             std::vector<ECS::systems::MovableSystem::EntityPos> _entityPositions;
             std::vector<ECS::systems::ControllableSystem::EntityEvent> _entityEvents;

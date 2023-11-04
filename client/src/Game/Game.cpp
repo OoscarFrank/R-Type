@@ -128,6 +128,10 @@ Game::Game(std::string ip, int port) :
         this->_textsEntity.insert({game::EntityManager::TEXT_TYPE::PING, newEntity});
     }
     this->createMainMenuScene();
+    this->_fbr = std::make_unique<Fbr>(this->_screenSize.x, this->_screenSize.y);
+    entity_t fbrEntity = this->ecs.spawn_entity(90);
+    this->ecs.emplace_component<ECS::components::SpriteComponent>(fbrEntity, ECS::components::SpriteComponent{this->_fbr->getTexture()});
+    this->ecs.emplace_component<ECS::components::PositionComponent>(fbrEntity, ECS::components::PositionComponent{0, 0});
 }
 
 Game::~Game()
@@ -386,6 +390,7 @@ void Game::update()
         {33, [&](Network::Packet &packet) { this->handleChatMessage(packet); }},
         {35, [&](Network::Packet &packet) { this->handlePodInfo(packet); }},
         {37, [&](Network::Packet &packet) { this->handleLaser(packet); }},
+        {39, [&](Network::Packet &packet) { this->handleRay(packet); }},
     };
 
     while (this->_net.getQueueIn().tryPop(packet)) {
@@ -473,10 +478,16 @@ void Game::sendMoveToServer()
                 out << 30_uc;
                 this->_net.send(out);
             }
-            if ((*i).getEvent() & LASER && std::chrono::system_clock::now() - this->_lastPlaerLaserFireTime > std::chrono::milliseconds(900)) {
+            if ((*i).getEvent() & LASER && std::chrono::system_clock::now() - this->_lastPlaerLaserFireTime > std::chrono::milliseconds(4900)) {
                 this->_lastPlaerLaserFireTime = std::chrono::system_clock::now();
                 Stream out;
                 out << 36_uc;
+                this->_net.send(out);
+            }
+            if ((*i).getEvent() & RAY && std::chrono::system_clock::now() - this->_lastPlaerRayFireTime > std::chrono::milliseconds(2900)) {
+                this->_lastPlaerRayFireTime = std::chrono::system_clock::now();
+                Stream out;
+                out << 38_uc;
                 this->_net.send(out);
             }
             continue;
@@ -523,6 +534,9 @@ void Game::handleChatInput(float deltaTime)
 int Game::MainLoop()
 {
     while (this->_window.isOpen()) {
+        this->_fbr->refresh();
+        this->_fbr->fadeout();
+
         this->refreshScreenSize();
         long currentTime = NOW;
         float deltaTime = (currentTime - this->_lastTime) / 1.0f;
@@ -573,6 +587,8 @@ void Game::handlePlayerPosition(Network::Packet &packet)
             this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(tmp.first, x + 240 * _resMult, y + 41 * _resMult));
         if (tmp.second == 2)
             this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(tmp.first, x + 240 * _resMult, y + 33 * _resMult));
+        if (tmp.second == 3)
+            this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(tmp.first, x + 240 * _resMult, y + 17 * _resMult));
     }
     this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(this->getPlayerEntityFromId(id), x, y));
 }
@@ -1347,7 +1363,13 @@ void Game::handlePodInfo(Network::Packet &packet)
             const std::shared_ptr<sf::Texture> &texture = this->_manager.getTexture(Loader::Loader::Pod2);
             this->ecs.emplace_component<ECS::components::SpriteComponent>(entity, ECS::components::SpriteComponent{texture});
             this->ecs.emplace_component<ECS::components::TextureRectComponent>(entity, ECS::components::TextureRectComponent{0, 0, (int)texture->getSize().x, 64, 6, 150.0f});
-            this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(entity, comp.getX() + 240 * this->_resMult, comp.getY() + 41 * this->_resMult));
+            this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(entity, comp.getX() + 240 * this->_resMult, comp.getY() + 33 * this->_resMult));
+        }
+        if (level == 3) {
+            const std::shared_ptr<sf::Texture> &texture = this->_manager.getTexture(Loader::Loader::Pod3);
+            this->ecs.emplace_component<ECS::components::SpriteComponent>(entity, ECS::components::SpriteComponent{texture});
+            this->ecs.emplace_component<ECS::components::TextureRectComponent>(entity, ECS::components::TextureRectComponent{0, 0, (int)texture->getSize().x, 100, 4, 150.0f});
+            this->_entityPositions.push_back(ECS::systems::MovableSystem::EntityPos(entity, comp.getX() + 240 * this->_resMult, comp.getY() + 17 * this->_resMult));
         }
     });
 
@@ -1364,5 +1386,26 @@ void Game::handleLaser(Network::Packet &packet)
         --i;
 
         this->_factory.createLaser(this->_manager.getTexture(Loader::Loader::Laser), i,(y - 80) * this->_resMult, this->_resMult);
+    }
+}
+
+void Game::handleRay(Network::Packet &packet)
+{
+    unsigned int id = packet.getData().getDataUInt();
+    unsigned short x = packet.getData().getDataUShort();
+    unsigned short y = packet.getData().getDataUShort();
+
+    sf::Vector2f rayPos = getRayEntityFromId(id);
+
+    if (rayPos.x == -100) {
+        this->_rays.push_back(std::make_pair<size_t, sf::Vector2f>(id, sf::Vector2f(x * this->_resMult, y * this->_resMult)));
+    } else {
+        for(auto i = _rays.begin(); i != _rays.end(); ++i) {
+            if ((*i).first == id) {
+                this->_fbr->drawLine((*i).second.x, (*i).second.y, x * this->_resMult, y * this->_resMult, sf::Color::Red);
+                (*i).second = sf::Vector2f(x * this->_resMult, y * this->_resMult);
+                break;
+            }
+        }
     }
 }
