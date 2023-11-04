@@ -37,7 +37,12 @@ std::pair<size_t, Stream> Client::getNextInst()
             out.second = this->_streamIn.subStream(i->_important ? 3 : 1, i->_size);
             if (i->_important) {
                 u_short test = _streamIn.subStream(1).getDataUShort();
+                if (!_initialised && test != 1) {
+                    _lastCmdNbrRecieved = test - 1;
+                }
+                _initialised = true;
                 int count = 0;
+                
                 for (_lastCmdNbrRecieved++; test != _lastCmdNbrRecieved; _lastCmdNbrRecieved++) {
                     std::cout << "Cmd not recieved: " << _lastCmdNbrRecieved << std::endl;
                     send(StreamFactory::askResend(_lastCmdNbrRecieved));
@@ -87,7 +92,6 @@ void Client::resend(u_short cmdNbr)
 {
     std::unique_lock<std::mutex> lock(_resendMutex);
     std::cout << "Resending " << cmdNbr << std::endl;
-
     try {
         Stream out = _sentPackets.at(cmdNbr);
         send(out);

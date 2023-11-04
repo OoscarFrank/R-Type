@@ -27,8 +27,10 @@ private:
     const std::vector<Commands> _outCommands;
     const std::vector<Commands> _inCommands;
     std::map<u_short, Stream> _sentPackets;
+    bool _initialised = false;
 
 public:
+    bool _handShaked = false;
     Client(asio::ip::udp::socket &socket, asio::ip::udp::endpoint endpoint);
     ~Client();
     Client(const Client &client) = delete;
