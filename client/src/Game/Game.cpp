@@ -16,6 +16,7 @@ Game::Game(std::string ip, int port) :
     _playerId(0),
     _startTimeLeft(0),
     _started(0),
+    _timeSinceLastUpdate(0.0f),
     _lastPing(std::chrono::system_clock::now()),
     _lastPlayerFireTime(std::chrono::system_clock::now())
 {
@@ -484,32 +485,50 @@ void Game::sendMoveToServer()
     this->_entityEvents.clear();
 }
 
+void Game::handleChatInput(float deltaTime)
+{
+    float updateInterval = 30.0f;
+    this->_timeSinceLastUpdate += deltaTime;
+
+    if (this->_gameState != gameState::MATCHMAKING || this->_timeSinceLastUpdate < updateInterval) return;
+
+    entity_t tchatText = this->getTextByType(EntityManager::TEXT_TYPE::TCHAT);
+    if (this->ecs.isEntityExist(tchatText) == false) return;
+
+    size_t inputSize = this->_keyboardInputs.size();
+    if (inputSize < 1) return;
+    for (auto &i : _keyboardInputs) {
+        if (i == '\n' || i == '\r') {
+                while (!this->_chatInput.empty() && std::isspace(this->_chatInput.back())) {
+                this->_chatInput.pop_back();
+            }
+            if (!this->_chatInput.empty()) {
+                this->sendChat(this->_chatInput);
+                this->_chatInput.clear();
+            }
+            break;
+        } else if (i == '\b') {
+            if (!this->_chatInput.empty())
+                this->_chatInput.pop_back();
+        } else if (this->_chatInput.size() < 26) {
+            this->_chatInput += i;
+        }
+    }
+
+    this->_textsUpdate.insert(std::make_pair(tchatText, this->_chatInput));
+    this->_keyboardInputs.clear();
+    this->_timeSinceLastUpdate = 0.0f;
+}
+
 int Game::MainLoop()
 {
     while (this->_window.isOpen()) {
-        entity_t tchatText = this->getTextByType(EntityManager::TEXT_TYPE::TCHAT);
-        if (this->_gameState == gameState::MATCHMAKING && this->ecs.isEntityExist(tchatText)) {
-            for (auto &i : _keyboardInputs) {
-                if (i == '\n' || i == '\r') {
-                    if (_chatInput.size() > 0)
-                        sendChat(_chatInput);
-                    _chatInput = "";
-                    break;
-                } else if (i == '\b') {
-                    if (_chatInput.size() > 0)
-                        _chatInput.pop_back();
-                } else if (_chatInput.size() < 30) {
-                    _chatInput += i;
-                }
-            }
-            this->_textsUpdate.insert(std::make_pair(tchatText, _chatInput));
-        }
-        _keyboardInputs.clear();
-
         this->refreshScreenSize();
         long currentTime = NOW;
         float deltaTime = (currentTime - this->_lastTime) / 1.0f;
         this->_lastTime = currentTime;
+
+        this->handleChatInput(deltaTime);
         this->update();
 
         // ALL SYSTEMS CALL HERE
