@@ -9,12 +9,6 @@ AEntity(room, id, 4000, (std::rand() % SCREEN_HEIGHT - 100) + 50, BONUS_WIDTH, B
     _vy = rand() % 6 - 3;
 }
 
-// BonusBox::~BonusBox()
-// {
-//     //send bonus destroyed
-// }
-
-
 void BonusBox::refresh()
 {
     auto now = std::chrono::system_clock::now();

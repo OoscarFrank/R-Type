@@ -393,8 +393,25 @@ void Room::checkCollisionBonus()
         if (!(**p).exists())
             continue;
         if (this->_bonusBox != nullptr && (**p).collide((*this->_bonusBox))) {
-            if ((*p)->podMissileLvl() < 3)
-                (*p)->setPodMissileLvl((*p)->podMissileLvl() + 1);
+            if ((*p)->podMissileLvl() == 3) {
+                if ((*p)->life() >= 100) {
+                    (*p)->setScore((*p)->score() + 100);
+                } else {
+                    (*p)->setLife((*p)->life() + 30);
+                    if ((*p)->life() > 100)
+                        (*p)->setLife(100);
+                }
+            } else {
+                int tmp = std::rand() % 3;
+                if (tmp == 0) {
+                    (*p)->setLife((*p)->life() + 30);
+                    if ((*p)->life() > 100)
+                        (*p)->setLife(100);
+                }else if (tmp == 1)
+                    (*p)->setPodMissileLvl((*p)->podMissileLvl() + 1);
+                else
+                    (*p)->setScore((*p)->score() + 100);
+            }
             this->sendToAll(StreamFactory::bonusDestroyed(this->_bonusBox->id()));
             this->_bonusBox.release();
             this->_bonusBox = nullptr;
