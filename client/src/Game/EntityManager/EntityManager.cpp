@@ -100,3 +100,15 @@ std::pair<entity_t, unsigned char> EntityManager::getPodEntityFromId(unsigned in
     }
     return std::make_pair(0, 0);
 }
+
+
+sf::Vector2f EntityManager::getRayEntityFromId(unsigned int id)
+{
+    for (auto &ray : this->_rays)
+    {
+        if (ray.first == id) {
+            return ray.second;
+        }
+    }
+    return sf::Vector2f(-100, -100);
+}

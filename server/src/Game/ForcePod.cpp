@@ -29,6 +29,15 @@ void ForcePod::refresh()
                 break;
         }
     }
+
+    for(auto i = _rays.begin(); i != _rays.end(); ++i) {
+        (*i)->refresh();
+        if (!(*i)->exists()) {
+            i = _rays.erase(i);
+            if (i == _rays.end())
+                break;
+        }
+    }
 }
 
 void ForcePod::toggleFront()
@@ -86,18 +95,35 @@ void ForcePod::shootLaser()
     }
 }
 
+void ForcePod::shootRay()
+{
+    if (this->lvl < 3)
+        return;
+     auto now = std::chrono::system_clock::now();
+    if (_player.exists() && std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastRay).count() >= PLAYER_FIRE_RAY_TIME) {
+        _rays.push_back(std::make_unique<Ray>(_room, ++_room.getRayIds(), _player.box().x + _player.box().width / 2, _player.box().y + _player.box().height / 2, _isFront, true));
+        _rays.push_back(std::make_unique<Ray>(_room, ++_room.getRayIds(), _player.box().x + _player.box().width / 2, _player.box().y + _player.box().height / 2, _isFront, false));
+        _lastRay = now;
+    }
+}
+
 void ForcePod::laserCollide(IEntity &other)
 {
 
-    auto now = std::chrono::system_clock::now();
-
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastLaserHit).count() >= LASER_MOVE_TIME) {
-        for(auto i = _lasers.begin(); i != _lasers.end(); ++i) {
-            if ((*i)->collide(other)) {
-                other.setLife(other.life() - LASER_DAMAGE);
-                _player.setScore(_player.score() + LASER_SCORE);
-            }
+    for(auto i = _lasers.begin(); i != _lasers.end(); ++i) {
+        if ((*i)->collide(other)) {
+            other.setLife(other.life() - LASER_DAMAGE);
+            _player.setScore(_player.score() + LASER_SCORE);
         }
-        _lastLaserHit = now;
+    }
+}
+
+void ForcePod::rayCollide(IEntity &other)
+{
+    for(auto i = _rays.begin(); i != _rays.end(); ++i) {
+        if ((*i)->collide(other)) {
+            other.setLife(other.life() - RAY_DAMAGE);
+            _player.setScore(_player.score() + RAY_SCORE);
+        }
     }
 }

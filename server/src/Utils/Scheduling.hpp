@@ -33,6 +33,10 @@
 
 #define LASER_HEIGHT       160
 
+#define RAY_HEIGHT         1
+#define RAY_WIDTH          1
+
+
 #define MISSILE_HEIGHT      1
 #define MISSILE_WIDTH       1
 
@@ -40,12 +44,13 @@
 #define BONUS_HEIGHT  75
 
 #define POD_ONE_SCORE       500
-#define POD_TWO_SCORE       100
-#define POD_THREE_SCORE     3000
+#define POD_TWO_SCORE       1000
+#define POD_THREE_SCORE     2000
 
 #define BOMB_SCORE          8
 #define MISSILE_SCORE       10
-#define LASER_SCORE         5
+#define LASER_SCORE         1
+#define RAY_SCORE           5
 
 // Progress steps
 #define MAP_PROGRESS_STEP                       7
@@ -78,6 +83,7 @@
 #define PLAYER_FIRE_TIME                150 // ms
 #define PLAYER_FIRE_BOMB_TIME           1000 // ms
 #define PLAYER_FIRE_LASER_TIME          5000 //ms
+#define PLAYER_FIRE_RAY_TIME            3000 //ms
 
 #define MONSTER_MOVE_TIME               12 // ms
 #define LITTLE_MONSTER_FIRE_TIME        1000 // ms
@@ -88,7 +94,7 @@
 #define BOSS2_MONSTER_FIRE_TIME         1000 // ms
 #define BIG_FIRE_TIME                   8000 // ms
 
-#define BONUS_SPAWN_TIME                10000 // ms
+#define BONUS_SPAWN_TIME                25000 // ms
 
 #define CHANGE_HORIZONTAL_DIRECTION     3 // second
 #define CHANGE_VERTICAL_DIRECTION       5 // second
@@ -96,7 +102,8 @@
 #define MISSILES_MOVE_TIME              10 // ms
 #define BONUS_MOVE_TIME                 10 // ms
 #define BOMB_MOVE_TIME                  10 // ms
-#define LASER_MOVE_TIME                 100 // ms
+#define LASER_MOVE_TIME                 50 // ms
+#define RAY_MOVE_TIME                   10  // ms
 
 #define SEND_WAIT_MESSAGE_TIME          200 // ms
 #define PLAYER_ALIVE_MAX_TIME           10 // seconds
@@ -106,7 +113,8 @@
 
 // damages
 #define BOMB_DAMAGE                     150
-#define LASER_DAMAGE                    34
+#define LASER_DAMAGE                    17
+#define RAY_DAMAGE                      25
 
 
 #endif

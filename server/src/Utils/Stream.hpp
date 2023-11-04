@@ -128,4 +128,5 @@ namespace StreamFactory {
     Stream bombDestroyed(u_int id);
     Stream podInfo(u_int userId, u_char lvl, u_char front);
     Stream laserCreated(u_int id, u_short y);
+    Stream rayPos(u_int id, u_short x, u_short y);
 }

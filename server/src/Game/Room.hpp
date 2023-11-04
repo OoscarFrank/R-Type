@@ -181,6 +181,7 @@ class Room
         void checkCollisionBonus();
         size_t &getBombIds();
         size_t &getLaserIds();
+        size_t &getRayIds();
         void handleForcePod();
         void degInZone(float x, float y, size_t radius, Player &player);
 

@@ -15,7 +15,7 @@ void Laser::refresh()
     auto now = std::chrono::system_clock::now();
 
     if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= LASER_MOVE_TIME) {
-        if (_counter > 19) {
+        if (_counter > 38) {
             _exist = false;
         }
         ++_counter;
