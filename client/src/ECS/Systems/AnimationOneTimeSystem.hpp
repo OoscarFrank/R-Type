@@ -8,7 +8,7 @@ namespace ECS {
         class AnimationOneTimeSystem {
             public:
             /**
-             * @brief Update animation of each entity with a texture rect component
+             * @brief Update the animation of each entity with a texture rect and an animation one time component
              * 
              * @param ecs 
              * @param deltaTime 

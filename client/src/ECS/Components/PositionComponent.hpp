@@ -42,7 +42,15 @@ namespace ECS {
                 float getY() const { return _y; }
 
             private:
+            /**
+             * @brief Position on the X axis
+             * 
+             */
                 float _x;
+            /**
+             * @brief Position on the Y axis
+             * 
+             */
                 float _y;
         };
     }

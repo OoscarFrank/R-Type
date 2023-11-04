@@ -35,18 +35,41 @@ namespace ECS {
          * @return const sf::IntRect& 
          */
             const sf::IntRect &getTextureRect() const { return _textureRect; }
+        /**
+         * @brief Set the Frame On Texture object
+         * 
+         * @param frame 
+         */
             void setFrameOnTexture(int frame) {
                 if (frame > _numFrames)
                     frame = 0;
                 _textureRect.left = frame * _frameWidth;
             }
-
+        /**
+         * @brief Texture rect width
+         * 
+         */
             sf::IntRect _textureRect;
+        /**
+         * @brief Frame width
+         * 
+         */
             int _frameWidth;
+        /**
+         * @brief Number of frames
+         * 
+         */
             int _numFrames;
+        /**
+         * @brief Delay between frames
+         * 
+         */
             float _frameDelay;
+        /**
+         * @brief Save the time since last frame change
+         * 
+         */
             float _timeSinceLastFrameChange = 0.0f;
-
         };
     }
 }

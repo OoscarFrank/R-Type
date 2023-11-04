@@ -133,7 +133,11 @@ namespace ECS
             _entities.push_back(entity);
             return entity;
         }
-
+        /**
+         * @brief Disable an entity
+         * 
+         * @param entity 
+         */
         void disableEntity(entity_t const &entity)
         {
             if (_entity_to_index.find(entity) == _entity_to_index.end()) {
@@ -141,7 +145,11 @@ namespace ECS
             }
             _entity_to_index[entity].first = false;
         }
-
+        /**
+         * @brief Enable an entity
+         * 
+         * @param entity 
+         */
         void enableEntity(entity_t const &entity)
         {
             if (_entity_to_index.find(entity) == _entity_to_index.end()) {
@@ -149,7 +157,13 @@ namespace ECS
             }
             _entity_to_index[entity].first = true;
         }
-
+        /**
+         * @brief Get the entity state
+         * 
+         * @param entity 
+         * @return true 
+         * @return false 
+         */
         bool isEntityEnabled(entity_t const &entity)
         {
             if (_entity_to_index.find(entity) == _entity_to_index.end()) {

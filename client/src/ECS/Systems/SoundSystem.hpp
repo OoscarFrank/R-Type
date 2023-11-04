@@ -8,7 +8,7 @@ namespace ECS {
         class SoundSystem {
         public:
         /**
-         * @brief Update the position of each entity with a position and a parallax component
+         * @brief Update the sound system
          *
          * @param ecs
          * @param deltaTime

@@ -8,6 +8,10 @@ namespace ECS {
     template <typename Component>
     class StorageComponents {
         public:
+        /**
+         * @brief Using of the value type
+         * 
+         */
             using value_type = std::optional<Component>;
             using reference_type = value_type &;
             using const_reference_type = value_type const &;
@@ -184,6 +188,10 @@ namespace ECS {
             }
 
         private:
+        /**
+         * @brief Container of the storage
+         * 
+         */
             container_t _data;
     };
 }

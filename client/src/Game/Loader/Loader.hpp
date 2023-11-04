@@ -19,6 +19,10 @@ namespace game {
          *
          */
             ~Loader();
+        /**
+         * @brief Enum of things to load
+         * 
+         */
             enum toLoad {
                 ParallaxFirstbkg,
                 ParallaxSecondbkg,
@@ -88,12 +92,36 @@ namespace game {
          * @return const std::shared_ptr<sf::Texture>&
          */
             const std::shared_ptr<sf::Texture> &getTexture(toLoad type) const;
-
+        /**
+         * @brief Load a font from a path
+         * 
+         * @param path 
+         * @param type 
+         */
             void loadFont(const std::string path, toLoad type);
+        /**
+         * @brief Unload a font from a type
+         * 
+         * @param type 
+         */
             void unloadFont(toLoad type);
+        /**
+         * @brief Get the Font object
+         * 
+         * @param type 
+         * @return const std::shared_ptr<sf::Font>& 
+         */
             const std::shared_ptr<sf::Font> &getFont(toLoad type) const;
         private:
+        /**
+         * @brief Store the textures
+         * 
+         */
             std::unordered_map<Loader::toLoad, std::shared_ptr<sf::Texture>> _textures;
+        /**
+         * @brief Store the fonts
+         * 
+         */
             std::unordered_map<Loader::toLoad, std::shared_ptr<sf::Font>> _fonts;
     };
 }

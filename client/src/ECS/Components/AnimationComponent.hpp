@@ -5,7 +5,7 @@ namespace ECS {
         class AnimationComponent {
             public:
             /**
-             * @brief Construct a new Button Component object
+             * @brief Construct a new AnimationComponent Component object
              * 
              */
                 AnimationComponent(){}

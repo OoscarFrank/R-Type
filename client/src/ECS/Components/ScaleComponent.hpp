@@ -26,17 +26,27 @@ namespace ECS {
                     this->_scaleY = newScaleY;
                 }
             /**
-             * @brief Get the scale object
+             * @brief Get the Scale X object
              *
              * @return float
              */
                 float getScaleX() const { return _scaleX; }
-
+            /**
+             * @brief Get the Scale Y object
+             * 
+             * @return float 
+             */
                 float getScaleY() const { return _scaleY; }
-
-
             private:
+            /**
+             * @brief Value of the scale X
+             * 
+             */
                 float _scaleX;
+            /**
+             * @brief Value of the scale Y
+             * 
+             */
                 float _scaleY;
         };
     }

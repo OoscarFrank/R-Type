@@ -8,8 +8,20 @@ namespace ECS {
         public:
             class EntityPos {
             private:
+            /**
+             * @brief Entity
+             * 
+             */
                 entity_t entity;
+            /**
+             * @brief Movement on X axis
+             * 
+             */
                 float x;
+            /**
+             * @brief Movement on Y axis
+             * 
+             */
                 float y;
             public:
             /**
@@ -39,7 +51,10 @@ namespace ECS {
              */
                 entity_t getEntity() const { return entity; }
             };
-
+            /**
+             * @brief Construct a new Movable System object
+             *
+             */
             MovableSystem() = default;
             /**
              * @brief Update the position of each entity with a position and a movable component

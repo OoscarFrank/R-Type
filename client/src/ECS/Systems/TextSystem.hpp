@@ -8,6 +8,12 @@ namespace ECS {
     namespace systems {
         class TextSystem {
             public:
+            /**
+             * @brief Update the text of each entity with a text component
+             * 
+             * @param ecs 
+             * @param texts 
+             */
                 void update(Registry &ecs, std::unordered_map<entity_t, std::string> &texts) {
                     try {
                         auto &textComponents = ecs.get_components<components::TextComponent>();

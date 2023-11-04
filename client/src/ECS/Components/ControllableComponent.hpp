@@ -23,16 +23,33 @@ namespace ECS {
                 const std::vector<sf::Keyboard::Key> &getControls() const {
                     return _controls;
                 }
-
+            /**
+             * @brief Get the Event object
+             *
+             * @return int
+             */
                 int getEvent() const {
                     return _event;
                 }
+            /**
+             * @brief Set the Event object
+             *
+             * @param event
+             */
                 void setEvent(int event) {
                     _event = event;
                 }
 
             private:
+            /**
+             * @brief Store the controls
+             *
+             */
                 std::vector<sf::Keyboard::Key> _controls;
+            /**
+             * @brief Store the event
+             *
+             */
                 int _event = 0;
         };
     }

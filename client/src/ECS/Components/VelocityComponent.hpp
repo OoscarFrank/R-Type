@@ -49,9 +49,25 @@ namespace ECS {
             void setDY(float dy) { _dy = dy; }
 
         private:
+        /**
+         * @brief Initial value of the velocity on the X axis
+         * 
+         */
             float _initialDx;
+        /**
+         * @brief Initial value of the velocity on the Y axis
+         * 
+         */
             float _initialDy;
+        /**
+         * @brief Value of the velocity on the X axis
+         * 
+         */
             float _dx;
+        /**
+         * @brief Value of the velocity on the Y axis
+         * 
+         */
             float _dy;
         };
     }

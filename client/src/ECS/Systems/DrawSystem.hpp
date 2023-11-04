@@ -36,8 +36,6 @@ namespace ECS {
                                 window.draw(sprite->getSprite());
                             }
                         }
-
-
                         auto &textComponents = ecs.get_components<components::TextComponent>();
 
                         for (size_t i = 0; i < textComponents.size() ; ++i) {
