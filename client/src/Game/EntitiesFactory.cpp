@@ -92,12 +92,12 @@ entity_t Factory::createMissile(float x, float y, const std::shared_ptr<sf::Text
     return newEntity;
 }
 
-entity_t Factory::createMissileAnnimated(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale)
+entity_t Factory::createMissileAnnimated(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale, short frame)
 {
     entity_t newEntity = _registry.spawn_entity(59);
     _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
     _registry.emplace_component<ECS::components::MovableComponent>(newEntity, ECS::components::MovableComponent{});
-    _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{0, 0, (int)texture->getSize().x, (int)texture->getSize().y, 4, 100.0f});
+    _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{0, 0, (int)texture->getSize().x, (int)texture->getSize().y, frame, 100.0f});
     _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
     _registry.emplace_component<ECS::components::AnimationComponent>(newEntity, ECS::components::AnimationComponent{});
     _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{static_cast<float>(scale), static_cast<float>(scale)});
@@ -115,12 +115,12 @@ entity_t Factory::createEnnemi(float x, float y, const std::shared_ptr<sf::Textu
     return newEntity;
 }
 
-entity_t Factory::createEnnemi4frames(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale)
+entity_t Factory::createEnnemiFrames(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale, short frame)
 {
     entity_t newEntity = _registry.spawn_entity(60);
     _registry.emplace_component<ECS::components::PositionComponent>(newEntity, ECS::components::PositionComponent{x, y});
     _registry.emplace_component<ECS::components::MovableComponent>(newEntity, ECS::components::MovableComponent{});
-    _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{0, 0, (int)texture->getSize().x, (int)texture->getSize().y, 4, 100.0f});
+    _registry.emplace_component<ECS::components::TextureRectComponent>(newEntity, ECS::components::TextureRectComponent{0, 0, (int)texture->getSize().x, (int)texture->getSize().y, frame, 500.0f});
     _registry.emplace_component<ECS::components::SpriteComponent>(newEntity, ECS::components::SpriteComponent{texture});
     _registry.emplace_component<ECS::components::AnimationComponent>(newEntity, ECS::components::AnimationComponent{});
     _registry.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{static_cast<float>(scale), static_cast<float>(scale)});

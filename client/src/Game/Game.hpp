@@ -72,6 +72,7 @@ namespace game {
                 GREEN_MISSILE,
                 PLAYER_TWO,
                 PLAYER_THREE,
+                FIRE_BALL,
             };
 
         private:

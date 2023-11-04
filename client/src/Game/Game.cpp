@@ -40,6 +40,7 @@ Game::Game(std::string ip, int port) :
         this->_manager.loadTexture(client::getAssetPath("entity/missile/orange_missile.png"), Loader::toLoad::OrangeMissile);
         this->_manager.loadTexture(client::getAssetPath("entity/missile/purple_missile.png"), Loader::toLoad::PurpleMissile);
         this->_manager.loadTexture(client::getAssetPath("entity/missile/green_missile.png"), Loader::toLoad::GreenMissile);
+        this->_manager.loadTexture(client::getAssetPath("entity/missile/fireBall.png"), Loader::toLoad::FireBall);
         this->_manager.loadTexture(client::getAssetPath("entity/monsters/monster1.png"), Loader::toLoad::Monster1);
         this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob1.png"), Loader::toLoad::Monster2);
         this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob2.png"), Loader::toLoad::Monster3);
@@ -48,6 +49,8 @@ Game::Game(std::string ip, int port) :
         this->_manager.loadTexture(client::getAssetPath("entity/monsters/boss2.png"), Loader::toLoad::Boss2);
         this->_manager.loadTexture(client::getAssetPath("entity/monsters/boss1.png"), Loader::toLoad::Boss3);
         this->_manager.loadTexture(client::getAssetPath("entity/monsters/boss1.png"), Loader::toLoad::Boss4);
+        this->_manager.loadTexture(client::getAssetPath("entity/monsters/boss1.png"), Loader::toLoad::Boss5);
+        this->_manager.loadTexture(client::getAssetPath("entity/monsters/boss1.png"), Loader::toLoad::Boss6);
         this->_manager.loadTexture(client::getAssetPath("entity/player/player_move1.png"), Loader::toLoad::Player_move1);
         this->_manager.loadTexture(client::getAssetPath("entity/player/player_move2.png"), Loader::toLoad::Player_move2);
         this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
@@ -625,19 +628,19 @@ void Game::handleMissilePosition(Network::Packet &packet)
                 }
                 break;
             case MISSILE_TYPE::ORANGE_MISSILE: {
-                    entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::OrangeMissile), this->_resMult);
+                    entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::OrangeMissile), this->_resMult, 4);
                     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                     this->_missiles.push_back(std::make_pair(id, newEntity));
                 }
                 break;
             case MISSILE_TYPE::PURPLE_MISSILE: {
-                    entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::PurpleMissile), this->_resMult);
+                    entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::PurpleMissile), this->_resMult, 4);
                     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                     this->_missiles.push_back(std::make_pair(id, newEntity));
                 }
                 break;
             case MISSILE_TYPE::GREEN_MISSILE: {
-                    entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::GreenMissile), this->_resMult);
+                    entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::GreenMissile), this->_resMult, 4);
                     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                     this->_missiles.push_back(std::make_pair(id, newEntity));
                 }
@@ -656,6 +659,12 @@ void Game::handleMissilePosition(Network::Packet &packet)
                     this->_missiles.push_back(std::make_pair(id, newEntity));
                     entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effects/piou.ogg"), 1000, true);
                     this->_sounds.emplace_back(soundEntity);
+                }
+                break;
+            case MISSILE_TYPE::FIRE_BALL: {
+                    entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::FireBall));
+                    this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
+                    this->_missiles.push_back(std::make_pair(id, newEntity));
                 }
                 break;
             default:
@@ -696,41 +705,51 @@ void Game::handleEnnemiPosition(Network::Packet &packet)
     if (res == 0) {
         switch ((int)type) {
             case 2: {
-                    entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster2), this->_resMult);
+                    entity_t newEntity = this->_factory.createEnnemiFrames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster2), this->_resMult, 4);
                     this->_ennemies.push_back(std::make_pair(id, newEntity));
                 }
                 break;
             case 3: {
-                    entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster3), this->_resMult);
+                    entity_t newEntity = this->_factory.createEnnemiFrames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster3), this->_resMult, 4);
                     this->_ennemies.push_back(std::make_pair(id, newEntity));
                 }
                 break;
             case 4: {
-                    entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster4), this->_resMult);
+                    entity_t newEntity = this->_factory.createEnnemiFrames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster4), this->_resMult, 4);
                     this->_ennemies.push_back(std::make_pair(id, newEntity));
                 }
                 break;
             case 5: {
-                    entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster4), this->_resMult);
+                    entity_t newEntity = this->_factory.createEnnemiFrames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Monster4), this->_resMult, 4);
                     this->_ennemies.push_back(std::make_pair(id, newEntity));
                 }
             case 6: {
-                    entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss1), this->_resMult);
+                    entity_t newEntity = this->_factory.createEnnemiFrames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss1), this->_resMult, 4);
                     this->_ennemies.push_back(std::make_pair(id, newEntity));
                 }
                 break;
             case 7: {
-                    entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss2), this->_resMult);
+                    entity_t newEntity = this->_factory.createEnnemiFrames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss2), this->_resMult, 4);
                     this->_ennemies.push_back(std::make_pair(id, newEntity));
                 }
                 break;
             case 8: {
-                    entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss3), this->_resMult);
+                    entity_t newEntity = this->_factory.createEnnemiFrames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss3), this->_resMult, 4);
                     this->_ennemies.push_back(std::make_pair(id, newEntity));
                 }
                 break;
             case 9: {
-                    entity_t newEntity = this->_factory.createEnnemi4frames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss4), this->_resMult);
+                    entity_t newEntity = this->_factory.createEnnemiFrames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss4), this->_resMult, 4);
+                    this->_ennemies.push_back(std::make_pair(id, newEntity));
+                }
+                break;
+            case 10: {
+                    entity_t newEntity = this->_factory.createEnnemiFrames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss5), this->_resMult, 4);
+                    this->_ennemies.push_back(std::make_pair(id, newEntity));
+                }
+                break;
+            case 11: {
+                    entity_t newEntity = this->_factory.createEnnemiFrames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss6), this->_resMult, 4);
                     this->_ennemies.push_back(std::make_pair(id, newEntity));
                 }
                 break;
