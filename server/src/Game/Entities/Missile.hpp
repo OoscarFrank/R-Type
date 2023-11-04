@@ -13,6 +13,7 @@ class Missile: public AEntity {
             GREEN_MISSILE,
             PLAYER_TWO,
             PLAYER_THREE,
+            FIRE_BALL,
         };
 
         /**

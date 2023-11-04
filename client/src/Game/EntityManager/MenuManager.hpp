@@ -50,7 +50,7 @@ namespace game {
 
             void nextButtonInMenu(MENU_TYPE type);
             void previousButtonInMenu(MENU_TYPE type);
-            void executeButtonInMenu(ECS::Registry &ecs);
+            bool executeButtonInMenu(ECS::Registry &ecs);
 
 
         private:

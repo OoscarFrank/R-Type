@@ -56,7 +56,7 @@ namespace game {
          * @return entity_t
          */
             entity_t createEnnemi(float x, float y, const std::shared_ptr<sf::Texture> &texture);
-            entity_t createEnnemi4frames(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale);
+            entity_t createEnnemiFrames(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale, short frame);
             entity_t createBlackband(sf::IntRect rect, const std::shared_ptr<sf::Texture> &texture);
 
             entity_t createScoreCoche(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale);
@@ -68,7 +68,7 @@ namespace game {
             entity_t createLoadingBar(float x, float y, const std::shared_ptr<sf::Texture> &texture, const std::shared_ptr<sf::Texture> &textureRect, float scale);
             entity_t createSound(const std::string &soundPath, float volume = 100.0f, bool play = false);
             entity_t createBonus(const std::shared_ptr<sf::Texture> &texture, float x, float y, float scale);
-            entity_t createMissileAnnimated(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale);
+            entity_t createMissileAnnimated(float x, float y, const std::shared_ptr<sf::Texture> &texture, float scale, short frame);
             entity_t createBomb(const std::shared_ptr<sf::Texture> &texture, float x, float y, float scale);
             entity_t createPod(const std::shared_ptr<sf::Texture> &texture, float scale);
             entity_t createExplosion(const std::shared_ptr<sf::Texture> &texture, float x, float y, float scale);
