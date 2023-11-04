@@ -158,14 +158,15 @@ void MenuManager::previousButtonInMenu(MENU_TYPE type)
     });
 }
 
-void MenuManager::executeButtonInMenu(ECS::Registry &ecs)
+bool MenuManager::executeButtonInMenu(ECS::Registry &ecs)
 {
     if (this->checkLastButtonInput() == false)
-        return;
+        return false;
     if (this->_buttons.find(this->_selectedButton) == this->_buttons.end())
-        return;
+        return false;
     auto &buttonComponents = ecs.get_components<ECS::components::ButtonComponent>();
     auto entity = this->_buttons[this->_selectedButton];
     auto buttonComponent = buttonComponents[entity];
     buttonComponent->executeAction();
+    return true;
 }

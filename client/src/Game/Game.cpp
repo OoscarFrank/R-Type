@@ -107,7 +107,7 @@ Game::Game(std::string ip, int port) :
     this->_musics.emplace(EntityManager::MUSIC_TYPE::BLAHBLAH, this->_factory.createMusic(client::getAssetPath("songs/levels/BLAHBLAH.ogg"), 100, true));
 
     this->_musics.emplace(EntityManager::MUSIC_TYPE::LOBBY, this->_factory.createMusic(client::getAssetPath("songs/ambient/lobby.ogg"), soundLevel_volume, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::MATCHMAKING, this->_factory.createMusic(client::getAssetPath("songs/ambient/matchmaking.ogg"), soundLevel_volume, false));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::MATCHMAKING, this->_factory.createMusic(client::getAssetPath("songs/ambient/matchmaking.ogg"), soundLevel_volume, true));
 
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxFirstbkg), (-0.070f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
     this->_parallax.push_back(this->_factory.createParallax(0.0f, 0.0f, this->_manager.getTexture(Loader::Loader::ParallaxSecondbkg), (-0.1f * _resMult), sf::Vector2f(_resMult, _resMult), _resMult));
@@ -447,7 +447,10 @@ void Game::sendMoveToServer()
         if ((this->_gameState == gameState::MENU || this->_gameState == gameState::ENDGAME)
             && (*i).getEntity() == this->_menuManager.getMenuEntity(MenuManager::MENU_TYPE::MAIN_MENU)) {
             if (((*i).getEvent() & ENTER)) {
-                this->_menuManager.executeButtonInMenu(this->ecs);
+                if (this->_menuManager.executeButtonInMenu(this->ecs) == true) {
+                    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effects/click_button.ogg"), 1000, true);
+                    this->_sounds.emplace_back(soundEntity);
+                }
             }
             if ((*i).getEvent() & DOWN) {
                 this->_menuManager.nextButtonInMenu(MenuManager::MENU_TYPE::MAIN_MENU);
