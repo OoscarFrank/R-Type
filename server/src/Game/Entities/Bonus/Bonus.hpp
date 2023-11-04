@@ -3,5 +3,7 @@
 
 
 enum BONUS {
-    MISSILE,
+    MISSILE = 1,
+    LIFE,
+    SCORE
 };

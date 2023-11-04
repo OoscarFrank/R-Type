@@ -89,6 +89,7 @@ struct Commands {
  * 35 serv - player pod level (userId, level, front)
  * 37 serv - laser position (id, y)
  * 39 serv - ray position (id, x, y)
+ * 40 serv - player get a bonus (type)
  *
  */
 #define IN_COMMANDS { \
@@ -119,5 +120,6 @@ struct Commands {
     {35, {UINT, UCHAR, UCHAR}, 6, true}, \
     {37, {UINT , USHORT}, 6, true}, \
     {39, {UINT, USHORT, USHORT}, 8, false}, \
+    {40, {UCHAR}, 1, true}, \
     {255, {USHORT}, 2, true} \
 }

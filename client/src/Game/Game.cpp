@@ -394,6 +394,7 @@ void Game::update()
         {35, [&](Network::Packet &packet) { this->handlePodInfo(packet); }},
         {37, [&](Network::Packet &packet) { this->handleLaser(packet); }},
         {39, [&](Network::Packet &packet) { this->handleRay(packet); }},
+        {40, [&](Network::Packet &packet) { this->handleBonus(packet); }},
     };
 
     while (this->_net.getQueueIn().tryPop(packet)) {
@@ -542,6 +543,7 @@ int Game::MainLoop()
     while (this->_window.isOpen()) {
         this->_fbr->refresh();
         this->_fbr->fadeout();
+        this->GenParticles();
 
         this->refreshScreenSize();
         long currentTime = NOW;
@@ -969,8 +971,11 @@ void Game::handleEnnemiDeath(Network::Packet &packet)
 
     entity_t res = getEnnemiEntityFromId(id);
     if (res != 0) {
-        this->ecs.kill_entity(res);
 
+        auto sprite  = this->ecs.getComponent<ECS::components::SpriteComponent>(res);
+        CreateParticle(sprite.getSprite().getGlobalBounds() , sf::Color::White, 150);
+
+        this->ecs.kill_entity(res);
         this->_entityPositions.erase(std::remove_if(this->_entityPositions.begin(), this->_entityPositions.end(), [id](ECS::systems::MovableSystem::EntityPos const &pair) {
             return pair.getEntity() == id;
         }), this->_entityPositions.end());
@@ -1434,4 +1439,56 @@ void Game::handleRay(Network::Packet &packet)
             }
         }
     }
+}
+
+void Game::GenParticles()
+{
+    if (std::chrono::system_clock::now() - this->_lastParticleUpdate > std::chrono::milliseconds(70)) {
+        for(auto j = _particles.begin(); j != _particles.end(); ++j) {
+            if (std::chrono::system_clock::now() - std::get<2>(*j) > std::chrono::milliseconds(std::get<3>(*j))) {
+                j = _particles.erase(j);
+                if (j == _particles.end())
+                    break;
+                continue;
+            }
+            sf::IntRect area = std::get<0>(*j);
+            sf::Color color = std::get<1>(*j);
+            for (int i = 0; i < area.width * area.height / 1000; ++i) {
+                short x = std::rand() % area.width + area.left;
+                short y = std::rand() % area.height + area.top;
+                short width = std::rand() % 8 + 3;
+                short height = std::rand() % 8 + 3;
+                this->_fbr->drawRect(x, y, width, height, color);
+            }
+        }
+        this->_lastParticleUpdate = std::chrono::system_clock::now();
+    }
+}
+
+void Game::CreateParticle(sf::IntRect rect, sf::Color color, size_t duration)
+{
+    this->_particles.push_back(std::make_tuple(rect, color, std::chrono::system_clock::now(), duration));
+}
+
+void Game::CreateParticle(sf::FloatRect rect, sf::Color color, size_t duration)
+{
+    this->_particles.push_back(std::make_tuple(sf::IntRect(rect.left, rect.top, rect.width, rect.height), color, std::chrono::system_clock::now(), duration));
+}
+
+void Game::handleBonus(Network::Packet &packet)
+{
+    unsigned char type= packet.getData().getDataUChar();
+
+    auto position = this->ecs.getComponent<ECS::components::SpriteComponent>(this->_playerEntity);
+    sf::FloatRect rect = position.getSprite().getGlobalBounds();
+    rect.left -= 20 * this->_resMult;
+    rect.top -= 20 * this->_resMult;
+    rect.width += 40 * this->_resMult;
+    rect.height += 40 * this->_resMult;
+    if (type == 1)
+        this->CreateParticle(rect, sf::Color::Red, 500);
+    if (type == 2)
+        this->CreateParticle(rect, sf::Color::Green, 500);
+    if (type == 3)
+        this->CreateParticle(rect, sf::Color::White, 500);
 }

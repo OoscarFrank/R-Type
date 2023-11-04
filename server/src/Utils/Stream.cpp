@@ -677,3 +677,11 @@ Stream StreamFactory::rayPos(u_int id, u_short x, u_short y)
     out.setDataUShort(y);
     return out;
 }
+
+Stream StreamFactory::BonusGet(u_char type)
+{
+    Stream out;
+    out.setDataUChar(40);
+    out.setDataUChar(type);
+    return out;
+}

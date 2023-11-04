@@ -116,6 +116,9 @@ namespace game {
             std::string _chatInput;
             float _timeSinceLastUpdate;
 
+            std::vector<std::tuple<sf::IntRect, sf::Color, std::chrono::system_clock::time_point, size_t>> _particles;
+            std::chrono::system_clock::time_point _lastParticleUpdate;
+
             void refreshScreenSize();
 
             void initButtons();
@@ -151,6 +154,9 @@ namespace game {
             void handlePodInfo(Network::Packet &packet);
             void handleLaser(Network::Packet &packet);
             void handleRay(Network::Packet &packet);
-
+            void GenParticles();
+            void CreateParticle(sf::IntRect rect, sf::Color color, size_t duration);
+            void CreateParticle(sf::FloatRect rect, sf::Color color, size_t duration);
+            void handleBonus(Network::Packet &packet);
     };
 }

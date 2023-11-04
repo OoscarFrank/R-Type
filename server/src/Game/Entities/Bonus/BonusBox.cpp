@@ -19,7 +19,7 @@ void BonusBox::refresh()
             _exist = false;
         if (_box.y < 0 || _box.y > SCREEN_HEIGHT - _box.height)
             _vy = -_vy;
-        this->_room.sendToAll(StreamFactory::bonusPos(_id, BONUS::MISSILE ,_box.x, _box.y));
+        this->_room.sendToAll(StreamFactory::bonusPos(_id, 1 ,_box.x, _box.y));
         _lastMove = now;
     }
 }

@@ -43,6 +43,7 @@ void printHelp()
 
 int main(int argc, char **argv)
 {
+    std::srand(static_cast<unsigned int>(std::time(NULL)));
     try {
         Args args(argc, argv);
 

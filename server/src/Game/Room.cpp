@@ -402,8 +402,10 @@ void Room::checkCollisionBonus()
             if ((*p)->podMissileLvl() == 3) {
                 if ((*p)->life() >= 100) {
                     (*p)->setScore((*p)->score() + 100);
+                    (*p)->client()->send(StreamFactory::BonusGet(BONUS::SCORE));
                 } else {
                     (*p)->setLife((*p)->life() + 30);
+                    (*p)->client()->send(StreamFactory::BonusGet(BONUS::LIFE));
                     if ((*p)->life() > 100)
                         (*p)->setLife(100);
                 }
@@ -413,10 +415,14 @@ void Room::checkCollisionBonus()
                     (*p)->setLife((*p)->life() + 30);
                     if ((*p)->life() > 100)
                         (*p)->setLife(100);
-                }else if (tmp == 1)
+                    (*p)->client()->send(StreamFactory::BonusGet(BONUS::LIFE));
+                }else if (tmp == 1) {
                     (*p)->setPodMissileLvl((*p)->podMissileLvl() + 1);
-                else
+                    (*p)->client()->send(StreamFactory::BonusGet(BONUS::MISSILE));
+                } else {
                     (*p)->setScore((*p)->score() + 100);
+                    (*p)->client()->send(StreamFactory::BonusGet(BONUS::SCORE));
+                }
             }
             this->sendToAll(StreamFactory::bonusDestroyed(this->_bonusBox->id()));
             this->_bonusBox.release();
