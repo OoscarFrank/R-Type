@@ -4,7 +4,7 @@
 Boss1Monster::Boss1Monster(Room &room, u_int id, short x, short y):
     Monster(room, id, x, y, BOSS1_MONSTER_WIDTH, BOSS1_MONSTER_HEIGHT)
 {
-    _life = 1500;
+    _life = 6500;
     _burstCount = 0;
     moveDirection.first = 0;
     moveDirection.second = 0;
@@ -13,7 +13,7 @@ Boss1Monster::Boss1Monster(Room &room, u_int id, short x, short y):
 Boss1Monster::Boss1Monster(Room &room, u_int id, const std::pair<short, short> &pos):
     Monster(room, id, pos, {BOSS1_MONSTER_WIDTH, BOSS1_MONSTER_HEIGHT})
 {
-    _life = 1500;
+    _life = 6500;
     _burstCount = 0;
     moveDirection.first = 0;
     moveDirection.second = 0;

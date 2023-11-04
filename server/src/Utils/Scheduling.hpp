@@ -62,6 +62,7 @@
 #define LITTLE_MONSTER_MISSILE_PROGRESS_STEP    30
 
 #define ZIGZAGER_MONSTER_PROGRESS_STEP          10
+#define ZIGZAGER_MONSTER_PROGRESS_STEP_VERTICAL 7
 #define ZIGZAGER_MONSTER_MISSILE_PROGRESS_STEP  30
 
 #define FOLLOWER_MONSTER_PROGRESS_STEP          10
@@ -94,7 +95,7 @@
 #define BOSS2_MONSTER_FIRE_TIME         1000 // ms
 #define BIG_FIRE_TIME                   8000 // ms
 
-#define BONUS_SPAWN_TIME                25000 // ms
+#define BONUS_SPAWN_TIME                20000 // ms
 
 #define CHANGE_HORIZONTAL_DIRECTION     3 // second
 #define CHANGE_VERTICAL_DIRECTION       5 // second

@@ -86,7 +86,7 @@ u_char ForcePod::getLvl() const
 
 void ForcePod::shootLaser()
 {
-    if (this->lvl < 2)
+    if (this->lvl < 3)
         return;
     auto now = std::chrono::system_clock::now();
     if (_player.exists() && std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastLaser).count() >= PLAYER_FIRE_LASER_TIME) {
@@ -97,7 +97,7 @@ void ForcePod::shootLaser()
 
 void ForcePod::shootRay()
 {
-    if (this->lvl < 3)
+    if (this->lvl < 2)
         return;
      auto now = std::chrono::system_clock::now();
     if (_player.exists() && std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastRay).count() >= PLAYER_FIRE_RAY_TIME) {

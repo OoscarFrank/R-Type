@@ -347,7 +347,7 @@ void Room::checkCollisionMonsters()
 
 std::pair<short, short> Room::getNearestPlayerPos(const IEntity &entity)
 {
-    std::pair<short, short> nearest = {0, SCREEN_HEIGHT / 2};
+    std::pair<short, short> nearest = {-500, SCREEN_HEIGHT / 2};
     double distance = std::numeric_limits<double>::max();
 
     for (auto p = _players.begin(); p != _players.end(); p++) {
@@ -559,4 +559,9 @@ void Room::degInZone(float x, float y, size_t radius, Player &player)
             continue;
         }
     }
+}
+
+std::vector<std::unique_ptr<Player>> &Room::getPlayers()
+{
+    return _players;
 }

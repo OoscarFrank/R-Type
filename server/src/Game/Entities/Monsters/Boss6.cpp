@@ -5,7 +5,7 @@
 Boss6Monster::Boss6Monster(Room &room, u_int id, short x, short y):
     Monster(room, id, x, y, BOSS1_MONSTER_WIDTH, BOSS1_MONSTER_HEIGHT)
 {
-    _life = 3000;
+    _life = 15000;
     _burstCount = 0;
     _moveDirection.first = 0;
     _moveDirection.second = 0;
@@ -16,7 +16,7 @@ Boss6Monster::Boss6Monster(Room &room, u_int id, short x, short y):
 Boss6Monster::Boss6Monster(Room &room, u_int id, const std::pair<short, short> &pos):
     Monster(room, id, pos, {BOSS1_MONSTER_WIDTH, BOSS1_MONSTER_HEIGHT})
 {
-    _life = 3000;
+    _life = 15000;
     _burstCount = 0;
     _moveDirection.first = 0;
     _moveDirection.second = 0;

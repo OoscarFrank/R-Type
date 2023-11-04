@@ -109,7 +109,10 @@ std::pair<size_t, Stream> Network::getNextInst()
                 if (i->_important) {
                     u_short test = _streamIn.subStream(1).getDataUShort();
                     int count = 0;
-                    
+                    if (_lastCmdNbrRecieved < test) {
+                        if (static_cast<int>(test) - static_cast<int>(_lastCmdNbrRecieved) > 50)
+                            _lastCmdNbrRecieved = test - 1;
+                    }
                     for (_lastCmdNbrRecieved++; test != _lastCmdNbrRecieved; _lastCmdNbrRecieved++) {
                         std::cout << "Cmd not recieved: " << _lastCmdNbrRecieved << std::endl;
                         Stream out;

@@ -4,7 +4,7 @@
 Boss2Monster::Boss2Monster(Room &room, u_int id, short x, short y):
     Monster(room, id, x, y, BOSS2_MONSTER_WIDTH, BOSS2_MONSTER_HEIGHT)
 {
-    _life = 2000;
+    _life = 10000;
     _burst = std::chrono::system_clock::now();
     _burstSpam = std::chrono::system_clock::now();
     _changeVelocity = std::chrono::system_clock::now();
@@ -16,7 +16,7 @@ Boss2Monster::Boss2Monster(Room &room, u_int id, short x, short y):
 Boss2Monster::Boss2Monster(Room &room, u_int id, const std::pair<short, short> &pos):
     Monster(room, id, pos, {BOSS2_MONSTER_WIDTH, BOSS2_MONSTER_HEIGHT})
 {
-    _life = 2000;
+    _life = 10000;
     _burst = std::chrono::system_clock::now();
     _burstSpam = std::chrono::system_clock::now();
     _changeVelocity = std::chrono::system_clock::now();

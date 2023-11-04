@@ -85,6 +85,14 @@ void Levels::update(Room &room)
             _endTime = chronoNow;
             _currentLvl += 1;
             _lastUpdate = chronoNow;
+            for(auto i = room.getPlayers().begin(); i != room.getPlayers().end(); ++i) {
+                if ((*i)->exists()) {
+                    (*i)->setScore((*i)->score() + 100);
+                    (*i)->setLife((*i)->life() + 50);
+                    if ((*i)->life() > 100)
+                        (*i)->setLife(100);
+                }
+            }
         }
     }
     if (_ended) {

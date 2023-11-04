@@ -13,6 +13,7 @@
 #define SERVER_WIDTH        3840
 #define SERVER_HEIGHT       2160
 #define SERVER_RATIO      16.0f / 9.0f
+#define SOUND_VOLUME        40.0f
 
 
 

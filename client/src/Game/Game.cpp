@@ -98,7 +98,7 @@ Game::Game(std::string ip, int port) :
         node = std::make_tuple(-1, 0, 0);
     }
 
-    float soundLevel_volume = 40.0f;
+    float soundLevel_volume = SOUND_VOLUME;
     this->_musics.emplace(EntityManager::MUSIC_TYPE::SOUND_OF_SPACE, this->_factory.createMusic(client::getAssetPath("songs/levels/SOUND_OF_SPACE.ogg"), soundLevel_volume, true));
     this->_musics.emplace(EntityManager::MUSIC_TYPE::TURN_ON_THE_LIGHTS, this->_factory.createMusic(client::getAssetPath("songs/levels/TURN_ON_THE_LIGHTS.ogg"), soundLevel_volume, true));
     this->_musics.emplace(EntityManager::MUSIC_TYPE::PUSH_UP, this->_factory.createMusic(client::getAssetPath("songs/levels/PUSH_UP.ogg"), soundLevel_volume, true));
@@ -107,7 +107,7 @@ Game::Game(std::string ip, int port) :
     this->_musics.emplace(EntityManager::MUSIC_TYPE::CLEON, this->_factory.createMusic(client::getAssetPath("songs/levels/CLEON.ogg"), soundLevel_volume, true));
     this->_musics.emplace(EntityManager::MUSIC_TYPE::AMNESIA, this->_factory.createMusic(client::getAssetPath("songs/levels/AMNESIA.ogg"), soundLevel_volume, true));
     this->_musics.emplace(EntityManager::MUSIC_TYPE::SEVENNATION, this->_factory.createMusic(client::getAssetPath("songs/levels/SEVENNATION.ogg"), soundLevel_volume, true));
-    this->_musics.emplace(EntityManager::MUSIC_TYPE::BLAHBLAH, this->_factory.createMusic(client::getAssetPath("songs/levels/BLAHBLAH.ogg"), 100, true));
+    this->_musics.emplace(EntityManager::MUSIC_TYPE::BLAHBLAH, this->_factory.createMusic(client::getAssetPath("songs/levels/BLAHBLAH.ogg"), soundLevel_volume, true));
 
     this->_musics.emplace(EntityManager::MUSIC_TYPE::LOBBY, this->_factory.createMusic(client::getAssetPath("songs/ambient/lobby.ogg"), soundLevel_volume, true));
     this->_musics.emplace(EntityManager::MUSIC_TYPE::MATCHMAKING, this->_factory.createMusic(client::getAssetPath("songs/ambient/matchmaking.ogg"), soundLevel_volume, true));
@@ -1102,8 +1102,8 @@ void Game::handleChangeLevel(Network::Packet &packet)
     if (!started) {
         this->handleMusic(this->ecs, static_cast<EntityManager::MUSIC_TYPE>(this->currentSong), [timeout, fadeOutTime](ECS::components::MusicComponent &music) {
             if (timeout <= fadeOutTime) {
-                int volume = 100 * timeout / fadeOutTime;
-                volume = (volume * -1) + 100;
+                int volume = SOUND_VOLUME * timeout / fadeOutTime;
+                volume = (volume * -1) + SOUND_VOLUME;
                 music.setVolume(volume);
             } else
                 music.setVolume(0);
@@ -1409,6 +1409,9 @@ void Game::handleLaser(Network::Packet &packet)
 
         this->_factory.createLaser(this->_manager.getTexture(Loader::Loader::Laser), i,(y - 80) * this->_resMult, this->_resMult);
     }
+    entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effects/laser.ogg"), 1000, true);
+    this->_sounds.emplace_back(soundEntity);
+
 }
 
 void Game::handleRay(Network::Packet &packet)
@@ -1424,6 +1427,7 @@ void Game::handleRay(Network::Packet &packet)
     } else {
         for(auto i = _rays.begin(); i != _rays.end(); ++i) {
             if ((*i).first == id) {
+                // std::cout << (*i).second.x << " " << (*i).second.y << "|" << x * this->_resMult <<  " " << y * this->_resMult << std::endl;
                 this->_fbr->drawLine((*i).second.x, (*i).second.y, x * this->_resMult, y * this->_resMult, sf::Color::Red);
                 (*i).second = sf::Vector2f(x * this->_resMult, y * this->_resMult);
                 break;

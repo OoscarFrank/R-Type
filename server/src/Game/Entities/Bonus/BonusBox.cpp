@@ -17,7 +17,7 @@ void BonusBox::refresh()
         move(_vx, _vy);
         if (_box.x < 0)
             _exist = false;
-        if (_box.y < 50 || _box.y > SCREEN_HEIGHT - _box.height - 50)
+        if (_box.y < 0 || _box.y > SCREEN_HEIGHT - _box.height)
             _vy = -_vy;
         this->_room.sendToAll(StreamFactory::bonusPos(_id, BONUS::MISSILE ,_box.x, _box.y));
         _lastMove = now;

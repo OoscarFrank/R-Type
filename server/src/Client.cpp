@@ -42,7 +42,10 @@ std::pair<size_t, Stream> Client::getNextInst()
                 }
                 _initialised = true;
                 int count = 0;
-                
+                if (_lastCmdNbrRecieved < test) {
+                    if (static_cast<int>(test) - static_cast<int>(_lastCmdNbrRecieved) > 50)
+                        _lastCmdNbrRecieved = test - 1;
+                }
                 for (_lastCmdNbrRecieved++; test != _lastCmdNbrRecieved; _lastCmdNbrRecieved++) {
                     std::cout << "Cmd not recieved: " << _lastCmdNbrRecieved << std::endl;
                     send(StreamFactory::askResend(_lastCmdNbrRecieved));

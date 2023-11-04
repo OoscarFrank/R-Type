@@ -186,6 +186,7 @@ class Room
         size_t &getRayIds();
         void handleForcePod();
         void degInZone(float x, float y, size_t radius, Player &player);
+        std::vector<std::unique_ptr<Player>> &getPlayers();
 
         std::mutex _playersMutex;
         void sendChat(std::shared_ptr<Client> client, const std::string &message);

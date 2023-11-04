@@ -118,10 +118,10 @@ namespace ECS
                             case sf::Keyboard::A:
                                 eventMemory |= BOMB;
                                 break;
-                            case sf::Keyboard::Z:
+                            case sf::Keyboard::E:
                                 eventMemory |= LASER;
                                 break;
-                            case sf::Keyboard::E:
+                            case sf::Keyboard::Z:
                                 eventMemory |= RAY;
                                 break;
                             default:
@@ -152,10 +152,10 @@ namespace ECS
                             case sf::Keyboard::A:
                                 eventMemory ^= BOMB;
                                 break;
-                            case sf::Keyboard::Z:
+                            case sf::Keyboard::E:
                                 eventMemory ^= LASER;
                                 break;
-                            case sf::Keyboard::E:
+                            case sf::Keyboard::Z:
                                 eventMemory ^= RAY;
                                 break;
                             default:
@@ -216,13 +216,13 @@ namespace ECS
                                     else if (!(eventMemory & BOMB) && p_move & BOMB)
                                         ControllableComponent->setEvent(p_move ^ BOMB);
                                     break;
-                                case sf::Keyboard::Z:
+                                case sf::Keyboard::E:
                                     if (eventMemory & LASER && !(p_move & LASER))
                                         ControllableComponent->setEvent(p_move | LASER);
                                     else if (!(eventMemory & LASER) && p_move & LASER)
                                         ControllableComponent->setEvent(p_move ^ LASER);
                                     break;
-                                case sf::Keyboard::E:
+                                case sf::Keyboard::Z:
                                     if (eventMemory & RAY && !(p_move & RAY))
                                         ControllableComponent->setEvent(p_move | RAY);
                                     else if (!(eventMemory & RAY) && p_move & RAY)
