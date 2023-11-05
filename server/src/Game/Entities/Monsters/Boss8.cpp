@@ -139,7 +139,7 @@ void Boss8Monster::refresh()
 
                 for (int i = 0; i < numMissiles; ++i) {
                     fireMissile(Missile::Type::FIRE_BALL, missileVelocity * std::cos(angle), missileVelocity * std::sin(angle));
-                    angle += 2.0 * M_PI / numMissiles;
+                    angle += 2.0 * MY_PI / numMissiles;
                 }
                 _burstCount++;
             }
@@ -192,7 +192,7 @@ void Boss8Monster::refresh()
 
                 for (int i = 0; i < numMissiles; ++i) {
                     fireMissile(Missile::Type::FIRE_BALL, missileVelocity * std::cos(angle), missileVelocity * std::sin(angle));
-                    angle += 2.0 * M_PI / numMissiles;
+                    angle += 2.0 * MY_PI / numMissiles;
                 }
                 _burstCount++;
             }

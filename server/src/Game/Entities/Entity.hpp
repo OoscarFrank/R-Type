@@ -10,6 +10,8 @@
 #include "../../Utils/Instruction.hpp"
 #include "../../Utils/BoundingBox.hpp"
 
+#define MY_PI 3.14159265358979323846
+
 class Room;
 
 /**

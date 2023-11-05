@@ -88,7 +88,7 @@ namespace ECS {
                  * @param ecs
                  * @param entityMoves
                  */
-                void update(Registry &ecs, std::vector<EntityEvent> &entityMoves, std::vector<u_char> &keyboardEntries, sf::RenderWindow &window, int &eventMemory) {
+                void update(Registry &ecs, std::vector<EntityEvent> &entityMoves, std::vector<unsigned char> &keyboardEntries, sf::RenderWindow &window, int &eventMemory) {
                     try {
                         auto &ControllableComponents = ecs.get_components<components::ControllableComponent>();
                         sf::Event event;
@@ -169,7 +169,7 @@ namespace ECS {
                                 }
                             }
                             if (event.type == sf::Event::TextEntered && event.text.unicode < 128)
-                                keyboardEntries.push_back(static_cast<u_char>(event.text.unicode));
+                                keyboardEntries.push_back(static_cast<unsigned char>(event.text.unicode));
                         }
 
                         for (size_t i = 0; i < ControllableComponents.size(); ++i)
