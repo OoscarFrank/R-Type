@@ -202,14 +202,15 @@ class AEntity: public IEntity {
          */
         virtual bool isDeletable() const;
 
-        virtual void move(short dx, short dy);
-    protected:
         /**
          * @brief Move the entity
          *
          * @param dx The x offset
          * @param dy The y offset
          */
+        virtual void move(short dx, short dy);
+    protected:
+        
 
         int _life;
         Room &_room;

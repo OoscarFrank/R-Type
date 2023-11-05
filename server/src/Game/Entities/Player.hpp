@@ -117,8 +117,12 @@ class Player: public ArmedEntity {
          */
         void setPodMissileLvl(unsigned char podMissileLvl);
 
+        /**
+         * @brief Get the force pod
+         *
+         * @return ForcePod&
+         */
         ForcePod &forcePod();
-
     private:
         unsigned char _podMissileLvl = 1;
         int _score;
