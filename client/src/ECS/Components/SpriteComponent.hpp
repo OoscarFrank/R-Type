@@ -63,6 +63,10 @@ namespace ECS{
                 const sf::Sprite &getSprite() const { return _sprite; }
 
             private:
+            /**
+             * @brief Sprite
+             * 
+             */
                 sf::Sprite _sprite;
         };
     }

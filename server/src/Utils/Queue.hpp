@@ -35,6 +35,18 @@ class Queue {
          */
         bool tryPop(T &value);
         /**
+         * @brief Try to pop a value from the queue if there is one and wait for a certain amount of time if there is none
+         *
+         * @tparam Rep Type of the timeOut duration
+         * @tparam Period Type of the timeOut duration
+         * @param value Value where the popped value will be stored
+         * @param timeOut Duration to wait if there is no value in the queue
+         * @return true If a value has been popped and the queue is not empty
+         * @return false If the queue is empty after the timeOut duration
+         */
+        template<typename Rep, typename Period>
+        bool tryPop(T &value, const std::chrono::duration<Rep, Period> &timeOut);
+        /**
          * @brief Pop a value from the queue and wait if there is none
          *
          * @return T
@@ -80,11 +92,24 @@ bool Queue<T>::tryPop(T &value)
 }
 
 template<typename T>
+template<typename Rep, typename Period>
+bool Queue<T>::tryPop(T &value, const std::chrono::duration<Rep, Period> &timeOut)
+{
+    std::unique_lock lock(_mutex);
+    if (_queue.empty())
+        if (_cv.wait_for(lock, std::chrono::seconds(10), [this]() { return !_queue.empty(); }) == false)
+            return false;
+    value = std::move(_queue.front());
+    _queue.pop();
+    return true;
+}
+
+template<typename T>
 T Queue<T>::pop()
 {
     std::unique_lock lock(_mutex);
     if (_queue.empty())
-        _cv.wait(lock);
+        _cv.wait(lock, [this]() { return !_queue.empty(); });
     T value = std::move(_queue.front());
     _queue.pop();
     return value;

@@ -4,7 +4,8 @@
 Player::Player(Room &room, std::shared_ptr<Client> client, u_int id, short x, short y):
     ArmedEntity(room, id, x, y, PLAYER_WIDTH, PLAYER_HEIGHT),
     _score(0),
-    _client(client)
+    _client(client),
+    _forcePod(ForcePod(room, *this))
 {
     _room.sendToAll(StreamFactory::playerJoinedGame(_id));
     sendPos();
@@ -13,7 +14,8 @@ Player::Player(Room &room, std::shared_ptr<Client> client, u_int id, short x, sh
 Player::Player(Room &room, std::shared_ptr<Client> client, u_int id, const std::pair<short, short> &pos):
     ArmedEntity(room, id, pos, {PLAYER_WIDTH, PLAYER_HEIGHT}),
     _score(0),
-    _client(client)
+    _client(client),
+    _forcePod(ForcePod(room, *this))
 {
     _room.sendToAll(StreamFactory::playerJoinedGame(_id));
     sendPos();
@@ -53,14 +55,23 @@ void Player::fireMissile()
     auto now = std::chrono::system_clock::now();
 
     if (_exist && std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= PLAYER_FIRE_TIME) {
-        ArmedEntity::fireMissile(Missile::Type::PLAYER, PLAYER_MISSILE_PROGRESS_STEP, 0);
+        if (this->_podMissileLvl == 1)
+            ArmedEntity::fireMissile(Missile::Type::PLAYER_ONE, PLAYER_MISSILE_PROGRESS_STEP, 0);
+        else if (this->_podMissileLvl == 2)
+            ArmedEntity::fireMissile(Missile::Type::PLAYER_TWO, PLAYER_MISSILE_PROGRESS_STEP, 0);
+        else if (this->_podMissileLvl == 3)
+            ArmedEntity::fireMissile(Missile::Type::PLAYER_THREE, PLAYER_MISSILE_PROGRESS_STEP, 0);
         _lastFire = now;
     }
 }
 
 int Player::getDamage()
 {
-    return 50 * _room.getCurrentLevel();
+    if (this->_podMissileLvl == 1)
+        return 50;
+    else if (this->_podMissileLvl == 2 || this->_podMissileLvl == 3)
+        return 100;
+    return 50;
 }
 
 const std::chrono::system_clock::time_point &Player::lastMoveTime() const
@@ -102,4 +113,19 @@ void Player::kill()
 std::shared_ptr<Client> Player::client() const
 {
     return _client;
+}
+
+unsigned char Player::podMissileLvl() const
+{
+    return _podMissileLvl;
+}
+
+void Player::setPodMissileLvl(unsigned char podMissileLvl)
+{
+    _podMissileLvl = podMissileLvl;
+}
+
+ForcePod &Player::forcePod()
+{
+    return _forcePod;
 }

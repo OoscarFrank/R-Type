@@ -8,6 +8,8 @@
 #define USHORT  SHORT
 #define INT     4
 #define UINT    INT
+#define LONG    8
+#define ULONG   LONG
 
 struct Commands {
     unsigned char _inst;
@@ -32,7 +34,14 @@ struct Commands {
  * 5 gui - spawn d'un missile par le player
  * 8 gui - creation d'une room (booleen pour savoir si la room est privee)
  * 9 gui - match making
- * 12 gui - ping
+ * 12 gui - ping (current time)
+ * 24 gui - quitter la room
+ * 25 gui - join d'une room (room id)
+ * 26 gui - ask to list rooms
+ * 30 gui -fire Bomb
+ * 34 gui - send a chat message the the room
+ * 36 gui - fire laser
+ * 38 gui - fire ray
  *
  */
 #define OUT_COMMANDS { \
@@ -40,7 +49,14 @@ struct Commands {
     {5, {}, 0, false}, \
     {8, {UCHAR}, 1, true}, \
     {9, {}, 0, true}, \
-    {12, {}, 0, true}, \
+    {12, {LONG}, 8, false}, \
+    {24, {}, 0, true}, \
+    {25, {UINT}, 4, true}, \
+    {26, {}, 0, true}, \
+    {30, {}, 0, true},  \
+    {34, {1000}, 1000, true}, \
+    {36, {}, 0, true}, \
+    {38, {}, 0, true}, \
     {255, {USHORT}, 2, true} \
 }
 
@@ -63,6 +79,18 @@ struct Commands {
  * 20 serv - vie de l'ennemie (id)
  * 21 serv - strobes (color, on/off)
  * 22 serv - next level starting (time)
+ * 23 serv - latency (time)
+ * 27 serv - room list (room id, number players, max number players, bool is joinable)
+ * 28 serv - bonus position (id,type,  x, y)
+ * 29 serv - bonus destroyed (id)
+ * 31 serv - bomb position (id, x, y)
+ * 32 serv - bomb destroyed (id)
+ * 33 serv - broadcast chat message (player id, message)
+ * 35 serv - player pod level (userId, level, front)
+ * 37 serv - laser position (id, y)
+ * 39 serv - ray position (id, x, y)
+ * 40 serv - player get a bonus (type)
+ *
  */
 #define IN_COMMANDS { \
     {1, {UINT}, 4, false}, \
@@ -82,5 +110,16 @@ struct Commands {
     {20, {UINT, INT}, 8, true}, \
     {21, {UCHAR, UCHAR}, 2, true}, \
     {22, {UINT, UCHAR, UCHAR}, 6, true}, \
+    {23, {USHORT}, 2, false}, \
+    {27, {UINT, UCHAR, UCHAR, UCHAR}, 7, true}, \
+    {28, {UINT, UCHAR, USHORT, USHORT}, 9, false}, \
+    {29, {UINT}, 4, true}, \
+    {31, {UINT, SHORT, SHORT}, 8, false}, \
+    {32, {UINT}, 4, true}, \
+    {33, {UINT, 1000}, 1004, true}, \
+    {35, {UINT, UCHAR, UCHAR}, 6, true}, \
+    {37, {UINT , USHORT}, 6, true}, \
+    {39, {UINT, USHORT, USHORT}, 8, false}, \
+    {40, {UCHAR}, 1, true}, \
     {255, {USHORT}, 2, true} \
 }

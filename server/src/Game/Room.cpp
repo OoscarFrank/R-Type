@@ -3,7 +3,10 @@
 #include <bitset>
 #include <cmath>
 
-Room::Room(u_int id, std::shared_ptr<Client> client, Levels &levels, bool privateRoom):
+using namespace TypesLitterals;
+
+Room::Room(u_int id, std::shared_ptr<Client> client, Levels &levels, const std::vector<std::shared_ptr<Client>> &allClients, bool privateRoom):
+    _allClients(allClients),
     _levels(levels)
 {
     _id = id;
@@ -27,6 +30,11 @@ Room::~Room()
 {
     if (_thread.joinable())
         _thread.join();
+    Stream out;
+    out << 27_uc << this->getId() << static_cast<u_char>(this->getNbPlayer()) << static_cast<u_char>(this->getMaxPlayer()) << 0_uc;
+    for (auto i = _allClients.begin(); i != _allClients.end(); i++) {
+        (*i)->send(out);
+    }
 }
 
 Room::State Room::getState() const
@@ -34,10 +42,7 @@ Room::State Room::getState() const
     return _state;
 }
 
-size_t Room::getCurrentLevel() const
-{
-    return _levels.lvl();
-}
+
 
 u_int Room::getId() const
 {
@@ -78,8 +83,25 @@ void Room::addPlayer(std::shared_ptr<Client> client)
     for (auto i = _players.begin(); i != _players.end(); i++)
         client->send(StreamFactory::playerJoinedGame((**i).id()));
 
-    _players.push_back(std::make_unique<Player>(*this, client, newId, 0, 0));
+    _players.push_back(std::make_unique<Player>(*this, client, newId, 0, SCREEN_HEIGHT / _maxPlayer * _players.size()));
     _lastJoin = NOW;
+
+    for (auto i = _players.begin(); i != _players.end(); i++)
+        (**i).sendPos();
+}
+
+void Room::removePlayer(std::shared_ptr<Client> client)
+{
+    std::unique_lock<std::mutex> lock(_playersMutex);
+
+    for (auto i = _players.begin(); i != _players.end(); i++) {
+        if ((**i).client() == client) {
+            std::cout << "Player " << (**i).id() << " disconnected in room " << _id << std::endl;
+            sendToAll(StreamFactory::playerLeftGame((**i).id()));
+            _players.erase(i);
+            break;
+        }
+    }
 }
 
 void Room::movePlayer(std::shared_ptr<Client> client, char move, char nbr)
@@ -128,6 +150,7 @@ Player &Room::getPlayer(std::shared_ptr<Client> client)
         }
     }
     throw std::runtime_error("Player not found");
+    return **_players.begin();
 }
 
 void Room::sendToAll(const Stream &stream)
@@ -144,9 +167,9 @@ void Room::refresh()
         _playersMutex.lock();
         for (auto i = _players.begin(); i != _players.end(); i++) {
             if (!(**i).client()->isAlive()) {
-                std::cout << "Player " << (**i).id() << " disconnected in room " << _id << std::endl;
-                sendToAll(StreamFactory::playerLeftGame((**i).id()));
-                _players.erase(i);
+                _playersMutex.unlock();
+                removePlayer((**i).client());
+                _playersMutex.lock();
                 break;
             }
         }
@@ -156,6 +179,7 @@ void Room::refresh()
             _state = STOPPED;
             break;
         }
+        std::this_thread::sleep_for(1us);
     }
 }
 
@@ -169,6 +193,7 @@ void Room::update()
             sendToAll(StreamFactory::screenProgress(_progress));
             now = NOW;
         }
+        handleBonus();
         _playersMutex.lock();
         // if (_players.size() == 0) {
         //     _state = END;
@@ -185,15 +210,17 @@ void Room::update()
                 continue;
             }
             if ((**i).exists() && (**i).isOutOfScreen())
-                (**i).kill();
+                _monsters.erase(i);
             else
                 i++;
         }
 
         checkCollisionPlayer();
         checkCollisionMonsters();
+        checkCollisionBonus();
 
         _levels.update(*this);
+        handleForcePod();
         _playersMutex.unlock();
     }
     if (_state == WAIT) {
@@ -225,12 +252,18 @@ void Room::startGame()
     _lastMapRefresh = NOW;
     _lastPlayerUpdate = NOW;
     _lastMissileUpdate = NOW;
-
+    _lastBonusBoxSpawn = NOW;
     sendToAll(StreamFactory::waitGame(0, true, _levels.getLevel().getSong()));
     _levels.start();
 
     for (auto i = _players.begin(); i != _players.end(); i++)
         (**i).sendPos();
+
+    Stream out;
+    out << 27_uc << this->getId() << static_cast<u_char>(this->getNbPlayer()) << static_cast<u_char>(this->getMaxPlayer()) << 0_uc;
+    for (auto i = _allClients.begin(); i != _allClients.end(); i++) {
+        (*i)->send(out);
+    }
 }
 
 void Room::addMonster(IEntity::Type type, int x, int y)
@@ -257,7 +290,26 @@ void Room::addMonster(IEntity::Type type, int x, int y)
         case IEntity::Type::BOSS2:
             _monsters.push_back(std::make_unique<Boss2Monster>(*this, ++_monstersIds, x, y));
             break;
+        case IEntity::Type::BOSS3:
+            _monsters.push_back(std::make_unique<Boss3Monster>(*this, ++_monstersIds, x, y));
+            break;
+        case IEntity::Type::BOSS4:
+            _monsters.push_back(std::make_unique<Boss4Monster>(*this, ++_monstersIds, x, y));
+            break;
+        case IEntity::Type::BOSS5:
+            _monsters.push_back(std::make_unique<Boss5Monster>(*this, ++_monstersIds, x, y));
+            break;
+        case IEntity::Type::BOSS6:
+            _monsters.push_back(std::make_unique<Boss6Monster>(*this, ++_monstersIds, x, y));
+            break;
+        case IEntity::Type::BOSS7:
+            _monsters.push_back(std::make_unique<Boss7Monster>(*this, ++_monstersIds, x, y));
+            break;
+        case IEntity::Type::BOSS8:
+            _monsters.push_back(std::make_unique<Boss8Monster>(*this, ++_monstersIds, x, y));
+            break;
         default:
+            std::cout << "bad monster" << std::endl;
             return;
     }
     // std::cout << "Monster " << static_cast<u_int>(_monstersIds) << " spawned in room " << static_cast<int>(_id) << std::endl;
@@ -281,24 +333,27 @@ void Room::checkCollisionPlayer()
 
 void Room::checkCollisionMonsters()
 {
+    int tmp = 0;
     for (auto p = _players.begin(); p != _players.end(); p++) {
         if (!(**p).exists())
             continue;
         for (auto m = _monsters.begin(); m != _monsters.end(); m++) {
+            ++tmp;
             if (!(**m).exists())
                 continue;
             if ((**p).collide(**m)) {
                 (**m).setLife((**m).life() - (**p).getDamage());
-                (**p).setScore((**p).score() + 10);
+                (**p).setScore((**p).score() + MISSILE_SCORE);
                 return;
             }
+            
         }
     }
 }
 
 std::pair<short, short> Room::getNearestPlayerPos(const IEntity &entity)
 {
-    std::pair<short, short> nearest = {0, SCREEN_HEIGHT / 2};
+    std::pair<short, short> nearest = {-500, SCREEN_HEIGHT / 2};
     double distance = std::numeric_limits<double>::max();
 
     for (auto p = _players.begin(); p != _players.end(); p++) {
@@ -323,4 +378,200 @@ bool Room::isPrivate() const
 bool Room::isMonster() const
 {
     return !this->_monsters.empty();
+}
+
+void Room::handleBonus()
+{
+
+    if (this->_bonusBox.get() != nullptr) {
+        if (!this->_bonusBox->exists()) {
+            this->sendToAll(StreamFactory::bonusDestroyed(this->_bonusBox->id()));
+            this->_bonusBox.release();
+            this->_bonusBox = nullptr;
+            return;
+        }
+        this->_bonusBox->refresh();
+        return;
+    }
+    if (NOW - this->_lastBonusBoxSpawn < BONUS_SPAWN_TIME)
+        return;
+    this->_lastBonusBoxSpawn = NOW;
+    this->_bonusBox = std::make_unique<BonusBox>(*this, ++_bonusIds);
+}
+
+void Room::checkCollisionBonus()
+{
+    for (auto p = _players.begin(); p != _players.end(); p++) {
+        if (!(**p).exists())
+            continue;
+        if (this->_bonusBox != nullptr && (**p).collide((*this->_bonusBox))) {
+            if ((*p)->podMissileLvl() == 3) {
+                if ((*p)->life() >= 100) {
+                    (*p)->setScore((*p)->score() + 100);
+                    (*p)->client()->send(StreamFactory::BonusGet(BONUS::SCORE));
+                } else {
+                    (*p)->setLife((*p)->life() + 30);
+                    (*p)->client()->send(StreamFactory::BonusGet(BONUS::LIFE));
+                    if ((*p)->life() > 100)
+                        (*p)->setLife(100);
+                }
+            } else {
+                int tmp = std::rand() % 3;
+                if (tmp == 0) {
+                    (*p)->setLife((*p)->life() + 30);
+                    if ((*p)->life() > 100)
+                        (*p)->setLife(100);
+                    (*p)->client()->send(StreamFactory::BonusGet(BONUS::LIFE));
+                }else if (tmp == 1) {
+                    (*p)->setPodMissileLvl((*p)->podMissileLvl() + 1);
+                    (*p)->client()->send(StreamFactory::BonusGet(BONUS::MISSILE));
+                } else {
+                    (*p)->setScore((*p)->score() + 100);
+                    (*p)->client()->send(StreamFactory::BonusGet(BONUS::SCORE));
+                }
+            }
+            this->sendToAll(StreamFactory::bonusDestroyed(this->_bonusBox->id()));
+            this->_bonusBox.release();
+            this->_bonusBox = nullptr;
+            return;
+        }
+    }
+}
+
+size_t &Room::getBombIds()
+{
+    return _bombIds;
+}
+
+size_t &Room::getLaserIds()
+{
+    return _laserIds;
+}
+
+size_t &Room::getRayIds()
+{
+    return _rayIds;
+}
+
+
+void Room::handleForcePod()
+{
+    for(auto p = _players.begin(); p != _players.end(); ++p) {
+        (*p)->forcePod().refresh();
+        if ((*p)->forcePod().getLvl() < 1 && (*p)->score() >= POD_ONE_SCORE) {
+            (*p)->forcePod().setLvl(1);
+            this->sendToAll(StreamFactory::podInfo((*p)->id(), 1, 1));
+        }
+        if ((*p)->forcePod().getLvl() < 2 && (*p)->score() >= POD_TWO_SCORE) {
+            (*p)->forcePod().setLvl(2);
+            this->sendToAll(StreamFactory::podInfo((*p)->id(), 2, 1));
+        }
+        if ((*p)->forcePod().getLvl() < 3 && (*p)->score() >= POD_THREE_SCORE) {
+            (*p)->forcePod().setLvl(3);
+            this->sendToAll(StreamFactory::podInfo((*p)->id(), 3, 1));
+        }
+        for(auto m = _monsters.begin(); m != _monsters.end(); ++m) {
+            (*p)->forcePod().bombCollide((**m));
+        }
+        auto now = std::chrono::system_clock::now();
+
+        if (std::chrono::duration_cast<std::chrono::milliseconds>(now - (*p)->forcePod()._lastLaserHit).count() >= LASER_MOVE_TIME) {
+            for(auto m = _monsters.begin(); m != _monsters.end(); ++m) {
+                (*p)->forcePod().laserCollide((**m));
+            }
+            (*p)->forcePod()._lastLaserHit = now;
+        }
+        if (std::chrono::duration_cast<std::chrono::milliseconds>(now - (*p)->forcePod()._lastRayHit).count() >= RAY_MOVE_TIME) {
+            for(auto m = _monsters.begin(); m != _monsters.end(); ++m) {
+                (*p)->forcePod().rayCollide((**m));
+            }
+            (*p)->forcePod()._lastRayHit = now;
+        }
+    }
+}
+
+void Room::sendChat(std::shared_ptr<Client> client, const std::string &message)
+{
+    std::unique_lock<std::mutex> lock(_playersMutex);
+    for (auto i = _players.begin(); i != _players.end(); i++) {
+        if ((**i).client() == client) {
+            _chatMessages.push_back(std::make_unique<ChatMessage>(*this, (**i).id(), message));
+            return;
+        }
+    }
+}
+
+
+
+Room::ChatMessage::ChatMessage(Room &room, u_int playerId, const std::string &message):
+    _timeStamp(std::chrono::system_clock::now()),
+    _playerId(playerId),
+    _message(message)
+{
+    Stream out;
+    out << 33_uc << playerId;
+    for (auto i = message.begin(); i != message.end(); i++) {
+        out << *i;
+    }
+    for (std::size_t i = message.size(); i < 1000; i++) {
+        out << 0_c;
+    }
+    room.sendToAll(out);
+}
+
+Room::ChatMessage::~ChatMessage()
+{}
+
+const std::chrono::system_clock::time_point &Room::ChatMessage::getTimeStamp() const
+{
+    return _timeStamp;
+}
+
+u_int Room::ChatMessage::getPlayerId() const
+{
+    return _playerId;
+}
+
+const std::string &Room::ChatMessage::getMessage() const
+{
+    return _message;
+}
+
+void Room::degInZone(float x, float y, size_t radius, Player &player)
+{
+    for(auto i = _monsters.begin(); i != _monsters.end(); ++i) {
+        float tmpX = (*i)->box().x;
+        float tmpY = (*i)->box().y;
+        if ((std::sqrt(std::pow(tmpX - x, 2) + std::pow(tmpY - y, 2))) <= radius) {
+            (*i)->setLife((*i)->life() - BOMB_DAMAGE);
+            player.setScore(player.score() + BOMB_SCORE);
+            continue;
+        }
+        tmpX = (*i)->box().x + (*i)->box().width;
+        tmpY = (*i)->box().y;
+        if ((std::sqrt(std::pow(tmpX - x, 2) + std::pow(tmpY - y, 2))) <= radius) {
+            (*i)->setLife((*i)->life() - BOMB_DAMAGE);
+            player.setScore(player.score() + BOMB_SCORE);
+            continue;
+        }
+        tmpX = (*i)->box().x + (*i)->box().width;
+        tmpY = (*i)->box().y + (*i)->box().height;
+        if ((std::sqrt(std::pow(tmpX - x, 2) + std::pow(tmpY - y, 2))) <= radius) {
+            (*i)->setLife((*i)->life() - BOMB_DAMAGE);
+            player.setScore(player.score() + BOMB_SCORE);
+            continue;
+        }
+        tmpX = (*i)->box().x;
+        tmpY = (*i)->box().y + (*i)->box().height;
+        if ((std::sqrt(std::pow(tmpX - x, 2) + std::pow(tmpY - y, 2))) <= radius) {
+            (*i)->setLife((*i)->life() - BOMB_DAMAGE);
+            player.setScore(player.score() + BOMB_SCORE);
+            continue;
+        }
+    }
+}
+
+std::vector<std::unique_ptr<Player>> &Room::getPlayers()
+{
+    return _players;
 }

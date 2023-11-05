@@ -10,6 +10,8 @@
 #include "../../Utils/Instruction.hpp"
 #include "../../Utils/BoundingBox.hpp"
 
+#define MY_PI 3.14159265358979323846
+
 class Room;
 
 /**
@@ -99,6 +101,12 @@ class IEntity {
             BURST_MONSTER,
             BOSS1,
             BOSS2,
+            BOSS3,
+            BOSS4,
+            BOSS5,
+            BOSS6,
+            BOSS7,
+            BOSS8,
         };
 };
 
@@ -197,7 +205,6 @@ class AEntity: public IEntity {
          */
         virtual bool isDeletable() const;
 
-    protected:
         /**
          * @brief Move the entity
          *
@@ -205,6 +212,8 @@ class AEntity: public IEntity {
          * @param dy The y offset
          */
         virtual void move(short dx, short dy);
+    protected:
+        
 
         int _life;
         Room &_room;

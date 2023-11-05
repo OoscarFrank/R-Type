@@ -6,7 +6,7 @@ ZigzagerMonster::ZigzagerMonster(Room &room, u_int id, short x, short y):
     _lastPos(std::chrono::system_clock::now() - std::chrono::milliseconds(500)),
     _switch(1)
 {
-    _life = 150;
+    _life = 100;
 }
 
 ZigzagerMonster::ZigzagerMonster(Room &room, u_int id, const std::pair<short, short> &pos):
@@ -14,7 +14,7 @@ ZigzagerMonster::ZigzagerMonster(Room &room, u_int id, const std::pair<short, sh
     _lastPos(std::chrono::system_clock::now() - std::chrono::milliseconds(500)),
     _switch(1)
 {
-    _life = 150;
+    _life = 100;
 }
 
 void ZigzagerMonster::refresh()
@@ -34,7 +34,7 @@ void ZigzagerMonster::refresh()
             _switch *= -1;
             _lastPos = now;
         }
-        move(-ZIGZAGER_MONSTER_PROGRESS_STEP, _switch * ZIGZAGER_MONSTER_PROGRESS_STEP);
+        move(-ZIGZAGER_MONSTER_PROGRESS_STEP, _switch * ZIGZAGER_MONSTER_PROGRESS_STEP_VERTICAL);
         _room.sendToAll(StreamFactory::monsterPos(_id, ZigzagerMonster::ZIGZAGER_MONSTER ,_box.x, _box.y));
         _lastMove = now;
     }

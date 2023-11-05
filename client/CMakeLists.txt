@@ -36,6 +36,7 @@ file(COPY ${CMAKE_SOURCE_DIR}/assets/screens/ DESTINATION ${CMAKE_BINARY_DIR}/Re
 file(COPY ${CMAKE_SOURCE_DIR}/assets/entity/buttons DESTINATION ${CMAKE_BINARY_DIR}/Release/assets/entity/buttons)
 file(COPY ${CMAKE_SOURCE_DIR}/assets/fonts/ DESTINATION ${CMAKE_BINARY_DIR}/Release/assets/fonts)
 file(COPY ${CMAKE_SOURCE_DIR}/assets/songs/ DESTINATION ${CMAKE_BINARY_DIR}/Release/assets/songs/)
+file(COPY ${CMAKE_SOURCE_DIR}/assets/entity/bonus DESTINATION ${CMAKE_BINARY_DIR}/Release/assets/entity/bonus)
 
 if(WIN32)
   file(COPY ${CMAKE_SOURCE_DIR}/../extern/dll/ DESTINATION ${CMAKE_BINARY_DIR}/Release/)
@@ -72,6 +73,10 @@ if(UNIX)
   install(DIRECTORY ${CMAKE_SOURCE_DIR}/assets/entity/ DESTINATION /usr/share/${PROJECT_NAME}/assets/entity/)
   install(DIRECTORY ${CMAKE_SOURCE_DIR}/assets/screens/ DESTINATION /usr/share/${PROJECT_NAME}/assets/screens/)
   install(DIRECTORY ${CMAKE_SOURCE_DIR}/assets/songs/ DESTINATION /usr/share/${PROJECT_NAME}/assets/songs/)
+  install(DIRECTORY ${CMAKE_SOURCE_DIR}/assets/songs/ambient DESTINATION /usr/share/${PROJECT_NAME}/assets/songs/ambient)
+  install(DIRECTORY ${CMAKE_SOURCE_DIR}/assets/songs/effects DESTINATION /usr/share/${PROJECT_NAME}/assets/songs/effects)
+  install(DIRECTORY ${CMAKE_SOURCE_DIR}/assets/songs/levels DESTINATION /usr/share/${PROJECT_NAME}/assets/songs/levels)
+
   install(FILES ${CMAKE_SOURCE_DIR}/assets/logo.png DESTINATION /usr/share/${PROJECT_NAME}/)
   install(FILES ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}.desktop DESTINATION /usr/share/applications/)
 elseif(WIN32)

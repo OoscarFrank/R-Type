@@ -60,6 +60,30 @@ void Levels::update(Room &room)
         for (auto i = tmp.begin(); i != tmp.end(); ++i)
             room.addMonster(IEntity::Type::BOSS2, SCREEN_WIDTH, (*i));
 
+        tmp = this->_levels[_currentLvl].getEvents()[Monster::BOSS3 - 2].getSpawns(current);
+        for (auto i = tmp.begin(); i != tmp.end(); ++i)
+            room.addMonster(IEntity::Type::BOSS3, SCREEN_WIDTH, (*i));
+
+        tmp = this->_levels[_currentLvl].getEvents()[Monster::BOSS4 - 2].getSpawns(current);
+        for (auto i = tmp.begin(); i != tmp.end(); ++i)
+            room.addMonster(IEntity::Type::BOSS4, SCREEN_WIDTH, (*i));
+
+        tmp = this->_levels[_currentLvl].getEvents()[Monster::BOSS5 - 2].getSpawns(current);
+        for (auto i = tmp.begin(); i != tmp.end(); ++i)
+            room.addMonster(IEntity::Type::BOSS5, SCREEN_WIDTH, (*i));
+
+        tmp = this->_levels[_currentLvl].getEvents()[Monster::BOSS6 - 2].getSpawns(current);
+        for (auto i = tmp.begin(); i != tmp.end(); ++i)
+            room.addMonster(IEntity::Type::BOSS6, SCREEN_WIDTH, (*i));
+
+        tmp = this->_levels[_currentLvl].getEvents()[Monster::BOSS7 - 2].getSpawns(current);
+        for (auto i = tmp.begin(); i != tmp.end(); ++i)
+            room.addMonster(IEntity::Type::BOSS7, SCREEN_WIDTH, (*i));
+
+        tmp = this->_levels[_currentLvl].getEvents()[Monster::BOSS8 - 2].getSpawns(current);
+        for (auto i = tmp.begin(); i != tmp.end(); ++i)
+            room.addMonster(IEntity::Type::BOSS8, SCREEN_WIDTH, (*i));
+
         std::vector<std::tuple<size_t, unsigned char, bool>> strobes = this->_levels[_currentLvl].getStrobes().getEvents(current);
         for(auto i = strobes.begin(); i != strobes.end(); ++i) {
             room.sendToAll(StreamFactory::strobe(std::get<1>(*i), std::get<2>(*i)));
@@ -69,6 +93,14 @@ void Levels::update(Room &room)
             _endTime = chronoNow;
             _currentLvl += 1;
             _lastUpdate = chronoNow;
+            for(auto i = room.getPlayers().begin(); i != room.getPlayers().end(); ++i) {
+                if ((*i)->exists()) {
+                    (*i)->setScore((*i)->score() + 100);
+                    (*i)->setLife((*i)->life() + 50);
+                    if ((*i)->life() > 100)
+                        (*i)->setLife(100);
+                }
+            }
         }
     }
     if (_ended) {
@@ -236,7 +268,12 @@ Levels::Level::Level(const std::string &path)
     this->_events.push_back(EntityEvents(Monster::BURST_MONSTER));
     this->_events.push_back(EntityEvents(Monster::BOSS1));
     this->_events.push_back(EntityEvents(Monster::BOSS2));
-
+    this->_events.push_back(EntityEvents(Monster::BOSS3));
+    this->_events.push_back(EntityEvents(Monster::BOSS4));
+    this->_events.push_back(EntityEvents(Monster::BOSS5));
+    this->_events.push_back(EntityEvents(Monster::BOSS6));
+    this->_events.push_back(EntityEvents(Monster::BOSS7));
+    this->_events.push_back(EntityEvents(Monster::BOSS8));
 
     std::string line;
     size_t line_nb = 1;
@@ -280,6 +317,16 @@ void Levels::Level::parsSong(const std::string &line, const std::string &path, s
                 this->_song = Levels::Level::PUSH_UP;
             else if (song.find("VOIS_SUR_TON_CHEMIN") != std::string::npos)
                 this->_song = Levels::Level::VOIS_SUR_TON_CHEMIN;
+            else if (song.find("HEUTE_NACHT") != std::string::npos)
+                this->_song = Levels::Level::HEUTE_NACHT;
+            else if (song.find("CLEON") != std::string::npos)
+                this->_song = Levels::Level::CLEON;
+            else if (song.find("AMNESIA") != std::string::npos)
+                this->_song = Levels::Level::AMNESIA;
+            else if (song.find("SEVENNATION") != std::string::npos)
+                this->_song = Levels::Level::SEVENNATION;
+            else if (song.find("BLAHBLAH") != std::string::npos)
+                this->_song = Levels::Level::BLAHBLAH;
             else {
                 Levels::Level::ParsError err;
                 err._msg =  "Error while reading file : " + path + "\nInvalid song : " + song + "\nLine : " + std::to_string(line_nb) + ". Errur";
@@ -307,6 +354,18 @@ void Levels::Level::parsEvents(const std::string &line, const std::string &path,
         this->_parserEntity = Monster::BOSS1;
     else if (line.find("BOSS2") != std::string::npos)
         this->_parserEntity = Monster::BOSS2;
+    else if (line.find("BOSS3") != std::string::npos)
+        this->_parserEntity = Monster::BOSS3;
+    else if (line.find("BOSS4") != std::string::npos)
+        this->_parserEntity = Monster::BOSS4;
+    else if (line.find("BOSS5") != std::string::npos)
+        this->_parserEntity = Monster::BOSS5;
+    else if (line.find("BOSS6") != std::string::npos)
+        this->_parserEntity = Monster::BOSS6;
+    else if (line.find("BOSS7") != std::string::npos)
+        this->_parserEntity = Monster::BOSS7;
+    else if (line.find("BOSS8") != std::string::npos)
+        this->_parserEntity = Monster::BOSS8;
 
     if (this->_parserEntity != -1 && this->_parserEntity != 1) {
         size_t timeCode = 0;

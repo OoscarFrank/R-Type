@@ -133,7 +133,11 @@ namespace ECS
             _entities.push_back(entity);
             return entity;
         }
-
+        /**
+         * @brief Disable an entity
+         * 
+         * @param entity 
+         */
         void disableEntity(entity_t const &entity)
         {
             if (_entity_to_index.find(entity) == _entity_to_index.end()) {
@@ -141,7 +145,11 @@ namespace ECS
             }
             _entity_to_index[entity].first = false;
         }
-
+        /**
+         * @brief Enable an entity
+         * 
+         * @param entity 
+         */
         void enableEntity(entity_t const &entity)
         {
             if (_entity_to_index.find(entity) == _entity_to_index.end()) {
@@ -149,7 +157,13 @@ namespace ECS
             }
             _entity_to_index[entity].first = true;
         }
-
+        /**
+         * @brief Get the entity state
+         * 
+         * @param entity 
+         * @return true 
+         * @return false 
+         */
         bool isEntityEnabled(entity_t const &entity)
         {
             if (_entity_to_index.find(entity) == _entity_to_index.end()) {
@@ -170,6 +184,11 @@ namespace ECS
                 throw std::runtime_error("Entity index out of range.");
             return _entities[idx];
         }
+
+        bool isEntityExist(entity_t entity)
+        {
+            return _entity_to_index.find(entity) != _entity_to_index.end();
+        }
         /**
          * @brief Destroy an entity
          *
@@ -179,8 +198,7 @@ namespace ECS
         void kill_entity(entity_t const &e)
         {
             auto it = _entity_to_index.find(e);
-            if (it == _entity_to_index.end())
-            {
+            if (it == _entity_to_index.end()) {
                 throw std::runtime_error("Entity not found.");
             }
 
@@ -216,6 +234,19 @@ namespace ECS
 
             if (this->hasComponent<components::TextComponent>(e))
                 this->remove_component<components::TextComponent>(e);
+
+            if (this->hasComponent<components::MusicComponent>(e))
+                this->remove_component<components::MusicComponent>(e);
+
+            if (this->hasComponent<components::SoundComponent>(e))
+                this->remove_component<components::SoundComponent>(e);
+
+            if (this->hasComponent<components::LoadingBarComponent>(e))
+                this->remove_component<components::LoadingBarComponent>(e);
+
+            
+            if (this->hasComponent<components::AnimationOneTimeComponent>(e))
+                this->remove_component<components::AnimationOneTimeComponent>(e);
 
             _entity_to_index.erase(it);
             if (_entity_sprite_order.count(e) > 0) {

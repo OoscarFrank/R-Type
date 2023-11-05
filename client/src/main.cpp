@@ -6,6 +6,7 @@ using namespace client;
 
 int main(int ac, char **av)
 {
+    std::srand(static_cast<unsigned int>(std::time(NULL)));
     Core core;
     try {
         if (core.checkArgs(ac, av) == 0) {

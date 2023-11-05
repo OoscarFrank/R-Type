@@ -38,6 +38,7 @@ logs/
 *.log
 client_test.c*
 clienttest
+ecsdemo
 todo.txt
 slow.sh
 Instructions.md

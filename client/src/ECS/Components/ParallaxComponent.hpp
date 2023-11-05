@@ -31,7 +31,15 @@ namespace ECS {
                 void setScrollSpeed(float scrollSpeed) { _scrollSpeed = scrollSpeed; }
 
             private:
+            /**
+             * @brief Value of the scroll speed
+             * 
+             */
                 float _scrollSpeed;
+            /**
+             * @brief Value of the background width
+             * 
+             */
                 float _backgroundWidth;
         };
     }

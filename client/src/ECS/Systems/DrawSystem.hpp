@@ -19,7 +19,8 @@ namespace ECS {
 
                         for (const auto &entity : ecs.get_entity_sprite_order()) {
                             auto &sprite = spriteComponents[entity.second];
-                            if (sprite && ecs.isEntityEnabled(entity.second) == true) {
+
+                            if (sprite && ecs.isEntityExist(entity.second) && ecs.isEntityEnabled(entity.second) == true) {
                                 try {
                                     if (ecs.hasComponent<components::PositionComponent>(entity.second)) {
                                         auto &position = ecs.getComponent<components::PositionComponent>(entity.second);
@@ -35,14 +36,13 @@ namespace ECS {
                                 window.draw(sprite->getSprite());
                             }
                         }
-
                         auto &textComponents = ecs.get_components<components::TextComponent>();
 
                         for (size_t i = 0; i < textComponents.size() ; ++i) {
                             auto &text = textComponents[i];
                             if (text) {
                                 try {
-                                    if (ecs.hasComponent<components::PositionComponent>(i)) {
+                                    if (ecs.isEntityExist(i) && ecs.isEntityEnabled(i) && ecs.hasComponent<components::PositionComponent>(i)) {
                                         auto &position = ecs.getComponent<components::PositionComponent>(i);
                                         text->setPosition({position.getX(), position.getY()});
                                     }
@@ -60,7 +60,7 @@ namespace ECS {
                             auto &rectangleShape = rectangleShapeComponents[i];
                             if (rectangleShape) {
                                 try {
-                                    if (ecs.hasComponent<components::PositionComponent>(i)) {
+                                    if (ecs.isEntityExist(i) && ecs.isEntityEnabled(i) && ecs.hasComponent<components::PositionComponent>(i)) {
                                         auto &position = ecs.getComponent<components::PositionComponent>(i);
                                         rectangleShape->setPosition({position.getX(), position.getY()});
                                     }

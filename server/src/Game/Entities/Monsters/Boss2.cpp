@@ -4,7 +4,7 @@
 Boss2Monster::Boss2Monster(Room &room, u_int id, short x, short y):
     Monster(room, id, x, y, BOSS2_MONSTER_WIDTH, BOSS2_MONSTER_HEIGHT)
 {
-    _life = 2000;
+    _life = 8000;
     _burst = std::chrono::system_clock::now();
     _burstSpam = std::chrono::system_clock::now();
     _changeVelocity = std::chrono::system_clock::now();
@@ -16,7 +16,7 @@ Boss2Monster::Boss2Monster(Room &room, u_int id, short x, short y):
 Boss2Monster::Boss2Monster(Room &room, u_int id, const std::pair<short, short> &pos):
     Monster(room, id, pos, {BOSS2_MONSTER_WIDTH, BOSS2_MONSTER_HEIGHT})
 {
-    _life = 2000;
+    _life = 8000;
     _burst = std::chrono::system_clock::now();
     _burstSpam = std::chrono::system_clock::now();
     _changeVelocity = std::chrono::system_clock::now();
@@ -35,8 +35,8 @@ void Boss2Monster::refresh()
         return;
     }
     if (now - _lastFire >= std::chrono::milliseconds(BOSS2_MONSTER_FIRE_TIME)) {
-        fireMissile(Missile::Type::LITTLE_MONSTER, -BOSS2_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + _box.height / 3);
-        fireMissile(Missile::Type::LITTLE_MONSTER, -BOSS2_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + (_box.height / 3 * 2));
+        fireMissile(Missile::Type::GREEN_MISSILE, -BOSS2_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + _box.height / 3);
+        fireMissile(Missile::Type::GREEN_MISSILE, -BOSS2_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + (_box.height / 3 * 2));
         _lastFire = now;
     }
     if (_box.x < 0)

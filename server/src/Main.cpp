@@ -20,13 +20,12 @@ void exec(int port, std::vector<std::string> stages)
     std::vector<std::shared_ptr<Client>> clients;
     Reader reader(socket, queueIn, clients);
     RoomManager rm;
-    Router router(rm);
+    Router router(rm, clients);
     Levels levels(stages);
 
     std::cout << "Server listening on port " << port << std::endl;
 
-    int nbThread = std::thread::hardware_concurrency() - 3;
-    ThreadPool reqPool(nbThread / 2, 10);
+    ThreadPool reqPool(4, 10);
     while (true) {
         Reader::Packet value = queueIn.pop();
         reqPool.submit([value, &router, &levels]() {
@@ -44,6 +43,7 @@ void printHelp()
 
 int main(int argc, char **argv)
 {
+    std::srand(static_cast<unsigned int>(std::time(NULL)));
     try {
         Args args(argc, argv);
 
@@ -51,7 +51,7 @@ int main(int argc, char **argv)
             printHelp();
             return 0;
         }
-        std::vector<std::string> defaultStages = {"./stages/stage2.script", "./stages/stage3.script"};
+        std::vector<std::string> defaultStages = {"./stages/stage1.script","./stages/stage2.script","./stages/stage3.script","./stages/stage4.script","./stages/stage5.script","./stages/stage6.script", "./stages/stage7.script", "./stages/stage8.script"};
         exec(args.getFlagValue<int>("-p", 4242), args.getFlagValues<std::string>("-s", defaultStages));
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;

@@ -29,14 +29,14 @@ class RoomManager
          * @param packet The packet received from the client
          * @param privateRoom If the room is private or not
          */
-        void createRoom(Reader::Packet &packet, Levels &levels , bool privateRoom = false);
+        void createRoom(Reader::Packet &packet, Levels &levels, const std::vector<std::shared_ptr<Client>> &allClients, bool privateRoom = false);
         /**
          * @brief Search a room for the client
          * If no room is found or all rooms are full, it will create a new one
          *
          * @param packet The packet received from the client
          */
-        void searchRoom(Reader::Packet &packet, Levels &levels);
+        void searchRoom(Reader::Packet &packet, Levels &levels, const std::vector<std::shared_ptr<Client>> &allClients);
 
         /**
          * @brief Get a room by its id
@@ -52,6 +52,13 @@ class RoomManager
          * @return Room&
          */
         Room &getRoom(std::shared_ptr<Client> client);
+
+        /**
+         * @brief Get all the rooms
+         *
+         * @return const std::vector<std::unique_ptr<Room>>&
+         */
+        const std::vector<std::unique_ptr<Room>> &getRooms();
 };
 
 #endif
