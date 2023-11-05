@@ -545,7 +545,6 @@ int Game::MainLoop()
     while (this->_window.isOpen()) {
         this->_fbr->refresh();
         this->_fbr->fadeout();
-        this->GenParticles();
 
         this->refreshScreenSize();
         long currentTime = NOW;
@@ -565,6 +564,7 @@ int Game::MainLoop()
         ECS::systems::ScaleSystem().update(this->ecs);
         ECS::systems::TextSystem().update(this->ecs, this->_textsUpdate);
         ECS::systems::SoundSystem().update(this->ecs, this->_sounds);
+        ECS::systems::ParticuleSystem().update(this->ecs, this->particules, this->_fbr, this->_lastParticleUpdate);
         this->_window.clear();
 
         // DRAW SYSTEM CALL HERE
@@ -985,7 +985,7 @@ void Game::handleEnnemiDeath(Network::Packet &packet)
     if (res != 0) {
 
         auto sprite  = this->ecs.getComponent<ECS::components::SpriteComponent>(res);
-        CreateParticle(sprite.getSprite().getGlobalBounds() , sf::Color::White, 150);
+        this->particules.push_back(this->_factory.createParticle(sprite.getSprite().getGlobalBounds() , sf::Color::White, 150));
 
         this->ecs.kill_entity(res);
         this->_entityPositions.erase(std::remove_if(this->_entityPositions.begin(), this->_entityPositions.end(), [id](ECS::systems::MovableSystem::EntityPos const &pair) {
@@ -1307,7 +1307,7 @@ void Game::handleBombDestroyed(Network::Packet &packet)
         }), this->_bombs.end());
 
         auto &c = this->ecs.getComponent<ECS::components::PositionComponent>(entity);
-        if (c.getY() < this->_realScreenSize.y + 10) { // TO SEE
+        if (c.getY() < this->_realScreenSize.y + 10) {
             entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effects/explose_pod.ogg"), 1000, true);
             this->_sounds.emplace_back(soundEntity);
         }
@@ -1423,7 +1423,6 @@ void Game::handleLaser(Network::Packet &packet)
 
     for (int i = 0; i < this->_screenSize.x; i += tmp) {
         --i;
-
         this->_factory.createLaser(this->_manager.getTexture(Loader::Loader::Laser), i,(y - 80) * this->_resMult, this->_resMult);
     }
     entity_t soundEntity = this->_factory.createSound(client::getAssetPath("songs/effects/laser.ogg"), 1000, true);
@@ -1444,47 +1443,12 @@ void Game::handleRay(Network::Packet &packet)
     } else {
         for(auto i = _rays.begin(); i != _rays.end(); ++i) {
             if ((*i).first == id) {
-                // std::cout << (*i).second.x << " " << (*i).second.y << "|" << x * this->_resMult <<  " " << y * this->_resMult << std::endl;
                 this->_fbr->drawLine((*i).second.x, (*i).second.y, x * this->_resMult, y * this->_resMult, sf::Color::Red);
                 (*i).second = sf::Vector2f(x * this->_resMult, y * this->_resMult);
                 break;
             }
         }
     }
-}
-
-void Game::GenParticles()
-{
-    if (std::chrono::system_clock::now() - this->_lastParticleUpdate > std::chrono::milliseconds(70)) {
-        for(auto j = _particles.begin(); j != _particles.end(); ++j) {
-            if (std::chrono::system_clock::now() - std::get<2>(*j) > std::chrono::milliseconds(std::get<3>(*j))) {
-                j = _particles.erase(j);
-                if (j == _particles.end())
-                    break;
-                continue;
-            }
-            sf::IntRect area = std::get<0>(*j);
-            sf::Color color = std::get<1>(*j);
-            for (int i = 0; i < area.width * area.height / 1000; ++i) {
-                short x = std::rand() % area.width + area.left;
-                short y = std::rand() % area.height + area.top;
-                short width = std::rand() % 8 + 3;
-                short height = std::rand() % 8 + 3;
-                this->_fbr->drawRect(x, y, width, height, color);
-            }
-        }
-        this->_lastParticleUpdate = std::chrono::system_clock::now();
-    }
-}
-
-void Game::CreateParticle(sf::IntRect rect, sf::Color color, size_t duration)
-{
-    this->_particles.push_back(std::make_tuple(rect, color, std::chrono::system_clock::now(), duration));
-}
-
-void Game::CreateParticle(sf::FloatRect rect, sf::Color color, size_t duration)
-{
-    this->_particles.push_back(std::make_tuple(sf::IntRect(rect.left, rect.top, rect.width, rect.height), color, std::chrono::system_clock::now(), duration));
 }
 
 void Game::handleBonus(Network::Packet &packet)
@@ -1497,10 +1461,11 @@ void Game::handleBonus(Network::Packet &packet)
     rect.top -= 20 * this->_resMult;
     rect.width += 40 * this->_resMult;
     rect.height += 40 * this->_resMult;
+
     if (type == 1)
-        this->CreateParticle(rect, sf::Color::Red, 500);
+        this->particules.push_back(this->_factory.createParticle(rect, sf::Color::Red, 500));
     if (type == 2)
-        this->CreateParticle(rect, sf::Color::Green, 500);
+        this->particules.push_back(this->_factory.createParticle(rect, sf::Color::Green, 500));
     if (type == 3)
-        this->CreateParticle(rect, sf::Color::White, 500);
+        this->particules.push_back(this->_factory.createParticle(rect, sf::Color::White, 500));
 }
