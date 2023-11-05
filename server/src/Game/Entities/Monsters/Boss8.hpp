@@ -4,6 +4,7 @@
 #include "../Entity.hpp"
 #include "Monster.hpp"
 
+
 class Boss8Monster: public Monster {
     public:
         /**
