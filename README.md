@@ -81,7 +81,18 @@ The host and port are optional, if you don't specify them, the client will use t
 
 ## Screenshots
 
-![](./screenshots/screenshot_actual_game.png)
+
+<img src="./screenshots/menu.png" width="300" />
+<img src="./screenshots/Screenshot1.png" width="300" />
+<img src="./screenshots/ScreenshotBomb.png" width="300" />
+<img src="./screenshots/ScreenshotBoss8.png" width="300" />
+<img src="./screenshots/laser.png" width="300" />
+<img src="./screenshots/game.png" width="300" />
+<img src="./screenshots/game2.png" width="300" />
+<img src="./screenshots/stage8.png" width="300" />
+
+<!-- ![](./screenshots/menu.png)
+![](./screenshots/Screenshot1.png) -->
 
 ## Technical documentation
 
