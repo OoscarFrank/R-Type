@@ -52,6 +52,12 @@ class RoomManager
          * @return Room&
          */
         Room &getRoom(std::shared_ptr<Client> client);
+
+        /**
+         * @brief Get all the rooms
+         *
+         * @return const std::vector<std::unique_ptr<Room>>&
+         */
         const std::vector<std::unique_ptr<Room>> &getRooms();
 };
 

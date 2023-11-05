@@ -6,9 +6,21 @@
 
 class Router {
     public:
+        /**
+         * @brief Construct a new Router object
+         *
+         * @param rm The room manager
+         * @param allClients The list of all clients
+         */
         Router(RoomManager &rm, const std::vector<std::shared_ptr<Client>> &allClients);
         ~Router() = default;
 
+        /**
+         * @brief Route a packet to the right function
+         *
+         * @param packet The packet to route
+         * @param levels The levels of the client
+         */
         void route(Reader::Packet packet, Levels &levels);
 
     private:

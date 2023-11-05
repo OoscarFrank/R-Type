@@ -97,6 +97,7 @@ namespace game {
                 PLAYER_TWO,
                 PLAYER_THREE,
                 FIRE_BALL,
+                BOSS8_MISSILE,
             };
 
         private:

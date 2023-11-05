@@ -28,6 +28,9 @@
 #define BOSS3_MONSTER_HEIGHT       282
 #define BOSS3_MONSTER_WIDTH        317
 
+#define BOSS8_MONSTER_HEIGHT       600
+#define BOSS8_MONSTER_WIDTH        450
+
 #define BOMB_WIDTH         64
 #define BOMB_HEIGHT        60
 
@@ -39,6 +42,12 @@
 
 #define MISSILE_HEIGHT      1
 #define MISSILE_WIDTH       1
+
+#define FIRE_BALL_HEIGHT    127
+#define FIRE_BALL_WIDTH     100
+
+#define BOSS8_MISSILE_HEIGHT    92
+#define BOSS8_MISSILE_WIDTH     95
 
 #define BONUS_WIDTH   75
 #define BONUS_HEIGHT  75

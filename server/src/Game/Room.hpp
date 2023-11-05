@@ -17,6 +17,7 @@
 #include "Entities/Monsters/Boss5.hpp"
 #include "Entities/Monsters/Boss6.hpp"
 #include "Entities/Monsters/Boss7.hpp"
+#include "Entities/Monsters/Boss8.hpp"
 #include "../Client.hpp"
 #include "Levels.hpp"
 #include "Entities/Bonus/Bonus.hpp"
@@ -25,7 +26,14 @@ class Room
 {
     public:
         class ChatMessage {
-            public:
+            public: 
+                /**
+                 * @brief Construct a new Chat Message object
+                 * 
+                 * @param room The room the message is sent in
+                 * @param playerId The id of the player that sent the message
+                 * @param message The message
+                 */
                 ChatMessage(Room &room, u_int playerId, const std::string &message);
                 ~ChatMessage();
                 ChatMessage(const ChatMessage &chatMessage) = delete;
@@ -33,8 +41,25 @@ class Room
                 ChatMessage &operator=(const ChatMessage &chatMessage) = delete;
                 ChatMessage &operator=(ChatMessage &&chatMessage) = delete;
 
+                /**
+                 * @brief Get the Time Stamp object
+                 * 
+                 * @return const std::chrono::system_clock::time_point& 
+                 */
                 const std::chrono::system_clock::time_point &getTimeStamp() const;
+
+                /**
+                 * @brief Get the Player Id object
+                 * 
+                 * @return u_int 
+                 */
                 u_int getPlayerId() const;
+
+                /**
+                 * @brief Get the Message object
+                 * 
+                 * @return const std::string& 
+                 */
                 const std::string &getMessage() const;
 
             private:
@@ -88,6 +113,9 @@ class Room
         void startGame();
         void checkCollisionPlayer();
         void checkCollisionMonsters();
+        void handleBonus();
+        void checkCollisionBonus();
+        void handleForcePod();
 
     public:
         /**
@@ -139,14 +167,21 @@ class Room
          * @param client The client that wants to join the room
          */
         void addPlayer(std::shared_ptr<Client> client);
+
         /**
+         * @brief remove a player from the room
+         * 
+         * @param client client object linked to the player
+         */
+       
+        void removePlayer(std::shared_ptr<Client> client);
+         /**
          * @brief Move a player in the room
          *
          * @param client The client that wants to move
          * @param move The move to make (PLAYER_MOVE_UP | PLAYER_MOVE_DOWN | PLAYER_MOVE_LEFT | PLAYER_MOVE_RIGHT) you can combine them with the | binary operator
          * @param nbr The number of move to make (default: 1)
          */
-        void removePlayer(std::shared_ptr<Client> client);
         void movePlayer(std::shared_ptr<Client> client, char move, char nbr = 1);
         /**
          * @brief Checks if a client is in the room
@@ -169,27 +204,100 @@ class Room
          * @param stream The packet to send
          */
         void sendToAll(const Stream &stream);
+
         /**
          * @brief Get the id of the next missile to create
          *
          * @return u_int&
          */
-        
         u_int &getMissilesIds();
+
+        /**
+         * @brief Add a monster in the room
+         * 
+         * @param type The type of the monster to add
+         * @param x The x position of the monster
+         * @param y The y position of the monster
+         *
+         */
         void addMonster(IEntity::Type type, int x, int y);
+
+        /**
+         * @brief Get the position of the nearest player from an entity
+         * 
+         * @param entity The entity to check
+         *
+         * @return std::pair<short, short> The position of the nearest player
+         */
         std::pair<short, short> getNearestPlayerPos(const IEntity &entity);
+
+        /**
+         * @brief Check if the room is private
+         * 
+         * @return true if the room is private
+         * @return false if the room is not private
+         */
         bool isPrivate() const;
+
+        /**
+         * @brief Check if the it remain monsters in the room
+         * 
+         * @return true if there is still monsters
+         * @return false if there is no more monsters
+         */
         bool isMonster() const;
-        void handleBonus();
-        void checkCollisionBonus();
+
+        /**
+         * @brief Get the id of the next Bomb to create
+         * 
+         * @return size_t& 
+         */
         size_t &getBombIds();
+
+        /**
+         * @brief Get the id of the next Laser to create
+         * 
+         * @return size_t& 
+         */
         size_t &getLaserIds();
+
+        /**
+         * @brief Get the id of the next Ray to create
+         * 
+         * @return size_t& 
+         */
         size_t &getRayIds();
-        void handleForcePod();
+
+
+        /**
+         * @brief Apply damage to all monsters in a zone
+         * 
+         * @param x the x position of the center of the zone
+         * @param y the y position of the center of the zone
+         * @param radius the radius of the zone
+         * @param player the player from which the damage comes
+         */
         void degInZone(float x, float y, size_t radius, Player &player);
+
+        /**
+         * @brief Get the Players object
+         * 
+         * @return std::vector<std::unique_ptr<Player>>& 
+         */
         std::vector<std::unique_ptr<Player>> &getPlayers();
 
+        /**
+         * @brief The mutex that lock the players vector
+         * 
+         */
         std::mutex _playersMutex;
+
+        /**
+         * @brief Send a message in the chat
+         * 
+         * @param client The client that send the message
+         * @param message The message to send
+         */
         void sendChat(std::shared_ptr<Client> client, const std::string &message);
 };
 

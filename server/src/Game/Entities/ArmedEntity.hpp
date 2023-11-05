@@ -33,6 +33,11 @@ class ArmedEntity: public AEntity {
          *
          */
         virtual void refresh() = 0;
+        /**
+         * @brief Get the entity damages
+         * 
+         * @return int The entity damages
+         */
         virtual int getDamage() = 0;
 
     protected:
@@ -55,8 +60,16 @@ class ArmedEntity: public AEntity {
          * @param type The type of the missile to fire (see Missile::Type)
          */
         virtual void fireMissile(Missile::Type type, short vx, short vy);
-
+        /**
+         * @brief Fire a new missile
+         *
+         * @param type The type of the missile to fire (see Missile::Type)
+         */
         virtual void fireMissile(Missile::Type type, short vx, short vy, short posX, short posY);
+
+        /**
+         * @brief get the last fire time
+         */
         std::chrono::system_clock::time_point _lastFire;
 
     private:
