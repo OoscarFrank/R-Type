@@ -17,6 +17,7 @@
 #include "Entities/Monsters/Boss5.hpp"
 #include "Entities/Monsters/Boss6.hpp"
 #include "Entities/Monsters/Boss7.hpp"
+#include "Entities/Monsters/Boss8.hpp"
 #include "../Client.hpp"
 #include "Levels.hpp"
 #include "Entities/Bonus/Bonus.hpp"

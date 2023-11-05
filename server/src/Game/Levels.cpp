@@ -80,6 +80,10 @@ void Levels::update(Room &room)
         for (auto i = tmp.begin(); i != tmp.end(); ++i)
             room.addMonster(IEntity::Type::BOSS7, SCREEN_WIDTH, (*i));
 
+        tmp = this->_levels[_currentLvl].getEvents()[Monster::BOSS8 - 2].getSpawns(current);
+        for (auto i = tmp.begin(); i != tmp.end(); ++i)
+            room.addMonster(IEntity::Type::BOSS8, SCREEN_WIDTH, (*i));
+
         std::vector<std::tuple<size_t, unsigned char, bool>> strobes = this->_levels[_currentLvl].getStrobes().getEvents(current);
         for(auto i = strobes.begin(); i != strobes.end(); ++i) {
             room.sendToAll(StreamFactory::strobe(std::get<1>(*i), std::get<2>(*i)));
@@ -269,7 +273,7 @@ Levels::Level::Level(const std::string &path)
     this->_events.push_back(EntityEvents(Monster::BOSS5));
     this->_events.push_back(EntityEvents(Monster::BOSS6));
     this->_events.push_back(EntityEvents(Monster::BOSS7));
-
+    this->_events.push_back(EntityEvents(Monster::BOSS8));
 
     std::string line;
     size_t line_nb = 1;
@@ -360,6 +364,8 @@ void Levels::Level::parsEvents(const std::string &line, const std::string &path,
         this->_parserEntity = Monster::BOSS6;
     else if (line.find("BOSS7") != std::string::npos)
         this->_parserEntity = Monster::BOSS7;
+    else if (line.find("BOSS8") != std::string::npos)
+        this->_parserEntity = Monster::BOSS8;
 
     if (this->_parserEntity != -1 && this->_parserEntity != 1) {
         size_t timeCode = 0;

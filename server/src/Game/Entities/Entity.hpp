@@ -104,6 +104,7 @@ class IEntity {
             BOSS5,
             BOSS6,
             BOSS7,
+            BOSS8,
         };
 };
 

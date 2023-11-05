@@ -13,6 +13,7 @@ class Missile: public AEntity {
             PLAYER_TWO,
             PLAYER_THREE,
             FIRE_BALL,
+            BOSS8_MISSILE,
         };
 
         /**
