@@ -16,3 +16,4 @@
 #include "LoadingBarComponent.hpp"
 #include "SoundComponent.hpp"
 #include "AnimationOneTimeComponent.hpp"
+#include "ParticuleComponent.hpp"
