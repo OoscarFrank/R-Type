@@ -3,7 +3,7 @@
 #include <cmath>
 
 Boss6Monster::Boss6Monster(Room &room, u_int id, short x, short y):
-    Monster(room, id, x, y, BOSS1_MONSTER_WIDTH, BOSS1_MONSTER_HEIGHT)
+    Monster(room, id, x, y, BOSS3_MONSTER_WIDTH, BOSS3_MONSTER_HEIGHT)
 {
     _life = 12500;
     _burstCount = 0;
@@ -14,7 +14,7 @@ Boss6Monster::Boss6Monster(Room &room, u_int id, short x, short y):
 }
 
 Boss6Monster::Boss6Monster(Room &room, u_int id, const std::pair<short, short> &pos):
-    Monster(room, id, pos, {BOSS1_MONSTER_WIDTH, BOSS1_MONSTER_HEIGHT})
+    Monster(room, id, pos, {BOSS3_MONSTER_WIDTH, BOSS3_MONSTER_HEIGHT})
 {
     _life = 12500;
     _burstCount = 0;
@@ -37,10 +37,28 @@ void Boss6Monster::refresh()
     if (!_exist) {
         return;
     }
-    if (life() >= 1500) {
-        if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= 2000) {
-            fireMissile(Missile::Type::PURPLE_MISSILE, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + _box.height / 3);
-            _lastFire = now;
+    if (life() >= 6250) {
+        if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= 1000) {
+        _burstCount = 0;
+        _lastFire = now;
+        } else if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire2).count() >= 3000) {
+            std::pair<double, double> tmpVect = vector;
+            if (len != 0) {
+                tmpVect.first /= len;
+                tmpVect.first *= FOLLOWER_MONSTER_MISSILE_PROGRESS_STEP;
+                tmpVect.second /= len;
+                tmpVect.second *= FOLLOWER_MONSTER_MISSILE_PROGRESS_STEP;
+            }
+            fireMissile(Missile::Type::LITTLE_MONSTER, static_cast<short>(tmpVect.first), static_cast<short>(tmpVect.second));
+            _lastFire2 = now;
+        }
+        if (_burstCount <= 5) {
+            if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= _burstCount * BURST_FIRE_TIME) {
+                fireMissile(Missile::Type::PURPLE_MISSILE, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + _box.height / 5.5);
+                fireMissile(Missile::Type::PURPLE_MISSILE, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + _box.height / 3);
+                _lastFire = now;
+                _burstCount++;
+            }
         }
         if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastMove).count() >= MONSTER_MOVE_TIME) {
             if (std::chrono::duration_cast<std::chrono::seconds>(now - _lastPos).count() >= CHANGE_HORIZONTAL_DIRECTION) {
@@ -51,7 +69,7 @@ void Boss6Monster::refresh()
                 _lastPos2 = now;
             }
 
-            if (_box.x == 0)
+            if (_box.x == 850)
                 _moveDirection.first = 1;
             else if (_box.x + _box.width > SCREEN_WIDTH)
                 _moveDirection.first = -1;
@@ -78,6 +96,10 @@ void Boss6Monster::refresh()
                 fireMissile(Missile::Type::FIRE_BALL, 0, 7, firePosX, -firePosYNeg);
             }
             _lastFire = now;
+        } else if(std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire2).count() >= 1000) {
+            fireMissile(Missile::Type::PURPLE_MISSILE, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + _box.height / 5.5);
+            fireMissile(Missile::Type::PURPLE_MISSILE, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + _box.height / 3);
+            _lastFire2 = now;
         }
         if (_box.x < 0)
         _vx = BOSS2_MONSTER_PROGRESS_STEP;
@@ -100,8 +122,8 @@ void Boss6Monster::refresh()
 
 int Boss6Monster::getDamage()
 {
-    if (life() < 1500 && Missile::Type::FIRE_BALL)
-        return 50;
+    if (life() < 6250)
+        return 20;
     else
         return 10;
 }

@@ -3,7 +3,7 @@
 #include <cmath>
 
 Boss5Monster::Boss5Monster(Room &room, u_int id, short x, short y):
-    Monster(room, id, x, y, BOSS1_MONSTER_WIDTH, BOSS1_MONSTER_HEIGHT)
+    Monster(room, id, x, y, BOSS2_MONSTER_WIDTH, BOSS2_MONSTER_HEIGHT)
 {
     _life = 7500;
     _burstCount = 0;
@@ -12,7 +12,7 @@ Boss5Monster::Boss5Monster(Room &room, u_int id, short x, short y):
 }
 
 Boss5Monster::Boss5Monster(Room &room, u_int id, const std::pair<short, short> &pos):
-    Monster(room, id, pos, {BOSS1_MONSTER_WIDTH, BOSS1_MONSTER_HEIGHT})
+    Monster(room, id, pos, {BOSS2_MONSTER_WIDTH, BOSS2_MONSTER_HEIGHT})
 {
     _life = 7500;
     _burstCount = 0;

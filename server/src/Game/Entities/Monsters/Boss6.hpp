@@ -40,6 +40,7 @@ class Boss6Monster: public Monster {
             int _burstCount;
             std::chrono::system_clock::time_point _lastPos;
             std::chrono::system_clock::time_point _lastPos2;
+            std::chrono::system_clock::time_point _lastFire2;
             std::chrono::system_clock::time_point _changeVelocity;
             std::pair<short, short> _moveDirection;
             bool exist;

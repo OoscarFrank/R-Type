@@ -3,7 +3,7 @@
 #include <cmath>
 
 Boss3Monster::Boss3Monster(Room &room, u_int id, short x, short y):
-    Monster(room, id, x, y, BOSS1_MONSTER_WIDTH, BOSS1_MONSTER_HEIGHT),
+    Monster(room, id, x, y, BOSS3_MONSTER_WIDTH, BOSS3_MONSTER_HEIGHT),
     _switch(1)
 {
     _life = 7000;
@@ -16,7 +16,7 @@ Boss3Monster::Boss3Monster(Room &room, u_int id, short x, short y):
 }
 
 Boss3Monster::Boss3Monster(Room &room, u_int id, const std::pair<short, short> &pos):
-    Monster(room, id, pos, {BOSS1_MONSTER_WIDTH, BOSS1_MONSTER_HEIGHT}),
+    Monster(room, id, pos, {BOSS3_MONSTER_WIDTH, BOSS3_MONSTER_HEIGHT}),
     _switch(1)
 {
     _life = 8500;
