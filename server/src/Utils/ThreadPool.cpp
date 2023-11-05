@@ -49,7 +49,6 @@ void ThreadPool::_newThread()
 
 void ThreadPool::_threadHandler()
 {
-    std::cout << "Thread started" << std::endl;
     std::function<void()> func = nullptr;
     while (_pool.tryPop(func, std::chrono::seconds(_secondsToWait))) {
         if (func == nullptr)
@@ -59,5 +58,4 @@ void ThreadPool::_threadHandler()
         func();
         func = nullptr;
     }
-    std::cout << "Thread finished" << std::endl;
 }

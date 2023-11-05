@@ -130,7 +130,7 @@ void Router::_fireBomb(Reader::Packet &packet, Levels &levels)
         tmpRoom._playersMutex.unlock();
     } catch (const std::runtime_error &e) {
         tmpRoom._playersMutex.unlock();
-        std::cout << "error" << std::endl;;
+        std::cerr << "error" << std::endl;;
     }
 }
 
@@ -145,7 +145,7 @@ void Router::_fireLaser(Reader::Packet &packet, Levels &levels)
         tmpRoom._playersMutex.unlock();
     } catch (const std::runtime_error &e) {
         tmpRoom._playersMutex.unlock();
-        std::cout << "error" << std::endl;;
+        std::cerr << "error" << std::endl;;
     }
 }
 
@@ -160,6 +160,6 @@ void Router::_fireRay(Reader::Packet &packet, Levels &levels)
         tmpRoom._playersMutex.unlock();
     } catch (const std::runtime_error &e) {
         tmpRoom._playersMutex.unlock();
-        std::cout << "error" << std::endl;;
+        std::cerr << "error" << std::endl;;
     }
 }

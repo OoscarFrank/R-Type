@@ -502,8 +502,6 @@ Room::ChatMessage::ChatMessage(Room &room, u_int playerId, const std::string &me
     _playerId(playerId),
     _message(message)
 {
-    std::cout << "New chat from " << playerId << ": " << message << std::endl;
-
     Stream out;
     out << 33_uc << playerId;
     for (auto i = message.begin(); i != message.end(); i++) {
