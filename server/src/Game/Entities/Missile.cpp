@@ -2,7 +2,7 @@
 #include "../Room.hpp"
 
 Missile::Missile(Room &room, Missile::Type type, u_int id, short x, short y, short vx, short vy):
-    AEntity(room, id, x, y, MISSILE_WIDTH, MISSILE_HEIGHT),
+    AEntity(room, id, x, y, Missile::Type::FIRE_BALL ? 4 : MISSILE_WIDTH, Missile::Type::FIRE_BALL ? 4 : MISSILE_HEIGHT),
     _type(type),
     _vx(vx),
     _vy(vy)

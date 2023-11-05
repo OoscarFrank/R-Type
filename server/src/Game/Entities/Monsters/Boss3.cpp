@@ -51,10 +51,10 @@ void Boss3Monster::refresh()
             _switch *= -1;
             _lastPosFire = now;
             }
-            fireMissile(Missile::Type::ORANGE_MISSILE, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, _switch * 10, _box.x + _box.width / 2, _box.y + _box.height / 3);
-            fireMissile(Missile::Type::ORANGE_MISSILE, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, _switch * 10, _box.x + _box.width / 2, _box.y + _box.height / 1.5);
-            fireMissile(Missile::Type::ORANGE_MISSILE, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, 0, _switch * (_box.x + _box.width / 2), _box.y + _box.height / 3);
-            fireMissile(Missile::Type::ORANGE_MISSILE, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + _box.height / 1.5);
+            fireMissile(Missile::Type::LITTLE_MONSTER, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, _switch * 10, _box.x + _box.width / 2, _box.y + _box.height / 3);
+            fireMissile(Missile::Type::LITTLE_MONSTER, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, _switch * 10, _box.x + _box.width / 2, _box.y + _box.height / 1.5);
+            fireMissile(Missile::Type::LITTLE_MONSTER, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, 0, _switch * (_box.x + _box.width / 2), _box.y + _box.height / 3);
+            fireMissile(Missile::Type::LITTLE_MONSTER, -LITTLE_MONSTER_MISSILE_PROGRESS_STEP, 0, _box.x + _box.width / 2, _box.y + _box.height / 1.5);
             _burstCount++;
         }
     }

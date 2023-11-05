@@ -37,9 +37,8 @@ Game::Game(std::string ip, int port) :
 
         this->_manager.loadTexture(client::getAssetPath("entity/missile/missile.png"), Loader::toLoad::Missile);
         this->_manager.loadTexture(client::getAssetPath("entity/missile/missileRed.png"), Loader::toLoad::MissileRed);
-        this->_manager.loadTexture(client::getAssetPath("entity/missile/orange_missile.png"), Loader::toLoad::OrangeMissile);
-        this->_manager.loadTexture(client::getAssetPath("entity/missile/purple_missile.png"), Loader::toLoad::PurpleMissile);
-        this->_manager.loadTexture(client::getAssetPath("entity/missile/green_missile.png"), Loader::toLoad::GreenMissile);
+        this->_manager.loadTexture(client::getAssetPath("entity/missile/missilePurple.png"), Loader::toLoad::PurpleMissile);
+        this->_manager.loadTexture(client::getAssetPath("entity/missile/missileGreen.png"), Loader::toLoad::GreenMissile);
         this->_manager.loadTexture(client::getAssetPath("entity/missile/fireBall.png"), Loader::toLoad::FireBall);
         this->_manager.loadTexture(client::getAssetPath("entity/monsters/monster1.png"), Loader::toLoad::Monster1);
         this->_manager.loadTexture(client::getAssetPath("entity/monsters/mob1.png"), Loader::toLoad::Monster2);
@@ -51,6 +50,7 @@ Game::Game(std::string ip, int port) :
         this->_manager.loadTexture(client::getAssetPath("entity/monsters/boss1.png"), Loader::toLoad::Boss4);
         this->_manager.loadTexture(client::getAssetPath("entity/monsters/boss2.png"), Loader::toLoad::Boss5);
         this->_manager.loadTexture(client::getAssetPath("entity/monsters/boss3.png"), Loader::toLoad::Boss6);
+        this->_manager.loadTexture(client::getAssetPath("entity/monsters/boss3.png"), Loader::toLoad::Boss7);
         this->_manager.loadTexture(client::getAssetPath("entity/player/player_move1.png"), Loader::toLoad::Player_move1);
         this->_manager.loadTexture(client::getAssetPath("entity/player/player_move2.png"), Loader::toLoad::Player_move2);
         this->_manager.loadTexture(client::getAssetPath("entity/player/player_move3.png"), Loader::toLoad::Player_move3);
@@ -629,20 +629,14 @@ void Game::handleMissilePosition(Network::Packet &packet)
                     this->_missiles.push_back(std::make_pair(id, newEntity));
                 }
                 break;
-            case MISSILE_TYPE::ORANGE_MISSILE: {
-                    entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::OrangeMissile), this->_resMult, 4);
-                    this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
-                    this->_missiles.push_back(std::make_pair(id, newEntity));
-                }
-                break;
             case MISSILE_TYPE::PURPLE_MISSILE: {
-                    entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::PurpleMissile), this->_resMult, 4);
+                    entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::PurpleMissile));
                     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                     this->_missiles.push_back(std::make_pair(id, newEntity));
                 }
                 break;
             case MISSILE_TYPE::GREEN_MISSILE: {
-                    entity_t newEntity = this->_factory.createMissileAnnimated(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::GreenMissile), this->_resMult, 4);
+                    entity_t newEntity = this->_factory.createMissile(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::GreenMissile));
                     this->ecs.emplace_component<ECS::components::ScaleComponent>(newEntity, ECS::components::ScaleComponent{this->_resMult, this->_resMult});
                     this->_missiles.push_back(std::make_pair(id, newEntity));
                 }
@@ -752,6 +746,11 @@ void Game::handleEnnemiPosition(Network::Packet &packet)
                 break;
             case 11: {
                     entity_t newEntity = this->_factory.createEnnemiFrames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss6), this->_resMult, 4);
+                    this->_ennemies.push_back(std::make_pair(id, newEntity));
+                }
+                break;
+            case 12: {
+                    entity_t newEntity = this->_factory.createEnnemiFrames(x + this->topLeftOffeset.x, y + this->topLeftOffeset.y, this->_manager.getTexture(Loader::Loader::Boss7), this->_resMult, 4);
                     this->_ennemies.push_back(std::make_pair(id, newEntity));
                 }
                 break;

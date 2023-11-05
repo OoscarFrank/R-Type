@@ -114,7 +114,7 @@ void Boss6Monster::refresh()
         short player = playerPos.second + (PLAYER_HEIGHT / 2);
         _vy = (boss == player || boss + 1 == player || boss - 1 == player) ? 0 : (boss < player) ? BOSS2_MONSTER_PROGRESS_STEP : -BOSS2_MONSTER_PROGRESS_STEP;
         move(_vx, _vy);
-        _room.sendToAll(StreamFactory::monsterPos(_id, IEntity::Type::BOSS3, _box.x, _box.y));
+        _room.sendToAll(StreamFactory::monsterPos(_id, IEntity::Type::BOSS6, _box.x, _box.y));
         _lastMove = now;
     }
     }

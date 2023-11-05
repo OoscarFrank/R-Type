@@ -44,6 +44,7 @@ namespace game {
                 Boss4,
                 Boss5,
                 Boss6,
+                Boss7,
                 CreateRoomButton,
                 JoinRoomButton,
                 QuitButton,

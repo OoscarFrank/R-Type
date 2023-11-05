@@ -92,7 +92,6 @@ namespace game {
             enum MISSILE_TYPE {
                 PLAYER_ONE = 1,
                 LITTLE_MONSTER,
-                ORANGE_MISSILE,
                 PURPLE_MISSILE,
                 GREEN_MISSILE,
                 PLAYER_TWO,

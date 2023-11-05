@@ -28,14 +28,13 @@ void Boss5Monster::refresh()
     if (!_exist) {
         return;
     }
-    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= BURST_MONSTER_FIRE_TIME) {
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= 3000) {
         _burstCount = 0;
         _lastFire = now;
     }
     if (_burstCount <= 5) {
         if (std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastFire).count() >= _burstCount * BURST_FIRE_TIME) {
             const int numMissiles = 8;
-            const double radius = 50.0;
             const double missileVelocity = 10.0;
             double angle = 0.0;
 
